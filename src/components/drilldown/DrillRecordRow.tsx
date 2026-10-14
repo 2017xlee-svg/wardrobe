@@ -1,6 +1,6 @@
 import React from 'react';
 import { ClothesItem, ReportPreset } from '../../types';
-import { resolveImageSource } from '../../utils/imageUtils';
+import { resolveImageSource, useResolvedImageUrl } from '../../utils/imageUtils';
 import { reportPresetService } from '../../services/reportPresetService';
 import { dataService } from '../../services/dataService';
 import { Shirt, ChevronRight, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -14,7 +14,7 @@ interface DrillRecordRowProps {
 export const DrillRecordRow: React.FC<DrillRecordRowProps> = ({ garment, preset, onSelect }) => {
   const pictures = garment['Pictures'] || [];
   const pic = pictures.length > 0 ? pictures[0] : null;
-  const imageUrl = resolveImageSource(pic);
+  const imageUrl = useResolvedImageUrl(pic);
 
   const stats = dataService.getGarmentStats(garment.id);
   const clothesType = garment['Clothes Type'] || garment.clothesType || 'Garment';
@@ -35,7 +35,7 @@ export const DrillRecordRow: React.FC<DrillRecordRowProps> = ({ garment, preset,
                 alt={name}
                 referrerPolicy="no-referrer"
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-0.5"
               />
             ) : (
               <Shirt className="w-4 h-4 text-slate-400" />

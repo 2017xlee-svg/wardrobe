@@ -11,14 +11,29 @@ service cloud.firestore {
       allow write: if isValidId(clothesId);
     }
 
+    match /wearingReport/{reportId} {
+      allow read: if true;
+      allow write: if isValidId(reportId);
+    }
+
     match /wearing_reports/{reportId} {
       allow read: if true;
       allow write: if isValidId(reportId);
     }
 
+    match /clothesJunction/{junctionId} {
+      allow read: if true;
+      allow write: if isValidId(junctionId);
+    }
+
     match /report_clothes_junctions/{junctionId} {
       allow read: if true;
       allow write: if isValidId(junctionId);
+    }
+
+    match /reportPresets/{presetId} {
+      allow read: if true;
+      allow write: if isValidId(presetId);
     }
 
     match /{document=**} {

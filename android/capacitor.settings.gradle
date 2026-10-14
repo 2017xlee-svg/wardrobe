@@ -1,0 +1,8 @@
+include ':capacitor-android'
+if (new File(rootDir, 'capacitor-android').exists()) {
+    project(':capacitor-android').projectDir = new File(rootDir, 'capacitor-android')
+} else if (new File(rootDir, '../node_modules/@capacitor/android/capacitor').exists()) {
+    project(':capacitor-android').projectDir = new File(rootDir, '../node_modules/@capacitor/android/capacitor')
+} else {
+    project(':capacitor-android').projectDir = new File(rootDir, 'capacitor-android')
+}

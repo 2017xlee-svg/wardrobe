@@ -54,31 +54,52 @@
       },
       "required": ["Name", "wear date"]
     },
-    "ReportClothes": {
-      "title": "ReportClothes",
-      "description": "Session junction linking wearing report and garment item",
+    "ClothesJunction": {
+      "title": "ClothesJunction",
+      "description": "Clothes junction linking a wearing report to exactly one clothes item",
       "type": "object",
       "properties": {
-        "name": { "type": "number", "description": "Incremental session junction ID" },
+        "name": { "type": "number", "description": "Incremental clothes junction ID" },
         "duration": { "type": "number", "description": "Wear duration in seconds" },
         "wash stated": { "type": "string", "maxLength": 50, "description": "Laundry wash status (wash / need wash)" },
-        "Clothes Type (from clothes(new))": { "type": "string", "maxLength": 100, "description": "Garment type" }
+        "Clothes Type (from clothes(new))": { "type": "string", "maxLength": 100, "description": "Clothes type" }
       },
       "required": ["name", "duration", "wash stated"]
+    },
+    "ReportPreset": {
+      "title": "ReportPreset",
+      "description": "Customizable multi-tier drill-down report preset configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "description": "Preset unique identifier" },
+        "name": { "type": "string", "maxLength": 200, "description": "Display name of preset" },
+        "description": { "type": "string", "maxLength": 1000, "description": "Purpose and description of the drill preset" },
+        "isCustom": { "type": "boolean", "description": "Whether this is a user-created custom preset" },
+        "groupTiers": { "type": "array", "items": { "type": "string" }, "description": "Ordered list of field keys for drill-down breakdown" },
+        "sortField": { "type": "string", "maxLength": 100, "description": "Default sorting field" },
+        "sortOrder": { "type": "string", "maxLength": 10, "description": "Sort direction: asc or desc" },
+        "visibleFields": { "type": "array", "items": { "type": "string" }, "description": "Garment metadata fields displayed as tags" },
+        "updatedAt": { "type": "string", "maxLength": 100, "description": "Last updated timestamp" }
+      },
+      "required": ["id", "name", "groupTiers", "sortField", "sortOrder", "visibleFields"]
     }
   },
   "firestore": {
     "/clothes/{clothesId}": {
       "schema": "Clothes",
-      "description": "Collection of wardrobe garment specifications and records"
+      "description": "Collection of wardrobe clothes items and records"
     },
-    "/wearing_reports/{reportId}": {
+    "/wearingReport/{reportId}": {
       "schema": "WearingReport",
-      "description": "Collection of daily wear reports and sensory reflections"
+      "description": "Collection of wearing reports"
     },
-    "/report_clothes_junctions/{junctionId}": {
-      "schema": "ReportClothes",
-      "description": "Collection of outfit session wear connections"
+    "/clothesJunction/{junctionId}": {
+      "schema": "ClothesJunction",
+      "description": "Collection of clothes junctions linking wearing reports to clothes"
+    },
+    "/reportPresets/{presetId}": {
+      "schema": "ReportPreset",
+      "description": "Collection of user and system drill-down report presets stored in cloud"
     }
   }
 }
