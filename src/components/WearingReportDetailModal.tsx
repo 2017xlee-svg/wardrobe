@@ -12,6 +12,7 @@ import { getCustomApiKey, getSelectedModel, GeminiModelId } from '../services/ai
 import { fieldDictionaryService } from '../services/fieldDictionaryService';
 import { FieldDictionaryDrawer } from './FieldDictionaryDrawer';
 import { FieldExplainBox } from './FieldExplainBox';
+import { FontSizeSwitcher } from './FontSizeSwitcher';
 import {
   X, Calendar, Clock, Shirt, Sparkles, Tag, ShieldCheck, Heart, Droplets,
   Image as ImageIcon, ChevronRight, Edit3, Trash2, Save, ArrowLeft, History,
@@ -823,6 +824,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
 
           {/* Action Toolbar */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <FontSizeSwitcher />
             {isEditing ? (
               <>
                 <button

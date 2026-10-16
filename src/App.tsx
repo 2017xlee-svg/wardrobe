@@ -14,6 +14,7 @@ import { SyncModal } from './components/SyncModal';
 import { SyncView } from './components/SyncView';
 import { UndoToast } from './components/UndoToast';
 import { AndroidInstallModal } from './components/AndroidInstallModal';
+import { FontSizeSwitcher } from './components/FontSizeSwitcher';
 import { mediaOutbox } from './services/mediaOutbox';
 import { syncOutbox } from './services/syncOutbox';
 import {
@@ -237,7 +238,7 @@ export function App() {
   return (
     <div className="w-full max-w-full overflow-x-hidden min-h-[100dvh] bg-slate-100/70 text-slate-900 flex flex-col font-sans selection:bg-purple-100 selection:text-purple-900 touch-pan-y">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shrink-0 select-none w-full max-w-full overflow-x-hidden pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shrink-0 select-none w-full max-w-full pt-[env(safe-area-inset-top,0px)]">
         <div className="w-full px-2.5 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-1.5 sm:gap-2">
             {/* Brand Logo & Name */}
@@ -342,6 +343,9 @@ export function App() {
 
             {/* Status Indicator Pill / Local Storage Link & Action Buttons */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              {/* App Font Size Switcher */}
+              <FontSizeSwitcher />
+
               {/* Android (Moto Edge 30) Install Button */}
               <button
                 type="button"

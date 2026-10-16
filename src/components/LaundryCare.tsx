@@ -58,7 +58,6 @@ export const LaundryCare: React.FC<LaundryCareProps> = ({
   });
 
   const hamperItems = laundryItems.filter(i => i.needWash);
-  const cleanItems = laundryItems.filter(i => !i.needWash);
 
   const totalUnwashedHours = (hamperItems.reduce((acc, i) => acc + i.unwashedSeconds, 0) / 3600).toFixed(1);
   const totalWashesRecorded = clothes.reduce((acc, c) => acc + (c['Total Washed Count'] || 0), 0);
@@ -298,46 +297,6 @@ export const LaundryCare: React.FC<LaundryCareProps> = ({
             </p>
           </div>
         )}
-      </div>
-
-      {/* Ready & Clean Items in Closet */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-3">
-        <div>
-          <h3 className="text-base font-bold text-slate-900">Clean & In Closet ({cleanItems.length})</h3>
-          <p className="text-xs text-slate-500">Ready for daily wear</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          {cleanItems.slice(0, 15).map(({ garment }) => (
-            <div
-              key={garment.id}
-              onClick={() => handleSelectClothesItem(garment)}
-              className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 cursor-pointer transition-colors flex items-center justify-between"
-            >
-              <div className="min-w-0 pr-2">
-                <span className="text-[10px] font-mono font-bold uppercase text-slate-400 block">
-                  {garment['Clothes Type']}
-                </span>
-                <span className="text-xs font-bold text-slate-800 truncate block">
-                  {garment['Name']}
-                </span>
-                <span className="text-[11px] text-slate-500 truncate block">
-                  {garment['material']}
-                </span>
-              </div>
-
-              <div className="text-right shrink-0">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  Clean
-                </span>
-                <span className="text-[10px] text-slate-400 block mt-1">
-                  {garment['Total Washed Count'] || 0} washes
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Confirmation Modal */}

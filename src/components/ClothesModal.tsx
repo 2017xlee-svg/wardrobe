@@ -13,6 +13,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { toDateKey, formatCalendarDate, getTodayDateKey } from '../utils/calendarCalculations';
 import { getCustomApiKey, getSelectedModel } from '../services/aiSettings';
 import { fieldDictionaryService } from '../services/fieldDictionaryService';
+import { FontSizeSwitcher } from './FontSizeSwitcher';
 import {
   X, CheckCircle2, AlertCircle, Sparkles, ThermometerSun, ShieldCheck, DollarSign,
   Clock, RefreshCw, Calendar, Tag, ChevronRight, Droplets, Info, Image as ImageIcon,
@@ -904,6 +905,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <FontSizeSwitcher />
             {!isEditing ? (
               <>
                 <button

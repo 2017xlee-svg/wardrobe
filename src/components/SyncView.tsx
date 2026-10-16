@@ -39,8 +39,15 @@ import {
   Edit2,
   Info,
   CheckCheck,
-  Sliders
+  Sliders,
+  Type
 } from 'lucide-react';
+import {
+  FONT_SCALE_OPTIONS,
+  getCurrentFontScale,
+  setGlobalFontScale,
+  FontScale
+} from './FontSizeSwitcher';
 import { ConfirmModal } from './ConfirmModal';
 import { dataService, SyncStatus, BackupInspectionResult, BackupFieldDiff, RestoreFieldResolutions } from '../services/dataService';
 import { syncOutbox } from '../services/syncOutbox';
@@ -122,6 +129,23 @@ export const SyncView: React.FC<SyncViewProps> = ({
   const [showResetSeedConfirmModal, setShowResetSeedConfirmModal] = useState(false);
   const [deletePhotosWithEmpty, setDeletePhotosWithEmpty] = useState(false);
   const [isResettingDb, setIsResettingDb] = useState(false);
+  const [fontScale, setFontScale] = useState<FontScale>(getCurrentFontScale);
+
+  React.useEffect(() => {
+    const handleScaleChanged = (e: Event) => {
+      const customEvent = e as CustomEvent<FontScale>;
+      if (customEvent.detail) {
+        setFontScale(customEvent.detail);
+      }
+    };
+    window.addEventListener('wardrobe_font_scale_changed', handleScaleChanged);
+    return () => window.removeEventListener('wardrobe_font_scale_changed', handleScaleChanged);
+  }, []);
+
+  const handleScaleSelect = (scale: FontScale) => {
+    setFontScale(scale);
+    setGlobalFontScale(scale);
+  };
 
   const handleSelectModel = (m: GeminiModelId) => {
     setSelectedModel(m);
@@ -1320,6 +1344,64 @@ export const SyncView: React.FC<SyncViewProps> = ({
             <span>Saved to local browser storage. All future AI calls will use your key.</span>
           </div>
         )}
+      </div>
+
+      {/* APP FONT SIZE & DISPLAY SCALE SETTINGS CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+              <Type className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-950">
+                App Appearance &amp; Font Size
+              </h3>
+              <p className="text-xs text-slate-500">
+                Adjust overall application typography scale. Persists across browser refreshes and mobile devices.
+              </p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-[11px] font-mono self-start sm:self-auto">
+            Current: {FONT_SCALE_OPTIONS.find(o => o.key === fontScale)?.label} ({FONT_SCALE_OPTIONS.find(o => o.key === fontScale)?.badge})
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          {FONT_SCALE_OPTIONS.map((opt) => {
+            const isSelected = opt.key === fontScale;
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => handleScaleSelect(opt.key)}
+                className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 active:scale-[0.99] ${
+                  isSelected
+                    ? 'border-indigo-600 bg-indigo-50/70 shadow-xs ring-2 ring-indigo-200'
+                    : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sm text-slate-900">{opt.label}</span>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
+                    isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {opt.badge} · {opt.rootPx}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {opt.description}
+                </p>
+                {opt.key === 'comfortable' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-300 self-start">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    Recommended Setting
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* OFFLINE BACKUP & EXPORT initialData.json CARD */}
