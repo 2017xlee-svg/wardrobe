@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { ClothesItem, WearingReport, ReportClothesJunction, ReportPreset, DrillStep } from '../../types';
 import {
   reportPresetService,
+  deduplicatePresets,
   AVAILABLE_REPORT_FIELDS,
   DEFAULT_REPORT_PRESETS
 } from '../../services/reportPresetService';
@@ -45,15 +46,15 @@ export const DrillDownReport: React.FC<DrillDownReportProps> = ({
     else if (onSelectGarment) onSelectGarment(item);
   };
 
-  // Presets state
-  const [presets, setPresets] = useState<ReportPreset[]>(() => reportPresetService.getPresets());
+  // Presets state (guaranteed deduplicated by ID and normalized name)
+  const [presets, setPresets] = useState<ReportPreset[]>(() => deduplicatePresets(reportPresetService.getPresets()));
   const [activePresetId, setActivePresetId] = useState<string>(() => reportPresetService.getActivePresetId());
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   // Subscribe to cloud updates for presets
   useEffect(() => {
     const unsub = reportPresetService.subscribe((updatedPresets) => {
-      setPresets(updatedPresets);
+      setPresets(deduplicatePresets(updatedPresets));
     });
     return unsub;
   }, []);
@@ -548,12 +549,12 @@ export const DrillDownReport: React.FC<DrillDownReportProps> = ({
           </div>
         ) : viewMode === 'table' ? (
           <div className="bg-white rounded-2xl border border-slate-300 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto w-full scrollbar-thin">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                    <th className="py-2.5 px-3">Clothes</th>
-                    <th className="py-2.5 px-3">Wash Status</th>
+                    <th className="py-2.5 px-3 min-w-[280px] sm:min-w-[340px]">Clothes (Full Name)</th>
+                    <th className="py-2.5 px-3 whitespace-nowrap">Wash Status</th>
                     {activePreset.visibleFields
                       .filter((f) => f !== 'Name' && f !== 'wash stated')
                       .slice(0, 5)

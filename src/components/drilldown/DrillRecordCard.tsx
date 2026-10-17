@@ -76,7 +76,7 @@ export const DrillRecordCard: React.FC<DrillRecordCardProps> = ({ garment, prese
         <div>
           {/* Garment Title */}
           <div className="flex items-start justify-between gap-1.5 mb-1.5">
-            <h4 className="font-bold text-slate-900 text-sm leading-snug line-clamp-1 group-hover:text-indigo-600 transition-colors">
+            <h4 className="font-bold text-slate-900 text-sm leading-snug break-words line-clamp-3 group-hover:text-indigo-600 transition-colors">
               {name}
             </h4>
             {price !== undefined && price > 0 && (

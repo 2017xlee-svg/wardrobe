@@ -25,8 +25,8 @@ export const DrillRecordRow: React.FC<DrillRecordRowProps> = ({ garment, preset,
       onClick={() => onSelect(garment)}
       className="border-b border-slate-100 hover:bg-indigo-50/40 transition-colors cursor-pointer text-xs text-slate-700 group"
     >
-      {/* Thumbnail + Name */}
-      <td className="py-2.5 px-3 min-w-[180px]">
+      {/* Thumbnail + Name (Full name display with expanded column width) */}
+      <td className="py-2.5 px-3 min-w-[280px] sm:min-w-[340px] max-w-[480px]">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200/80 flex items-center justify-center">
             {imageUrl ? (
@@ -41,11 +41,11 @@ export const DrillRecordRow: React.FC<DrillRecordRowProps> = ({ garment, preset,
               <Shirt className="w-4 h-4 text-slate-400" />
             )}
           </div>
-          <div>
-            <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+          <div className="min-w-0 pr-2">
+            <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors break-words text-xs leading-snug">
               {name}
             </div>
-            <div className="text-[10px] text-slate-400 font-mono">{clothesType}</div>
+            <div className="text-[10px] text-slate-400 font-mono mt-0.5">{clothesType}</div>
           </div>
         </div>
       </td>

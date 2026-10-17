@@ -366,43 +366,8 @@ export function computeDailyWashSummaries(
     }
   });
 
-  // 2. Only incorporate clothes['Last Washed'] for garments that have ZERO wash junction records in the database,
-  // preventing phantom wash dates from overwriting or misrepresenting actual junction records.
-  clothes.forEach(c => {
-    const rawLastWashed = c['Last Washed'];
-    if (!rawLastWashed) return;
-    const washDateKey = toDateKey(rawLastWashed);
-    if (!washDateKey) return;
-
-    // Check if this garment already has actual wash records in clothesJunction
-    const hasExistingWashJunction = junctions.some(j => {
-      const cId = (typeof j['clothes(new)'] === 'object' && j['clothes(new)']?.id) ? j['clothes(new)'].id : String(j['clothes(new)'] || j.clothesId || '');
-      return cId === c.id && j['wash stated'] === 'wash';
-    });
-
-    if (hasExistingWashJunction) {
-      // Junction records are the single source of truth for wash history. Do not invent an extra wash date.
-      return;
-    }
-
-    if (!washEventsByDate.has(washDateKey)) {
-      washEventsByDate.set(washDateKey, new Map());
-    }
-    const dayGarments = washEventsByDate.get(washDateKey)!;
-    if (!dayGarments.has(c.id)) {
-      dayGarments.set(c.id, {
-        clothesId: c.id,
-        garment: c,
-        clothesTitle: c['Name'],
-        clothesType: c['Clothes Type'] || 'Dress',
-        washDate: washDateKey,
-        accumulatedSeconds: 0,
-        accumulatedHours: 0,
-        sessionsCount: 0,
-        contributingSessions: []
-      });
-    }
-  });
+  // Wash days are strictly determined by confirmed wash records in wearing reports/junctions
+  // (j['wash stated'] === 'wash'). No phantom wash days are inferred from orphaned garment timestamps.
 
   // Convert to Map<string, DayWashSummary>
   washEventsByDate.forEach((garmentMap, dateKey) => {

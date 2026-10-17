@@ -471,6 +471,73 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
 const PRESETS_STORAGE_KEY = 'wardrobe_drilldown_report_presets_v6';
 const ACTIVE_PRESET_ID_KEY = 'wardrobe_drilldown_active_preset_id_v6';
 
+/**
+ * Normalizes and deduplicates a list of presets.
+ * - Deduplicates by ID AND normalized name (case-insensitive, trimmed).
+ * - Deduplicates array fields: groupTiers and visibleFields (no repeated 'diao dai' or 'beautiful').
+ * - Preserves built-in presets order and ensures all default presets exist.
+ */
+export function deduplicatePresets(presets: ReportPreset[]): ReportPreset[] {
+  if (!Array.isArray(presets) || presets.length === 0) {
+    return [...DEFAULT_REPORT_PRESETS];
+  }
+
+  const defaultMap = new Map<string, ReportPreset>(DEFAULT_REPORT_PRESETS.map((dp) => [dp.id, dp]));
+  const defaultNameMap = new Map<string, ReportPreset>(
+    DEFAULT_REPORT_PRESETS.map((dp) => [dp.name.toLowerCase().trim(), dp])
+  );
+
+  const seenIds = new Set<string>();
+  const seenNames = new Set<string>();
+  const cleanList: ReportPreset[] = [];
+
+  const sanitizePreset = (p: ReportPreset): ReportPreset => {
+    return {
+      ...p,
+      name: (p.name || '').trim(),
+      groupTiers: Array.from(new Set((p.groupTiers || []).map((t) => (t || '').trim()).filter(Boolean))),
+      visibleFields: Array.from(new Set((p.visibleFields || []).map((f) => (f || '').trim()).filter(Boolean)))
+    };
+  };
+
+  // 1. Process all default presets first, taking user-edited customizations if matching
+  DEFAULT_REPORT_PRESETS.forEach((dp) => {
+    const normName = dp.name.toLowerCase().trim();
+    const userMatch = presets.find(
+      (p) => p && (p.id === dp.id || (p.name && p.name.toLowerCase().trim() === normName))
+    );
+    const chosen = sanitizePreset(userMatch ? { ...dp, ...userMatch, id: dp.id } : dp);
+    cleanList.push(chosen);
+    seenIds.add(chosen.id);
+    seenNames.add(chosen.name.toLowerCase().trim());
+  });
+
+  // 2. Add custom presets, avoiding duplicate IDs and duplicate names
+  presets.forEach((p) => {
+    if (!p || !p.id || !p.name) return;
+    const normId = p.id;
+    const normName = p.name.toLowerCase().trim();
+
+    if (seenIds.has(normId) || seenNames.has(normName) || defaultMap.has(normId) || defaultNameMap.has(normName)) {
+      // If it's a match to an already processed item, update properties if custom
+      const existingIdx = cleanList.findIndex(
+        (e) => e.id === normId || e.name.toLowerCase().trim() === normName
+      );
+      if (existingIdx !== -1 && (p.isCustom || cleanList[existingIdx].isCustom)) {
+        cleanList[existingIdx] = sanitizePreset({ ...cleanList[existingIdx], ...p });
+      }
+      return;
+    }
+
+    const sanitized = sanitizePreset(p);
+    seenIds.add(normId);
+    seenNames.add(normName);
+    cleanList.push(sanitized);
+  });
+
+  return cleanList;
+}
+
 class ReportPresetService {
   private presets: ReportPreset[] = [];
   private listeners: ((presets: ReportPreset[]) => void)[] = [];
@@ -491,24 +558,9 @@ class ReportPresetService {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            const defaultMap = new Map<string, ReportPreset>(DEFAULT_REPORT_PRESETS.map((dp) => [dp.id, dp]));
-            const merged: ReportPreset[] = [];
-
-            // 1. Keep all default presets, prioritizing user's customized version if edited
-            DEFAULT_REPORT_PRESETS.forEach((dp) => {
-              const userSaved = parsed.find((p: any) => p && p.id === dp.id);
-              merged.push(userSaved || dp);
-            });
-
-            // 2. Preserve any user-created custom presets
-            parsed.forEach((p: any) => {
-              if (p && p.id && !defaultMap.has(p.id) && !merged.some((m) => m.id === p.id)) {
-                merged.push(p);
-              }
-            });
-
-            this.presets = merged;
-            this.savePresetsLocal(merged);
+            const clean = deduplicatePresets(parsed);
+            this.presets = clean;
+            this.savePresetsLocal(clean);
           }
         }
       }
@@ -555,7 +607,7 @@ class ReportPresetService {
         await fetch('/api/drilldown-presets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(presets)
+          body: JSON.stringify(deduplicatePresets(presets))
         });
       }
     } catch (err) {
@@ -593,7 +645,7 @@ class ReportPresetService {
 
   /**
    * Safely imports and merges incoming presets from a backup file or server database.
-   * Matches by ID, updates if newer, preserves user custom presets without deleting them.
+   * Matches by ID and normalized name, updates if newer/restoring, and eliminates all duplicates.
    * When isRestore is true, always applies the preset configurations from the backup archive.
    */
   public importPresets(incoming: ReportPreset[], syncServer = true, isRestore = false): ReportPreset[] {
@@ -601,59 +653,21 @@ class ReportPresetService {
       return this.presets;
     }
 
-    const defaultMap = new Map<string, ReportPreset>(DEFAULT_REPORT_PRESETS.map((dp) => [dp.id, dp]));
-    const presetMap = new Map<string, ReportPreset>();
+    // Combine current and incoming presets, giving precedence to incoming when restoring
+    const combined = isRestore
+      ? [...incoming, ...this.presets]
+      : [...this.presets, ...incoming];
 
-    // 1. Seed with current presets
-    this.presets.forEach((p) => {
-      if (p && p.id) presetMap.set(p.id, p);
-    });
+    const deduplicated = deduplicatePresets(combined);
 
-    // 2. Overlay incoming presets
-    incoming.forEach((p) => {
-      if (!p || !p.id) return;
-      const existing = presetMap.get(p.id);
-      if (!existing) {
-        presetMap.set(p.id, p);
-      } else {
-        if (isRestore) {
-          // Explicit restore from backup always updates the preset definition and tiers
-          presetMap.set(p.id, { ...existing, ...p });
-        } else {
-          const incomingTime = p.updatedAt ? Date.parse(p.updatedAt) : 0;
-          const existingTime = existing.updatedAt ? Date.parse(existing.updatedAt) : 0;
-          if (incomingTime >= existingTime || !existing.updatedAt || p.isCustom) {
-            presetMap.set(p.id, { ...existing, ...p });
-          }
-        }
-      }
-    });
-
-    // 3. Ensure all built-in default presets exist
-    DEFAULT_REPORT_PRESETS.forEach((dp) => {
-      if (!presetMap.has(dp.id)) {
-        presetMap.set(dp.id, dp);
-      }
-    });
-
-    // Preserve order: defaults first, then custom presets
-    const merged: ReportPreset[] = [];
-    DEFAULT_REPORT_PRESETS.forEach((dp) => {
-      merged.push(presetMap.get(dp.id)!);
-      presetMap.delete(dp.id);
-    });
-    presetMap.forEach((p) => {
-      merged.push(p);
-    });
-
-    this.presets = merged;
-    this.savePresetsLocal(merged);
+    this.presets = deduplicated;
+    this.savePresetsLocal(deduplicated);
     this.notify();
 
     if (syncServer) {
-      this.syncToServer(merged);
+      this.syncToServer(deduplicated);
     }
-    return merged;
+    return deduplicated;
   }
 
   public exportPresetsJson(): string {
@@ -723,19 +737,20 @@ class ReportPresetService {
    */
   public getAllAvailableFields(): ReportFieldMeta[] {
     const list = [...AVAILABLE_REPORT_FIELDS];
-    const existingKeys = new Set(list.map((f) => f.key.toLowerCase()));
+    const existingKeys = new Set(list.map((f) => f.key.trim().toLowerCase()));
 
     try {
       const clothes = dataService.getClothes();
       clothes.forEach((c) => {
         const customs = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
         Object.keys(customs).forEach((k) => {
-          if (k && !existingKeys.has(k.toLowerCase())) {
-            existingKeys.add(k.toLowerCase());
+          const trimmed = k ? k.trim() : '';
+          if (trimmed && !existingKeys.has(trimmed.toLowerCase())) {
+            existingKeys.add(trimmed.toLowerCase());
             list.push({
-              key: k,
-              label: k,
-              description: `Custom Garment Field (${k})`,
+              key: trimmed,
+              label: trimmed,
+              description: `Custom Garment Field (${trimmed})`,
               category: 'classification',
               type: 'string'
             });
@@ -747,12 +762,13 @@ class ReportPresetService {
       reports.forEach((r) => {
         const customs = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
         Object.keys(customs).forEach((k) => {
-          if (k && !existingKeys.has(k.toLowerCase())) {
-            existingKeys.add(k.toLowerCase());
+          const trimmed = k ? k.trim() : '';
+          if (trimmed && !existingKeys.has(trimmed.toLowerCase())) {
+            existingKeys.add(trimmed.toLowerCase());
             list.push({
-              key: k,
-              label: k,
-              description: `Custom Wear Report Field (${k})`,
+              key: trimmed,
+              label: trimmed,
+              description: `Custom Wear Report Field (${trimmed})`,
               category: 'comfort',
               type: 'string'
             });

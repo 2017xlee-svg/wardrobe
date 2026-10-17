@@ -504,6 +504,7 @@ export class DataService {
           // If server was freshly rebuilt or client local storage has more/newer edits:
           if (!serverData.clothes || serverData.clothes.length === 0 || this.clothes.length > serverData.clothes.length || localUpdatedAt >= serverUpdatedAt) {
             console.log('[DataService] Preserving latest user local data to container disk...');
+            this.reconcileAllGarmentsWashStats();
             await this.saveToLocalDisk();
             return;
           } else if (serverUpdatedAt > localUpdatedAt && Array.isArray(serverData.clothes) && serverData.clothes.length > 0) {
@@ -517,6 +518,7 @@ export class DataService {
             if (typeof localStorage !== 'undefined') {
               localStorage.setItem('wardrobe_db_updated_at', String(serverUpdatedAt));
             }
+            this.reconcileAllGarmentsWashStats();
             this.persistLocalOnly();
             this.notify();
             return;
@@ -533,6 +535,7 @@ export class DataService {
             if (typeof localStorage !== 'undefined') {
               localStorage.setItem('wardrobe_db_updated_at', String(serverUpdatedAt || Date.now()));
             }
+            this.reconcileAllGarmentsWashStats();
             this.syncStatus = 'synced';
             this.persistLocalOnly();
             this.notify();
@@ -552,9 +555,12 @@ export class DataService {
       if (Array.isArray((initialData as any).drilldownPresets) && (initialData as any).drilldownPresets.length > 0) {
         reportPresetService.importPresets((initialData as any).drilldownPresets, false, false);
       }
+      this.reconcileAllGarmentsWashStats();
       this.syncStatus = 'synced';
       this.persistLocalOnly();
       this.notify();
+    } else {
+      this.reconcileAllGarmentsWashStats();
     }
   }
 
@@ -580,6 +586,7 @@ export class DataService {
           reportPresetService.importPresets(data.drilldownPresets, false, false);
         }
         if (changed) {
+          this.reconcileAllGarmentsWashStats();
           this.lastSyncTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           this.syncStatus = 'synced';
           this.persistLocalOnly();
@@ -1810,6 +1817,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
   public async updateJunctionWashDate(junctionId: string, washDate: string): Promise<ReportClothesJunction | null> {
     let updated: ReportClothesJunction | null = null;
     const cleanWashDate = washDate ? toDateKey(washDate) || washDate : '';
+    const newWashStated: 'wash' | 'need wash' = cleanWashDate ? 'wash' : 'need wash';
     this.junctions = this.junctions.map(j => {
       if (j.id === junctionId) {
         updated = {
@@ -1818,8 +1826,8 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'washed date': cleanWashDate || undefined,
           washDate: cleanWashDate || undefined,
           washedDate: cleanWashDate || undefined,
-          'wash stated': cleanWashDate ? 'wash' : j['wash stated'],
-          washStated: cleanWashDate ? 'wash' : j.washStated
+          'wash stated': newWashStated,
+          washStated: newWashStated
         };
         return updated;
       }
@@ -1827,6 +1835,10 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     });
 
     if (updated) {
+      const cId = typeof (updated as any)['clothes(new)'] === 'object' ? (updated as any)['clothes(new)'].id : String((updated as any)['clothes(new)']);
+      if (cId) {
+        this.recalculateGarmentWashStats(cId);
+      }
       this.persistLocal();
       this.notify();
 
@@ -1838,7 +1850,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'wash date': cleanWashDate || null,
           'washed date': cleanWashDate || null,
           'washDate': cleanWashDate || null,
-          'wash stated': cleanWashDate ? 'wash' : 'need wash'
+          'wash stated': newWashStated
         },
         `Update wash date for junction ${junctionId}`
       );
@@ -1864,6 +1876,10 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     });
 
     if (updated) {
+      const cId = typeof (updated as any)['clothes(new)'] === 'object' ? (updated as any)['clothes(new)'].id : String((updated as any)['clothes(new)']);
+      if (cId) {
+        this.recalculateGarmentWashStats(cId);
+      }
       this.persistLocal();
       this.notify();
 
@@ -2519,6 +2535,100 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         stats: this.getGarmentStats(c.id)
       }))
       .filter(entry => entry.stats.needWash);
+  }
+
+  /**
+   * Reconciles a garment's wash stats (Last Washed, Tracked App Washes, Total Washed Count)
+   * based strictly on its actual confirmed wash junction records in the database.
+   * If all junctions are 'need wash' (or no wash junctions exist), Last Washed is cleared
+   * so phantom wash dates are never retained.
+   */
+  public recalculateGarmentWashStats(clothesId: string): ClothesItem | null {
+    const garment = this.clothes.find(c => c.id === clothesId);
+    if (!garment) return null;
+
+    const garmentJunctions = this.junctions.filter(j => {
+      const cId = typeof j['clothes(new)'] === 'object' ? j['clothes(new)'].id : String(j['clothes(new)']);
+      return cId === clothesId;
+    });
+
+    const washJunctions = garmentJunctions.filter(j => j['wash stated'] === 'wash');
+    const hasNeedWash = garmentJunctions.some(j => j['wash stated'] === 'need wash');
+
+    // Find the latest wash date among confirmed wash junctions
+    let latestWashDate = '';
+    washJunctions.forEach(j => {
+      const wDate = j['wash date'] || j.washDate || j['washed date'] || j.washedDate;
+      const key = toDateKey(wDate);
+      if (key && (!latestWashDate || key > latestWashDate)) {
+        latestWashDate = key;
+      }
+    });
+
+    const trackedAppWashes = washJunctions.length;
+    const legacyWashed = typeof garment['wearing frequency(how many times legacy washed)'] === 'number'
+      ? garment['wearing frequency(how many times legacy washed)']
+      : 0;
+    const totalWashed = legacyWashed + trackedAppWashes;
+
+    const updatedGarment: ClothesItem = {
+      ...garment,
+      'Last Washed': latestWashDate ? `${latestWashDate}T00:00:00.000Z` : '',
+      'Tracked App Washes': trackedAppWashes,
+      'Total Washed Count': totalWashed,
+      'wet': hasNeedWash ? 'dry' : garment['wet']
+    };
+
+    this.clothes = this.clothes.map(c => c.id === clothesId ? updatedGarment : c);
+    return updatedGarment;
+  }
+
+  /**
+   * Reconciles wash stats across all garments against their junction records.
+   * Cleans up any orphaned Last Washed timestamps (such as garments reverted to unwashed).
+   */
+  public reconcileAllGarmentsWashStats(): void {
+    let changed = false;
+    this.clothes.forEach(garment => {
+      const garmentJunctions = this.junctions.filter(j => {
+        const cId = typeof j['clothes(new)'] === 'object' ? j['clothes(new)'].id : String(j['clothes(new)']);
+        return cId === garment.id;
+      });
+
+      const washJunctions = garmentJunctions.filter(j => j['wash stated'] === 'wash');
+      let latestWashDate = '';
+      washJunctions.forEach(j => {
+        const wDate = j['wash date'] || j.washDate || j['washed date'] || j.washedDate;
+        const key = toDateKey(wDate);
+        if (key && (!latestWashDate || key > latestWashDate)) {
+          latestWashDate = key;
+        }
+      });
+
+      const expectedLastWashed = latestWashDate ? `${latestWashDate}T00:00:00.000Z` : '';
+      const expectedTracked = washJunctions.length;
+      const legacyWashed = typeof garment['wearing frequency(how many times legacy washed)'] === 'number'
+        ? garment['wearing frequency(how many times legacy washed)']
+        : 0;
+      const expectedTotal = legacyWashed + expectedTracked;
+
+      // If garment was incorrectly showing Last Washed without any wash junctions, fix it
+      if (
+        (garmentJunctions.length > 0 && garment['Last Washed'] !== expectedLastWashed) ||
+        (garment['Tracked App Washes'] !== expectedTracked) ||
+        (garment['Total Washed Count'] !== expectedTotal)
+      ) {
+        changed = true;
+        garment['Last Washed'] = expectedLastWashed;
+        garment['Tracked App Washes'] = expectedTracked;
+        garment['Total Washed Count'] = expectedTotal;
+      }
+    });
+
+    if (changed) {
+      this.persistLocalOnly();
+      this.notify();
+    }
   }
 
   // Local-First Mutations with Async Firestore persistence & Full Undo Capability
@@ -3293,6 +3403,35 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       });
       newJunctions.forEach(nj => {
         syncOutbox.enqueue('clothesJunction', nj.id, 'upsert', nj, `Update junction ${nj.id}`);
+      });
+
+      // Reconcile wash stats for all affected clothes
+      const affectedClothesIds = new Set<string>();
+      oldJunctions.forEach(oj => {
+        const cId = typeof oj['clothes(new)'] === 'object' ? oj['clothes(new)'].id : String(oj['clothes(new)']);
+        if (cId) affectedClothesIds.add(cId);
+      });
+      newJunctions.forEach(nj => {
+        const cId = typeof nj['clothes(new)'] === 'object' ? nj['clothes(new)'].id : String(nj['clothes(new)']);
+        if (cId) affectedClothesIds.add(cId);
+      });
+
+      affectedClothesIds.forEach(cId => {
+        const updatedG = this.recalculateGarmentWashStats(cId);
+        if (updatedG) {
+          syncOutbox.enqueue(
+            'clothes',
+            cId,
+            'upsert',
+            {
+              'Tracked App Washes': updatedG['Tracked App Washes'],
+              'Total Washed Count': updatedG['Total Washed Count'],
+              'Last Washed': updatedG['Last Washed'],
+              'wet': updatedG['wet']
+            },
+            `Reconcile wash stats for ${cId}`
+          );
+        }
       });
     }
 

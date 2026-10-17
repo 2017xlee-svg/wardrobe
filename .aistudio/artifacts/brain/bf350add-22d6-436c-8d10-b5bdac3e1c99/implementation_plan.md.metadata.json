@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan for adding a persistent interactive app font size switcher with a default comfortable 15-20% text scale increase across all views and modals.",
-  "updatedAt": "2026-10-15T07:30:55.149459313Z",
+  "summary": "Implementation plan to automatically deduplicate presets and filter tier options during backup restore and expand the drill-down list view column to display complete clothes names with full horizontal scroll support.",
+  "updatedAt": "2026-10-17T01:06:48.542169609Z",
   "requestFeedback": true,
   "userFacing": true
 }
