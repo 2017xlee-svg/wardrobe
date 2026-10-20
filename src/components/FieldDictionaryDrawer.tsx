@@ -5,6 +5,7 @@ import {
   FieldValueDefinition,
   DEFAULT_FIELD_DEFINITIONS
 } from '../services/fieldDictionaryService';
+import { useAiGenerationPaused } from '../services/aiSettings';
 import { dataService } from '../services/dataService';
 import {
   BookOpen, ChevronDown, ChevronUp, Sparkles, Plus, Edit2, Trash2,
@@ -19,6 +20,7 @@ interface FieldDictionaryDrawerProps {
 
 export const FieldDictionaryDrawer: React.FC<FieldDictionaryDrawerProps> = ({ initialOpen = false }) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
+  const isAiPaused = useAiGenerationPaused();
   const [activeCategory, setActiveCategory] = useState<'all' | 'clothes' | 'wearingReport' | 'junction'>('all');
   const [definitions, setDefinitions] = useState<FieldDefinitionItem[]>(() => fieldDictionaryService.getDefinitions());
   const [searchQuery, setSearchQuery] = useState('');
@@ -159,9 +161,16 @@ export const FieldDictionaryDrawer: React.FC<FieldDictionaryDrawerProps> = ({ in
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-50 text-purple-700 border border-purple-200">
                 {definitions.length} 个字段定义
               </span>
+              {isAiPaused && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                  ⏸️ 纯客观数据字典模式 · AI 实时生成已暂停 (NotebookLM 专供)
+                </span>
+              )}
             </div>
             <p className="text-[11px] text-slate-500 truncate mt-0.5">
-              直接勾选/取消勾选送入 AI 分析的字段，并指导 AI 精准理解中英文输入含义与历史真实值
+              {isAiPaused
+                ? '纯客观数据字典管理模式：保留所有中英文释义与典型值，已暂停自动生成调用，可完整导出至 NotebookLM'
+                : '直接勾选/取消勾选送入 AI 分析的字段，并指导 AI 精准理解中英文输入含义与历史真实值'}
             </p>
           </div>
         </div>

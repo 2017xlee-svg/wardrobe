@@ -11,7 +11,7 @@ import { CustomAttributesManager } from './CustomAttributesManager';
 import { resolveImageSource } from '../utils/imageUtils';
 import { ConfirmModal } from './ConfirmModal';
 import { toDateKey, formatCalendarDate, getTodayDateKey } from '../utils/calendarCalculations';
-import { getCustomApiKey, getSelectedModel } from '../services/aiSettings';
+import { getCustomApiKey, getSelectedModel, useAiGenerationPaused } from '../services/aiSettings';
 import { fieldDictionaryService } from '../services/fieldDictionaryService';
 import { FontSizeSwitcher } from './FontSizeSwitcher';
 import {
@@ -70,6 +70,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
 
   // Edit Mode State
   const [isEditing, setIsEditing] = useState(false);
+  const isAiPaused = useAiGenerationPaused();
   const [analyzing, setAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState(garment['AI Clothes Analysis'] || '');
   const [errorMsg, setErrorMsg] = useState('');
@@ -2448,7 +2449,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                   />
                 </div>
 
-                {/* AI Clothes Analysis Card (Teable-Style Multi-Version Garment Diagnostic) */}
+                {/* AI Clothes Analysis Card (Teable-Style Multi-Version Garment Diagnostic) - Hidden when AI generation is paused */}
+                {!isAiPaused && (
                 <div className="p-5 rounded-3xl bg-linear-to-br from-purple-50/70 via-white to-indigo-50/40 border border-purple-200/80 shadow-xs space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
@@ -2684,6 +2686,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Linked Wearing Sessions - CLICKABLE */}
                 <div className="space-y-2.5">

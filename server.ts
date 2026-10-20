@@ -49,14 +49,14 @@ function handleGeminiError(error: any, res: express.Response, fallbackMessage: s
 const dataDir = path.join(process.cwd(), "data");
 const secretConfigPath = path.join(dataDir, "secret_config.json");
 
-function getSavedSecretConfig(): { geminiApiKey?: string; model?: string } {
+function getSavedSecretConfig(): { geminiApiKey?: string; model?: string; isAiPaused?: boolean } {
   try {
     if (fs.existsSync(secretConfigPath)) {
       const raw = fs.readFileSync(secretConfigPath, "utf-8");
       return JSON.parse(raw);
     }
   } catch {}
-  return {};
+  return { isAiPaused: true };
 }
 
 function getGeminiClient(customKey?: string, requestedModel?: string): { ai: GoogleGenAI; model: string; keySource: 'request' | 'saved_secret' | 'env' } {
@@ -292,6 +292,28 @@ async function startServer() {
       res.json({ status: "ok" });
     } catch (e: any) {
       res.status(500).json({ error: e.message || "Failed to remove secret key." });
+    }
+  });
+
+  // AI Pause Status & Control (Master Switch)
+  app.get("/api/ai/pause-status", (req, res) => {
+    const config = getSavedSecretConfig();
+    res.json({ paused: config.isAiPaused !== false });
+  });
+
+  app.post("/api/ai/set-paused", async (req, res) => {
+    try {
+      const { paused } = req.body;
+      await fs.promises.mkdir(dataDir, { recursive: true });
+      const current = getSavedSecretConfig();
+      const updated = {
+        ...current,
+        isAiPaused: Boolean(paused)
+      };
+      await fs.promises.writeFile(secretConfigPath, JSON.stringify(updated, null, 2), "utf-8");
+      res.json({ status: "ok", paused: updated.isAiPaused });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || "Failed to update pause state." });
     }
   });
 
@@ -1020,11 +1042,36 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         for (const c of mergedClothes) {
           const existing = existingClothesMap.get(c.id);
           if (existing) {
-            c.customFields = { ...(existing.customFields || {}), ...(c.customFields || {}) };
-            c.extraAttributes = { ...(existing.extraAttributes || {}), ...(c.extraAttributes || {}) };
+            const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
+            const incomingCustom = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
+            const mergedCustom = { ...existingCustom, ...incomingCustom };
+            for (const [k, v] of Object.entries(existingCustom)) {
+              if (v !== undefined && v !== null && String(v).trim() !== "") {
+                if (mergedCustom[k] === undefined || mergedCustom[k] === null || String(mergedCustom[k]).trim() === "") {
+                  mergedCustom[k] = v;
+                }
+              }
+            }
+            c.customFields = mergedCustom;
+            c.extraAttributes = mergedCustom;
+            for (const [mk, mv] of Object.entries(mergedCustom)) {
+              if (c[mk] === undefined || c[mk] === null || String(c[mk]).trim() === "") {
+                c[mk] = mv;
+              }
+            }
+
+            if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+              c.fieldExplanations = {
+                ...existing.fieldExplanations,
+                ...(c.fieldExplanations || {})
+              };
+            }
             for (const [k, v] of Object.entries(existing)) {
-              if (!(k in c) && v !== undefined && v !== null && v !== "") {
-                c[k] = v;
+              if (v !== undefined && v !== null && String(v).trim() !== "") {
+                const incomingVal = c[k];
+                if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === "") {
+                  c[k] = v;
+                }
               }
             }
           }
@@ -1044,11 +1091,36 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         for (const r of mergedReports) {
           const existing = existingReportsMap.get(r.id);
           if (existing) {
-            r.customFields = { ...(existing.customFields || {}), ...(r.customFields || {}) };
-            r.extraAttributes = { ...(existing.extraAttributes || {}), ...(r.extraAttributes || {}) };
+            const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
+            const incomingCustom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
+            const mergedCustom = { ...existingCustom, ...incomingCustom };
+            for (const [k, v] of Object.entries(existingCustom)) {
+              if (v !== undefined && v !== null && String(v).trim() !== "") {
+                if (mergedCustom[k] === undefined || mergedCustom[k] === null || String(mergedCustom[k]).trim() === "") {
+                  mergedCustom[k] = v;
+                }
+              }
+            }
+            r.customFields = mergedCustom;
+            r.extraAttributes = mergedCustom;
+            for (const [mk, mv] of Object.entries(mergedCustom)) {
+              if (r[mk] === undefined || r[mk] === null || String(r[mk]).trim() === "") {
+                r[mk] = mv;
+              }
+            }
+
+            if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+              r.fieldExplanations = {
+                ...existing.fieldExplanations,
+                ...(r.fieldExplanations || {})
+              };
+            }
             for (const [k, v] of Object.entries(existing)) {
-              if (!(k in r) && v !== undefined && v !== null && v !== "") {
-                r[k] = v;
+              if (v !== undefined && v !== null && String(v).trim() !== "") {
+                const incomingVal = r[k];
+                if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === "") {
+                  r[k] = v;
+                }
               }
             }
           }
@@ -1236,9 +1308,24 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     }
   });
 
+  function isAiGenerationPausedServer(req: any): boolean {
+    if (req.body?.bypassPause) return false;
+    const config = getSavedSecretConfig();
+    return config.isAiPaused !== false;
+  }
+
   // AI Outfit & Sensory Advisor endpoint (Macro AI Advisor - Full 3-Layer Synthesis: Clothes + 20-Field Wearing Reports + Junction Records)
   app.post("/api/ai/outfit-advice", async (req, res) => {
     try {
+      if (isAiGenerationPausedServer(req)) {
+        return res.json({
+          status: "paused",
+          paused: true,
+          error: "AI generation is paused in settings to save tokens and execution time. You can review existing records or use Google NotebookLM for analysis.",
+          advice: "AI generation is currently paused in Settings.",
+          analysis: "AI generation is currently paused in Settings."
+        });
+      }
       const {
         prompt,
         items,
@@ -1564,6 +1651,14 @@ ${JSON.stringify(formattedJunctions, null, 2)}
   // AI Garment Assessment Generator (Teable-Style Deep Grounded Diagnostics)
   app.post("/api/ai/analyze-garment", async (req, res) => {
     try {
+      if (isAiGenerationPausedServer(req)) {
+        return res.json({
+          status: "paused",
+          paused: true,
+          error: "AI generation is paused in settings to save tokens and execution time. You can review existing records or use Google NotebookLM for analysis.",
+          analysis: "AI generation is currently paused in Settings."
+        });
+      }
       const { garment, apiKey, model: reqModel, dictionaryPrompt, reports: linkedReports, junctions: linkedJunctions } = req.body;
       if (!garment) {
         return res.status(400).json({ error: "Garment data is required." });
@@ -1934,6 +2029,14 @@ ${sessionsSummaryText || '(暂无关联穿着报告数据)'}
   // AI Wearing Report Assessment Generator (Teable-Style Deep Session Grounding)
   app.post("/api/ai/analyze-wearing-report", async (req, res) => {
     try {
+      if (isAiGenerationPausedServer(req)) {
+        return res.json({
+          status: "paused",
+          paused: true,
+          error: "AI generation is paused in settings to save tokens and execution time. You can review existing records or use Google NotebookLM for analysis.",
+          analysis: "AI generation is currently paused in Settings."
+        });
+      }
       const { report, junctions, clothes, apiKey, model: reqModel, dictionaryPrompt } = req.body;
       if (!report) {
         return res.status(400).json({ error: "Wearing report data is required." });
@@ -2079,6 +2182,14 @@ ${clothes && clothes.length > 0 ? JSON.stringify(clothes, null, 2) : '(none prov
   // AI Single Clothes-Junction Assessment Generator (Specific Garment Performance in a specific session)
   app.post("/api/ai/analyze-junction", async (req, res) => {
     try {
+      if (isAiGenerationPausedServer(req)) {
+        return res.json({
+          status: "paused",
+          paused: true,
+          error: "AI generation is paused in settings to save tokens and execution time. You can review existing records or use Google NotebookLM for analysis.",
+          analysis: "AI generation is currently paused in Settings."
+        });
+      }
       const { junction, garment, report, apiKey, model: reqModel, dictionaryPrompt } = req.body;
       if (!junction) {
         return res.status(400).json({ error: "Junction data is required." });
@@ -2167,6 +2278,14 @@ Session Notes: ${report?.['report detail'] || '(无)'}
   // AI Wardrobe Macro Diagnostics (Comprehensive 3-Layer Synthesis: Clothes + 20-Field Wearing Reports + Junction Records)
   app.post("/api/ai/analyze-wardrobe", async (req, res) => {
     try {
+      if (isAiGenerationPausedServer(req)) {
+        return res.json({
+          status: "paused",
+          paused: true,
+          error: "AI generation is paused in settings to save tokens and execution time. You can review existing records or use Google NotebookLM for analysis.",
+          advice: "AI generation is currently paused in Settings."
+        });
+      }
       const {
         clothes,
         clothesSummary,

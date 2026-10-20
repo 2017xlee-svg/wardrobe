@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ClothesItem, WearingReport, ReportClothesJunction } from '../types';
 import { dataService } from '../services/dataService';
-import { getCustomApiKey, getSelectedModel } from '../services/aiSettings';
+import { getCustomApiKey, getSelectedModel, useAiGenerationPaused, setAiGenerationPaused } from '../services/aiSettings';
 import { toDateKey } from '../utils/calendarCalculations';
 import { fieldDictionaryService, AIAdvisorReportRecord } from '../services/fieldDictionaryService';
 import { FieldDictionaryDrawer } from './FieldDictionaryDrawer';
@@ -38,6 +38,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
   };
 
   // Mode switch: 'wardrobe-consultant' (Macro AI Advisor) | 'garment-diagnostic' (Clothes AI) | 'report-diagnostic' (Wearing Report AI) | 'all-reports-archive' (All Reports Unified Archive)
+  const isAiPaused = useAiGenerationPaused();
   const [advisorMode, setAdvisorMode] = useState<'wardrobe-consultant' | 'garment-diagnostic' | 'report-diagnostic' | 'all-reports-archive'>('wardrobe-consultant');
 
   // Garment Teable Diagnostic state (Clothes AI - strictly this garment fields only)
@@ -568,6 +569,44 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
 
       {/* Field & Data Bilingual Dictionary & AI Input Check (Single Unified Drawer, Zero Duplication) */}
       <FieldDictionaryDrawer initialOpen={false} />
+
+      {/* AI GENERATION PAUSED NOTICE BANNER */}
+      {isAiPaused && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-linear-to-r from-amber-50 via-white to-amber-50/60 border-2 border-amber-300/90 text-amber-950 space-y-2 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-xs shrink-0">
+                ⏸️
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">
+                    System Control State
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-amber-200/80 text-amber-900 border border-amber-300">
+                    AI Generation Paused (Zero Token Mode)
+                  </span>
+                </div>
+                <h4 className="font-bold text-sm text-slate-900">
+                  AI 智能生成当前处于暂停状态 · 推荐使用 Google NotebookLM
+                </h4>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setAiGenerationPaused(false)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-all cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
+            >
+              <span>▶️ 一键恢复 AI 生成 (Resume)</span>
+            </button>
+          </div>
+
+          <p className="text-xs text-amber-900/90 leading-relaxed pt-1">
+            为节省处理时间与 API Token 消耗，单品诊断、穿戴日记评估及穿搭顾问调用已全局暂停。所有算法代码及历史保存报告完好无损。您可在「Local Storage」中导出排除 AI 预生成报告的 100% 纯客观事实知识库，直接交由 Google NotebookLM 进行深度推理与播客生成！
+          </p>
+        </div>
+      )}
 
       {/* MODE 1: MACRO WARDROBE ADVISOR (Supports None, 0 select = All Clothes) */}
       {advisorMode === 'wardrobe-consultant' && (

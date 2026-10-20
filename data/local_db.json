@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14T14:27:58.954Z",
+  "updatedAt": "2026-10-19T07:51:42.616Z",
   "clothes": [
     {
       "id": "rec0gReSd4zD3YS5KrA",
@@ -78,9 +78,9 @@
       "Descriptions": "a old center purple bra",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 0,
-      "Last Washed": "",
+      "Tracked App Washes": 11,
+      "Total Washed Count": 11,
+      "Last Washed": "2026-09-03T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** An old, center-chest purple bra described as beautiful. It uses “quick thick material” and is reported as hot at noon. There are 11 related bra-wearing report references.  \n**Inference:** It appears usable but is better suited to cooler conditions than warm midday wear.\n\n## Comfort and climate\n**Observed:** Thick material and center-chest coverage contribute to heat at noon. The last comment says nighttime comfort depends on the weather and is usually not a problem. The bra was recorded as dry.  \n**Missing:** Material composition, drying explanation, strap details, and broader comfort data.\n\n## Fit and appearance\n**Observed:** The bra is rated “Beautiful” and has center-chest coverage.  \n**Missing:** Reason for the appearance rating, sitting fit, side-breast fit, and strap fit. Overall support and sizing therefore cannot be assessed reliably.\n\n## Care and wash priority\n**Observed:** Unwashed bra-wear time is **17 hours 30 minutes**; general unwashed-clothes time is **0:00**.  \n**Inference:** Washing should now be prioritized, especially given the reported heat during wear. Follow the care label because the material and washing requirements are unknown.\n\n## Usage value\n**Observed:** The item has numerous linked wearing reports, indicating repeated documented use.  \n**Inference:** It likely has practical wardrobe value, particularly for evenings or cooler weather. Its age and heat retention may limit warm-weather usefulness.  \n**Missing:** Price, wearing frequency, condition details, and “may throw” status, so value and replacement urgency cannot be fully judged.\n\n## Recommended next action\nWash it before the next wear, then inspect the band, cups, straps, center panel, and elastic for age-related wear. Reserve it for cooler days or nighttime use if it remains comfortable. Do not decide whether to discard it until fit, elasticity, damage, and the missing “may throw” information are assessed.",
       "Pictures": [],
       "may throw": "",
@@ -137,9 +137,9 @@
       "Descriptions 2": "sit is over knee long,",
       "price": 57.13,
       "wearing frequency(how many times legacy washed)": 22,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 22,
-      "Last Washed": "",
+      "Tracked App Washes": 3,
+      "Total Washed Count": 25,
+      "Last Washed": "2026-06-25T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** A $57.13, medium-length blue dress with wide straps and thick, plain fabric. It is rated “Middle beautiful”; the design is considered acceptable, but the chest area reduces its appeal.  \n**Inference:** It is usable but not an especially successful wardrobe item because fit and heat issues may limit when it can be worn.\n\n## Comfort and climate\n**Observed:** The fabric is categorized as thick, and the dress feels hot at noon. It was recorded as dry, possibly because of the plain, thick material.  \n**Inference:** It is likely better suited to cooler weather, mornings, evenings, or air-conditioned settings than hot midday conditions.\n\n## Fit and appearance\n**Observed:** The dress falls around or over the knee, has wide straps, and lacks center-chest coverage/support. The notes say the breasts look unattractive when standing because the chest area is loose, especially without a center-supporting bra. A larger bra may be needed.  \n**Data issue:** The field labeled “Sitting fit” contains information about standing fit rather than sitting fit. Side-fit data is missing.\n\n## Care and wash priority\n**Observed:** Both the dress and bra have **0:00** recorded unwashed time.  \n**Recommendation:** There is no current wash urgency based on the recorded timers. Follow the garment’s care label; no washing method is provided.\n\n## Usage value\n**Observed:** Wearing frequency is **22.0**, though its unit or calculation period is not supplied. Three wearing reports are listed: June 11, 2026 at 11:25 and 11:29, and June 15, 2026 at 12:16.  \n**Inference:** The item appears to receive meaningful use, but its value is reduced by midday heat and unreliable chest fit.\n\n## Recommended next action\nTry it with a well-fitting supportive bra and adjust or tailor the loose chest area if possible. Reserve it for cooler periods. If the chest fit remains unattractive or uncomfortable after adjustment, reduce its rotation and consider removing it from the wardrobe. **“May throw,” last action, side-fit, and related bra-report data are missing, so no definite discard decision can be made.**",
       "Pictures": [],
       "may throw": "",
@@ -172,12 +172,24 @@
       "side breast ok: with side out bra": "side breast out",
       "sit breast ok: With 聚拢bra": "stand breast ugly, because loose tie not as white marry",
       "sit breast ok: with side out bra": "stand breast ugly, because loose tie not as white marry",
-      "when with aircond: hot feeling": "",
-      "when with aircond: leg feeling": "",
-      "when without aircond: hot feeling": "",
-      "when without aircond: leg feeling": "",
-      "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when with aircond: hot feeling": "not so cold",
+      "when with aircond: leg feeling": "not so cold",
+      "when without aircond: hot feeling": "hot",
+      "when without aircond: leg feeling": "middle hot",
+      "when sleep under fan: hot feeling": "not hot",
+      "when sleep under fan: leg feeling": "middle cold",
+      "fieldExplanations": {
+        "when with aircond: hot feeling": "due to thick chiffon material, thick clothes so no so cold.",
+        "when with aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.",
+        "when without aircond: hot feeling": "due to thick chiffon material, thick clothes.",
+        "when without aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.little more swear",
+        "when sleep under fan: hot feeling": "under fan wind bigger and cold bed help reduce feeling of hot",
+        "when sleep under fan: leg feeling": "due to middle long dress, inner thin, easy fold up 裙底，even it is thick clothes outer",
+        "side breast ok: with 聚拢 bra": "When look for side , the breast shape beautifully, 配合聚拢bra立体饱满",
+        "side breast ok: with side out bra": "配合侧开内衣侧面副乳易外溢或扁塌，缺乏聚拢支撑",
+        "sit breast ok: With 聚拢bra": "配合聚拢bra就肯定没有胸型问题，胸型饱满稳定",
+        "sit breast ok: with side out bra": "stand breast middle ugly, because 胸型上部坍塌，配合侧开内衣非常不好看"
+      }
     },
     {
       "id": "recA92wObsBz1SMYkiY",
@@ -257,9 +269,9 @@
       "Descriptions 2": "",
       "price": 71,
       "wearing frequency(how many times legacy washed)": 30,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 30,
-      "Last Washed": "",
+      "Tracked App Washes": 4,
+      "Total Washed Count": 34,
+      "Last Washed": "2026-08-20T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n- **Observed:** “white heavy new” is a **$71 long dress**, described as “quite beautiful” with a short inner layer. Its appearance is rated **Middle beautiful**.\n- **Inference:** It seems better suited to occasional, appearance-focused wear than hot-weather comfort.\n- **Missing:** Material, additional description, beauty-rating reason, and precise meaning/unit of wearing frequency (**30.0**).\n\n## Comfort and climate\n- **Observed:** Rated **Hot at noon** and **03 thick clothes**. The latest drying status provided is **dry**, with the uncertain note “maybe not wet.”\n- **Inference:** The weight/thickness likely makes it less comfortable around midday or in warm weather.\n- **Missing:** Fabric breathability, weather conditions, and whether the short inner layer affects comfort or coverage.\n\n## Fit and appearance\n- **Observed:** Long dress, not a “diao dai”/spaghetti-strap style, with center-chest coverage. The fit note says the chest looks unattractive while standing because of a loose tie; the remaining comparison is unclear.\n- **Inference:** The loose tie or chest adjustment may be the main fit problem.\n- **Missing:** Clear sitting-fit result, side-fit assessment, measurements, and an explanation of “not as white marry.”\n\n## Care and wash priority\n- **Observed:** Accumulated unwashed dress time is **12:00**; unwashed bra time is **0:00**. The dress is recorded as dry.\n- **Inference:** Washing the dress now is sensible after 12 accumulated hours, especially before storage or another warm-weather wear.\n- **Missing:** Fabric, care-label instructions, odor/stain information, and last wash date.\n\n## Usage value\n- **Observed:** Price is **$71**; wearing frequency is recorded as **30.0**; four wearing reports are listed: **2026-07-10, 2026-07-12, 2026-08-04, and 2026-08-07**.\n- **Inference:** The repeated reports suggest meaningful use, but value per wear cannot be calculated reliably because the unit and period for “30.0” are unspecified.\n\n## Recommended next action\n1. **Wash according to the care label** due to 12 hours of accumulated wear.\n2. Before the next outing, **retie or adjust the chest area** and check the fit both sitting and standing.\n3. Prefer **cooler hours or air-conditioned settings**.\n4. Record the material, side fit, exact sitting fit, and whether the chest adjustment fixes the appearance.\n5. No keep/discard recommendation can be made because **“may throw” and last-action data are missing**.",
       "Pictures": [],
       "may throw": "",
@@ -316,9 +328,9 @@
       "Descriptions 2": "",
       "price": 33.5,
       "wearing frequency(how many times legacy washed)": 7,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 7,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 9,
+      "Last Washed": "2026-07-23T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n- **Observed:** “apricot french rm30” is a long, mid-thickness dress priced at **$33.50**. It is marked **Beautiful**, dry, and has two related wearing reports dated **2026-07-14** and **2026-07-15**.\n- **Inference:** The available records indicate a wearable, attractive dress with no obvious fit or care problems.\n\n## Comfort and climate\n- **Observed:** Noon heat is marked **Hot**, but the description says it felt “a little cold at noon” and remained acceptable in air conditioning with a blanket.\n- **Note:** These climate records conflict, so its performance in warm weather is unclear. The dress’s long length and medium thickness may provide some coverage in air-conditioned spaces.\n\n## Fit and appearance\n- **Observed:** Long dress; not a strap dress. Center-chest, sitting breast shape, and side breast shape are all marked acceptable. Appearance is marked **Beautiful**.\n- **Missing:** No specific beauty reason or material is provided.\n\n## Care and wash priority\n- **Observed:** The dress is recorded as **dry**. Unwashed clothes time and unwashed bra time are both **0:00**.\n- **Recommendation:** No immediate wash priority is indicated. Follow the care label because material and drying details are missing.\n\n## Usage value\n- **Observed:** Price is **$33.50** and wearing frequency is **7.0**, though the unit or period for that frequency is not defined.\n- **Inference:** It appears to have reasonable usage potential, but cost per wear cannot be confirmed without knowing whether “7.0” means seven actual wears.\n\n## Recommended next action\n- Keep and continue wearing it, especially for settings where a long, medium-thickness dress is suitable.\n- At the next wear, clarify whether it feels hot outdoors or cold mainly under air conditioning.\n- Record the material, care instructions, beauty reason, and drying result details.\n- **Missing:** Additional description, wet/drying reason, last action, may-throw status, and related bra wearing reports.",
       "Pictures": [],
       "may throw": "",
@@ -493,9 +505,9 @@
       "Descriptions 2": "",
       "price": 30,
       "wearing frequency(how many times legacy washed)": 4,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 4,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 6,
+      "Last Washed": "2026-07-09T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** A $30 short, pink-and-white dress made from medium-thick plain material. It has wide straps, a center-chest neckline, and two linked wearing reports. Overall appearance is rated “not so beautiful.”\n\n**Inference:** The dress is usable but has notable comfort and design drawbacks, so it may be better for occasional rather than frequent wear.\n\n## Comfort and climate\n**Observed:** Noon heat is rated “Middle.” The dress irritates the shoulders, and the chest area presses or sticks the bra against the body, making bras feel hot. Drying status is recorded as dry.\n\n**Inference:** It may become uncomfortable during warm weather or extended wear despite not being rated extremely hot.\n\n## Fit and appearance\n**Observed:** The upper-breast view is considered attractive, and the breast shape remains acceptable while sitting. However, the waist cut, numerous wrinkles, and strap design reduce the overall appearance.\n\n**Missing:** Side-breast fit and any second description were not provided.\n\n## Care and wash priority\n**Observed:** Both unwashed-clothes time and unwashed-bra time are **0:00**, so there is no recorded wash backlog. The dress is dry.\n\n**Recommendation:** No immediate washing is indicated by the data. Follow the garment’s care label, which was not provided.\n\n## Usage value\n**Observed:** Price is $30 and wearing frequency is 4.0.\n\n**Uncertain:** The frequency scale and time period are missing, so cost-per-wear and true usage value cannot be calculated. The two listed wearing reports indicate some continued use.\n\n## Recommended next action\nWear it once more for a short, cooler-weather outing and specifically reassess shoulder irritation, bra heat, and waist appearance. If discomfort continues or you consistently dislike the design, consider donating or discarding it. A final keep/throw decision cannot be made from the data because **“may throw”** and **last action** are missing.",
       "Pictures": [],
       "may throw": "",
@@ -551,9 +563,9 @@
       "Descriptions": "a small but side open bra, the material after wash easy broken",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 0,
-      "Last Washed": "",
+      "Tracked App Washes": 8,
+      "Total Washed Count": 8,
+      "Last Washed": "2026-07-09T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** A small, relatively thin, side-open bra. The material is described as prone to breaking after washing. Eight related bra-wearing report references are listed, but their detailed contents are unavailable.  \n**Inference:** Its main weakness is durability; continued use depends on the fabric’s current condition.\n\n## Comfort and climate\n**Observed:** Noon heat is rated **Middle**, with the last comment noting moderate heat because the bra sticks to the body. The recorded drying result is **dry**.  \n**Inference:** It may be acceptable in mild conditions but less comfortable in hot or humid weather.\n\n## Fit and appearance\n**Observed:** Appearance is rated **Beautiful**. The chest design is side-open rather than centered, and the bra is “not so thick.”  \n**Missing:** Strap details, sitting fit, side-breast fit, and the reason for the appearance rating. Fit security and support therefore cannot be assessed.\n\n## Care and wash priority\n**Observed:** Both unwashed-time fields are **0:00**, so no immediate wash is indicated by the records. The material reportedly breaks easily after washing.  \n**Recommendation:** Inspect seams and fabric before washing. If washing is needed, use gentle hand-washing, cool water, minimal agitation, and air-drying. Follow the care label if available.\n\n## Usage value\n**Observed:** Multiple wearing-report references suggest repeated use, but the formal wearing-frequency and price fields are missing.  \n**Inference:** It has some practical use and visual appeal, but fragile material lowers its likely long-term value.\n\n## Recommended next action\nContinue using it only if the side opening, fabric, and seams remain secure. Avoid wearing it for long periods in hot weather due to body sticking. Wash gently only when necessary; replace or discard it if there are tears, weakened elastic, or unstable side coverage. **“May throw” status is missing**, so disposal intent cannot be confirmed.",
       "Pictures": [],
       "may throw": "",
@@ -609,9 +621,9 @@
       "Descriptions": "a old center blue bra",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 0,
-      "Last Washed": "",
+      "Tracked App Washes": 6,
+      "Total Washed Count": 6,
+      "Last Washed": "2026-07-09T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n- **Observed:** “blue old bra,” described as an old, center-chest blue bra with a quick/thick material. It is marked **Beautiful**.\n- **Inference:** It remains usable and visually liked, but its thicker, centered construction may limit comfort in warm weather.\n- **Missing:** Material composition, price, wearing frequency, and disposal status.\n\n## Comfort and climate\n- **Observed:** Rated **Hot at noon**. The last comment attributes this to the thick material and center-chest coverage; nighttime comfort depends on the weather and is usually not a problem.\n- **Inference:** Better suited to evenings, cooler days, or air-conditioned settings than hot midday conditions.\n\n## Fit and appearance\n- **Observed:** The bra is considered beautiful and has center-chest coverage.\n- **Missing:** Reason for its appearance rating, strap details, seated breast fit, and side-breast fit.\n- **Assessment:** Fit quality cannot be confirmed without the missing fit data.\n\n## Care and wash priority\n- **Observed:** Unwashed clothing time and unwashed bra time are both **0:00**. Drying result is **dry**.\n- **Inference:** There is no current wash-priority indication based on the recorded timers.\n- **Missing:** Washing history, drying method, and explanation for the drying result.\n\n## Usage value\n- **Observed:** Seven bra-wearing report timestamps are listed between **2026-06-11 and 2026-06-25**, but their report contents are unavailable.\n- **Inference:** The repeated records suggest active use during that period, though actual wearing frequency and satisfaction cannot be established from timestamps alone.\n\n## Recommended next action\nUse it mainly during cooler periods or at night, and avoid hot midday wear when possible. At the next use, record seated fit, side fit, strap comfort, and fabric composition. No immediate washing or disposal action is indicated by the available data.",
       "Pictures": [],
       "may throw": "",
@@ -667,9 +679,9 @@
       "Descriptions": "a side open bra, but the bra is tied to chest",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 1,
-      "Total Washed Count": 1,
-      "Last Washed": "2026-06-11T00:00:00.000Z",
+      "Tracked App Washes": 7,
+      "Total Washed Count": 7,
+      "Last Washed": "2026-07-23T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** “Hugo bra” is a side-open bra secured at the chest. It is described as beautiful and not very thick. Eight related bra-wearing report entries are listed.  \n**Inference:** It appears to be an actively used item, but overall quality and durability cannot be assessed from the available data.\n\n## Comfort and climate\n**Observed:** Noon heat is rated **Middle**, with the note that it feels moderately hot because it sticks to the body. The bra was recorded as dry.  \n**Inference:** It may be less comfortable in warm conditions, especially during prolonged wear. Breathability cannot be evaluated because the material is missing.\n\n## Fit and appearance\n**Observed:** Appearance is rated **Beautiful**. The chest design is not centered and is open at the side.  \n**Missing:** Strap details, sitting fit, side-breast fit, and the reason for the appearance rating.  \n**Inference:** The unusual side-open construction may be visually appealing, but fit security cannot be confirmed.\n\n## Care and wash priority\n**Observed:** Unwashed clothes time and unwashed bra time are both **0:00**, indicating no accumulated unwashed time in the current record. The drying result is dry.  \n**Recommendation:** No urgent wash is indicated by the recorded timers. Continue normal washing based on actual wear, sweat, odor, and the care label.\n\n## Usage value\n**Observed:** Eight bra-wearing report entries are listed, dated from **2026-06-03 to 2026-07-12**. One entry (“2026-06-04 wearing report 6”) appears incomplete or inconsistently formatted.  \n**Missing:** Price, material, stated wearing frequency, durability, and “may throw” status.  \n**Inference:** Repeated reports suggest practical use, but value for money cannot be determined.\n\n## Recommended next action\nKeep the bra if the side-open fit remains secure and comfortable. Test comfort during warm midday wear, particularly where it sticks to the body. Record the material, strap configuration, sitting fit, side fit, price, and disposal status to support a more reliable keep-or-discard decision.",
       "Pictures": [],
       "may throw": "",
@@ -727,9 +739,9 @@
       "Descriptions": "a old center pink bra",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 0,
-      "Last Washed": "",
+      "Tracked App Washes": 4,
+      "Total Washed Count": 4,
+      "Last Washed": "2026-07-23T00:00:00.000Z",
       "AI Clothes Analysis": "### Overall assessment\n- **Observed:** An old pink center-chest bra, described as beautiful and made with “quick thick material.” Four wearing-report timestamps are listed, but their detailed contents are unavailable.\n- **Inference:** It remains usable, though its thicker, centered construction may limit warm-weather comfort.\n\n### Comfort and climate\n- **Observed:** It becomes hot at noon because of the thickness and center-chest coverage. Nighttime comfort depends on the weather and is usually not a problem. The drying result is **dry**.\n- **Practical use:** Prefer cooler days, evenings, or air-conditioned settings; avoid hot midday wear when possible.\n\n### Fit and appearance\n- **Observed:** Rated **Beautiful** and confirmed as a center-chest bra.\n- **Missing data:** No reason for the appearance rating, strap assessment, sitting fit, or side fit is provided. Fit quality therefore cannot be fully evaluated.\n\n### Care and wash priority\n- **Observed:** Both unwashed-clothes time and unwashed-bra time are **0:00**.\n- **Inference:** There is no current wash backlog indicated. However, washing method, material details, and drying reason are missing.\n\n### Usage value\n- **Positive:** Attractive appearance and generally acceptable nighttime comfort.\n- **Limitation:** Thick material and center coverage make it less suitable for hot noon conditions.\n- **Missing data:** Price, wearing frequency, exact material, and discard status are unavailable, so value-for-money and replacement priority cannot be judged.\n\n### Recommended next action\nKeep it for cooler-weather or evening use. After the next full wear, check center-chest comfort, side fit, and strap fit, then record those results. Do not discard it based on the current data alone; no “may throw” status or serious fit problem is documented.",
       "Pictures": [],
       "may throw": "",
@@ -926,9 +938,9 @@
       "Descriptions 2": "",
       "price": 120,
       "wearing frequency(how many times legacy washed)": 8,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 8,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 10,
+      "Last Washed": "2026-07-09T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n- **Observed:** Long, thick-chiffon dress priced at **$120**, described as **hot, heavy, and wet/not easy to dry**. Wearing frequency is recorded as **8.0**, but the unit and period are missing.\n- **Inference:** It offers limited practicality due to heat, weight, slow drying, and fit concerns.\n\n## Comfort and climate\n- **Observed:** The dress is marked **hot at noon**, **heavy**, **thick**, and **long**.\n- **Inference:** It is likely better suited to cooler conditions or short periods indoors than warm midday wear.\n\n## Fit and appearance\n- **Observed:** Rated **“not so beautiful”** because of its **big size**. The chest fit is described as unattractive when standing due to a **loose tie**. It is not a strap dress.\n- **Missing:** Clear sitting-fit and side-fit results are not provided; the chest-related wording is partly unclear.\n\n## Care and wash priority\n- **Observed:** Current unwashed time is **0:00** for both the dress and bra. The dress is recorded as **wet**, and the last note says it is **not easy to dry**.\n- **Inference:** There is no immediate wash priority based on elapsed unwashed time. After future washing, allow extra drying time and airflow.\n- **Missing:** The cause of wetness and specific care instructions are not provided.\n\n## Usage value\n- **Observed:** It was expensive and is noted as being worn less frequently. Two clothing reports are listed: **2026-06-26 09:10** and **2026-06-27 08:19**. No related bra reports are provided.\n- **Inference:** Value for money appears low unless the fit or styling can be improved.\n\n## Recommended next action\nTry one low-cost fit adjustment—especially tightening or altering the loose chest tie—and test it briefly in cooler weather. If it remains hot, heavy, unattractive, or rarely worn, consider resale or donation. **“May throw” data is missing, so disposal intent cannot be confirmed.**",
       "Pictures": [],
       "may throw": "",
@@ -985,8 +997,8 @@
       "Descriptions 2": "",
       "price": 66.8,
       "wearing frequency(how many times legacy washed)": 4.5,
-      "Tracked App Washes": 4,
-      "Total Washed Count": 8.5,
+      "Tracked App Washes": 0,
+      "Total Washed Count": 4.5,
       "Last Washed": "",
       "AI Clothes Analysis": "### Overall assessment\n**Observed:** “yellow diao dai” is a short dress priced at **$66.80**. It is described as sleepwear-like, thick, not very attractive, and marked **“may throw.”**  \n**Inference:** It appears to be a low-priority wardrobe item and a possible decluttering candidate.\n\n### Comfort and climate\n**Observed:** The dress is rated **“03 thick clothes”** and feels **hot at noon**. Drying result is listed as **wet**.  \n**Inference:** It may be uncomfortable in warm daytime conditions and could dry slowly. The material and reason for remaining wet are missing.\n\n### Fit and appearance\n**Observed:** It is rated **“not so beautiful.”** The record says **“not diao dai”** despite the name suggesting straps. The chest fit looks unattractive while standing, reportedly because of a loose tie; sitting fit is not clearly documented.  \n**Inference:** Loose construction around the chest may be the main fit problem. Side-fit data and a detailed appearance reason are missing.\n\n### Care and wash priority\n**Observed:** Unwashed clothing time and unwashed bra time are both **0:00**.  \n**Recommendation:** No immediate wash priority is indicated by the timers. If the item is physically wet, dry it fully before storage to prevent odor or mildew.\n\n### Usage value\n**Observed:** Wearing frequency is **4.5**, but its scale and unit are not provided. The item is thick, hot at noon, and considered unattractive.  \n**Inference:** Its practical value may be limited to sleepwear, indoor use, or cooler conditions. Related clothing and bra reports are missing.\n\n### Recommended next action\nTry it once in an appropriate cool or indoor setting and assess chest fit and comfort. If the loose tie cannot be adjusted and you still dislike its appearance, **discard, donate, or repurpose it** rather than keeping it unused.",
       "Pictures": [],
@@ -1044,9 +1056,9 @@
       "Descriptions 2": "Sit over knee little, sit quite long, overall quite warm.",
       "price": 89,
       "wearing frequency(how many times legacy washed)": 25,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 25,
-      "Last Washed": "",
+      "Tracked App Washes": 3,
+      "Total Washed Count": 28,
+      "Last Washed": "2026-06-11T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** Blue short dress with a side-flower design, priced at **$89**. It is recorded as not thick, dry, and “middle beautiful.” Five clothing-wear reports are linked.  \n**Inference:** It appears to be a regularly used, moderately attractive warm-weather dress, though its value cannot be fully assessed without material and durability data.\n\n## Comfort and climate\n**Observed:** The dress is described as “overall quite warm,” while noon heat is rated **Middle** and thickness is **not thick**.  \n**Inference:** It may be comfortable in mild weather but could feel moderately warm around noon. The reason for the warmth is unclear because the material is missing.\n\n## Fit and appearance\n**Observed:** Sitting breast shape is recorded as OK, and there is no center-chest exposure. The straps field contains **“diao dai.”** The description says it sits slightly over the knee, while the length category says **short dress**. Appearance is rated middle, reportedly due to the material.  \n**Note:** The exact material and side-fit data are missing. The length descriptions may use different standards and should be verified.\n\n## Care and wash priority\n**Observed:** Unwashed clothing time is **8:00**; unwashed bra time is **0:00**. The drying-result field says **dry**. One related bra-wear report is listed.  \n**Recommendation:** Washing priority is **moderate** based on eight recorded hours of dress wear. Follow the care label because the material and drying explanation are unavailable.\n\n## Usage value\n**Observed:** Wearing frequency is **25.0**, but the scale and time period are not defined. The dress has five linked wear reports.  \n**Inference:** It likely receives meaningful use, but cost-per-wear cannot be calculated reliably without knowing what “25.0” represents.\n\n## Recommended next action\nWash the dress after the current wear cycle, then inspect the material, straps, and side fit. Record the material, side-fit result, care instructions, and clarify the length classification. No discard recommendation can be made because **may throw**, **last action**, and condition/damage data are missing.",
       "Pictures": [],
       "may throw": "",
@@ -1105,9 +1117,9 @@
       "Descriptions": "a side open bra, but the bra is tied to chest",
       "Descriptions 2": "",
       "wearing frequency(how many times legacy washed)": 0,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 0,
-      "Last Washed": "",
+      "Tracked App Washes": 9,
+      "Total Washed Count": 9,
+      "Last Washed": "2026-09-03T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** “hugo bra new 2” is a side-open bra tied to the chest. It is rated **Beautiful**, relatively thin, and currently dry.  \n**Inference:** It appears visually appealing and usable, but heat and extended unwashed wear reduce comfort and hygiene.\n\n## Comfort and climate\n**Observed:** Noon heat is rated **Middle**. The last comment says it felt moderately hot because it sticks to the body.  \n**Inference:** It may be less comfortable in warm weather or during long wear, despite not being very thick.\n\n## Fit and appearance\n**Observed:** The bra is side-open rather than centered at the chest and is secured by tying. Its appearance is rated **Beautiful**.  \n**Missing:** Strap details, sitting fit, side-breast fit, and the reason for the appearance rating are not provided. Fit security and support therefore cannot be fully assessed.\n\n## Care and wash priority\n**Observed:** Unwashed bra time is **37:00 hours**; general unwashed-clothes time is **0:00**. The bra is currently dry.  \n**Recommendation:** **High wash priority—wash it before the next use**, especially because it has been against the body and caused moderate heat. Follow the care label because the material and washing requirements are missing.\n\n## Usage value\n**Observed:** Multiple wearing reports are listed, including one duplicate/copy entry.  \n**Inference:** The item appears to have received repeated use, suggesting practical value. However, wearing frequency, price, material, and disposal status are missing, so value and durability cannot be judged reliably.\n\n## Recommended next action\n1. Wash the bra now and let it dry fully.\n2. At the next wear, check whether the tied, side-open design stays secure while sitting and moving.\n3. Record material, fit results, wearing frequency, and care instructions.\n4. Do not decide whether to discard it until comfort and fit are reassessed after washing.",
       "Pictures": [],
       "may throw": "",
@@ -1166,7 +1178,7 @@
       "wearing frequency(how many times legacy washed)": 39,
       "Tracked App Washes": 3,
       "Total Washed Count": 42,
-      "Last Washed": "2026-09-13T00:00:00.000Z",
+      "Last Washed": "2026-07-23T00:00:00.000Z",
       "AI Clothes Analysis": "### Overall assessment\n**Observed:** A short dress made from soft chiffon, described as light, soft, feminine, and beautifully cut. It is marked “Beautiful” and costs **$53.00**.  \n**Inference:** The item appears suitable for regular warm-weather wear and remains a strong wardrobe piece.\n\n### Comfort and climate\n**Observed:** The dress is not thick, does not feel hot at noon, and dries well because of the chiffon fabric.  \n**Inference:** It should be comfortable in warm conditions and practical when quick drying is useful.\n\n### Fit and appearance\n**Observed:** It is a short, non-strap dress with no center-chest issue. The bust shape remains acceptable while sitting.  \n**Missing data:** Side-bust fit and the specific reason for the “Beautiful” rating were not provided.\n\n### Care and wash priority\n**Observed:** Both unwashed clothing time and unwashed bra time are **0:00**, so there is no recorded wash backlog. The dress is currently marked dry.  \n**Recommendation:** No immediate washing is indicated. Follow chiffon-appropriate gentle-care instructions when cleaning.\n\n### Usage value\n**Observed:** Wearing frequency is **39.0**, with three linked wearing reports dated **2026-07-10** and **2026-07-11**.  \n**Inference:** If 39.0 represents a wear count, the dress has relatively strong usage value; however, the frequency unit is not specified.\n\n### Recommended next action\nKeep the dress and continue wearing it, especially in warm weather. At the next wear, record the **side fit**, detailed appearance reason, and any comfort changes. **Last action, disposal status (“may throw”), additional description, and related bra reports are missing**, so no disposal recommendation can be made from those fields.",
       "Pictures": [
         {
@@ -1233,8 +1245,8 @@
       "Descriptions 2": "Very femenine, and the skirt sink to knee. So little warm protect cold. But still cold due to short.",
       "price": 89,
       "wearing frequency(how many times legacy washed)": 30,
-      "Tracked App Washes": 3,
-      "Total Washed Count": 33,
+      "Tracked App Washes": 0,
+      "Total Washed Count": 30,
       "Last Washed": "",
       "AI Clothes Analysis": "### Overall assessment\n**Observed:** A feminine, soft-chiffon pink dress with a side-flower detail. It is marked **Beautiful**, **short**, and **not thick**. Three related wearing reports are listed.  \n**Inference:** It appears best suited to dressy or feminine warm-weather use rather than cold conditions.\n\n### Comfort and climate\n**Observed:** Noon heat is rated **Middle**. The description says the skirt falls around the knee and offers a little warmth, but the short length still feels cold. It is not a thick garment.  \n**Inference:** Most practical in mild or warm weather; consider an outer layer or tights in cooler conditions.\n\n### Fit and appearance\n**Observed:** The breast and waist are described as attractive, and the breast shape is acceptable while sitting. The dress is not a strap style and has center-chest coverage. Sitting length is acceptable, but it becomes short when sleeping or reclining.  \n**Missing:** Side-breast fit and the specific reason for the “Beautiful” rating.\n\n### Care and wash priority\n**Observed:** Accumulated unwashed dress time is **10:00 hours**; unwashed bra time is **0:00**. Drying result is recorded as **dry**.  \n**Missing:** Drying-result reason and exact care-label instructions.  \n**Recommendation:** Wash soon due to the accumulated wear time. Because it is soft chiffon, follow the garment label and use gentle handling; avoid assuming it is machine-washable.\n\n### Usage value\n**Observed:** Price is **$89.00**, and wearing frequency is recorded as **30.0**, though its unit is not defined. Three clothing reports are linked.  \n**Inference:** If 30.0 represents a wear count, the approximate cost per wear is **$2.97**, indicating good usage value. This calculation is conditional on that interpretation.\n\n### Recommended next action\nWash the dress according to its care label, then continue using it for mild or warm-weather occasions. Avoid relying on it for sleeping/reclining or cold conditions because of the short length. Reassess after washing for chiffon condition, side fit, and whether it should be kept or discarded.\n\n**Missing decision data:** Last action/comment, “may throw” status, side fit, and related bra wearing reports.",
       "Pictures": [],
@@ -1295,9 +1307,9 @@
       "Descriptions 2": "",
       "price": 40,
       "wearing frequency(how many times legacy washed)": 16,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 16,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 18,
+      "Last Washed": "2026-06-25T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n- **Observed:** “pink flower rm30” is a short dress priced at **$40.00**. It is described as generally acceptable and quite pretty, but rated **“not so beautiful”** because of substantial wrinkling around the middle and bust.\n- **Inference:** The main weakness is appearance and structure rather than basic wearability.\n\n## Comfort and climate\n- **Observed:** Thickness is **medium**, noon heat is **“Middle,”** and the dress was recorded as **dry**.\n- **Missing:** Material and the reason for the drying result.\n- **Inference:** It may be suitable for moderate conditions, but there is not enough information to assess breathability or hot-weather comfort.\n\n## Fit and appearance\n- **Observed:** The skirt is considered a little short. It is not a strap dress. The bust looks unattractive when standing because of heavy wrinkling; the description also mentions wrinkling while sitting.\n- **Missing:** Center-chest and side-fit assessments.\n- **Inference:** Wrinkling around the waist and bust may indicate a fit, fabric, construction, or ironing issue, but the exact cause cannot be determined from the data.\n\n## Care and wash priority\n- **Observed:** Unwashed clothing time is **0:00** and unwashed bra time is **0:00**.\n- **Inference:** No immediate wash priority is indicated. Before the next wear, steaming or ironing—only if permitted by the care label—may improve the appearance.\n\n## Usage value\n- **Observed:** Wearing frequency is **16.0**, though its unit or calculation method is not provided. Two related wearing reports are listed: **2026-06-23 08:33** and **2026-06-25 21:40**.\n- **Data issue:** The name includes **“rm30,”** while the price field says **$40.00**; the currencies or intended price are unclear.\n- **Inference:** The recorded frequency suggests meaningful use, but value for money cannot be calculated reliably without a defined frequency unit and confirmed price.\n\n## Recommended next action\n1. Steam or iron the middle and bust areas according to the care label, then reassess the standing and sitting appearance.\n2. Check whether the short length feels practical during normal movement and sitting.\n3. Keep it if wrinkle treatment improves the fit; otherwise consider alteration or reduced use.\n4. **May-throw status and last action are missing**, so there is not enough evidence to recommend disposal.",
       "Pictures": [],
       "may throw": "",
@@ -1354,9 +1366,9 @@
       "Descriptions 2": "",
       "price": 48,
       "wearing frequency(how many times legacy washed)": 17,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 17,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 19,
+      "Last Washed": "2026-07-09T00:00:00.000Z",
       "AI Clothes Analysis": "### Overall assessment\n**Observed:** “Pink bridesmaid” is a long pink dress priced at **$48.00**, with a recorded wearing frequency of **17.0**. It is rated **“Middle beautiful,”** mainly because it is only pink.  \n**Inference:** It appears functional and moderately attractive, but not especially versatile or visually distinctive.\n\n### Comfort and climate\n**Observed:** The dress is marked **hot at noon** and **“03 thick clothes.”** It remained wet because the middle section was thick. The description also says the skirt is long and thin, and that air-conditioning is manageable with a blanket.  \n**Inference:** It may be more comfortable indoors or in cooler conditions than during hot midday weather. The mixed “thin” and “thick” records may refer to different sections of the dress.\n\n### Fit and appearance\n**Observed:** It is a **long dress**, is **not spaghetti-strap**, has a center-chest design/fit, and the breast shape is recorded as acceptable while sitting.  \n**Missing:** Side fit data is unavailable. The exact cut, size, material, and secondary description are also missing.\n\n### Care and wash priority\n**Observed:** Both unwashed timers are **0:00**. The dress has previously remained wet due to its thick middle section.  \n**Inference:** There is no recorded urgent wash backlog, but after washing, the thicker middle area should be checked carefully and given extra drying time. No bra-specific care assessment is possible because no related bra reports were supplied.\n\n### Usage value\n**Observed:** Price is **$48.00**, and wearing frequency is **17.0**, though the frequency unit is not defined.  \n**Inference:** If 17 represents actual wears, the approximate cost per wear is **$2.82**, suggesting reasonable usage value. This estimate is uncertain because the meaning of “17.0” is not specified.\n\n### Recommended next action\nKeep and continue using it for cooler or air-conditioned settings, but avoid hot midday wear when possible. After washing, fully dry the thick middle section before storage. Reassess whether its limited all-pink appearance and heat level justify keeping it after the next few wears.\n\n**Missing decision data:** last action/comment, “may throw” status, material, side fit, additional description, and related bra wearing reports.",
       "Pictures": [],
       "may throw": "",
@@ -1594,9 +1606,9 @@
       "Descriptions 2": "quite beautiful little short",
       "price": 52.8,
       "wearing frequency(how many times legacy washed)": 106,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 106,
-      "Last Washed": "",
+      "Tracked App Washes": 2,
+      "Total Washed Count": 108,
+      "Last Washed": "2026-06-25T00:00:00.000Z",
       "AI Clothes Analysis": "### Overall assessment\n**Observed:** “pink lace old” is a short, mid-thickness pink lace dress priced at **$52.80**. It is marked **Beautiful** and has a wearing frequency of **106**.  \n**Inference:** It appears to be a well-used wardrobe item with strong practical value, although the meaning/unit of “106” is not specified.\n\n### Comfort and climate\n**Observed:** The dress is recorded as **hot at noon**, **mid-thickness**, and **dry** after drying.  \n**Inference:** It may be uncomfortable in warm midday conditions and better suited to cooler weather, mornings, evenings, or air-conditioned settings. The drying record indicates no current moisture issue.  \n**Missing:** No reason is provided for the heat or drying assessments.\n\n### Fit and appearance\n**Observed:** It is a **short dress**, not a strappy dress, with **no center-chest issue** and an acceptable sitting bust shape. It is described as beautiful, little, and short.  \n**Missing:** The reason for the beauty rating and side-bust fit data are unavailable.\n\n### Care and wash priority\n**Observed:** Unwashed clothing time and unwashed bra time are both **0:00**.  \n**Inference:** There is no recorded wash urgency. Follow lace-appropriate care based on the garment’s actual care label.  \n**Missing:** No last wash/action note or detailed care instructions are provided.\n\n### Usage value\n**Observed:** Price is **$52.80**, with a recorded wearing frequency of **106**.  \n**Inference:** If 106 represents completed wears, the approximate cost per wear is **$0.50**, indicating excellent usage value.\n\n### Recommended next action\nKeep the dress and use it in cooler conditions rather than at hot noon hours. Check the lace, seams, and lining for age-related wear before the next use. No immediate washing is indicated. Review the two wearing reports from **2026-06-11 at 11:44 and 11:51** for additional comfort details.  \n**Missing:** “May throw,” last action, related bra reports, and side-fit information are not available, so disposal is not currently supported by the data.",
       "Pictures": [],
       "may throw": "",
@@ -1653,9 +1665,9 @@
       "Descriptions 2": "waist is loose not so beautiful",
       "price": 65.55,
       "wearing frequency(how many times legacy washed)": 45,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 45,
-      "Last Washed": "",
+      "Tracked App Washes": 4,
+      "Total Washed Count": 49,
+      "Last Washed": "2026-09-03T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** Blue French thick-chiffon long dress priced at **$65.55**, with a recorded wearing frequency of **45.0**. It is rated **“Middle beautiful.”** Four related clothing-wear reports are listed.  \n**Inference:** It appears usable and frequently worn, but heat, loose-waist styling, and skirt movement reduce its overall practicality.\n\n## Comfort and climate\n**Observed:** The dress becomes hot quickly and is rated **Hot at noon**. The material is **thick chiffon**, with thickness recorded as **“03 thick clothes.”** It is described as suitable for nighttime sleep.  \n**Inference:** Better for nighttime or cooler conditions than warm midday wear.\n\n## Fit and appearance\n**Observed:** The waist is loose and considered less attractive. The long skirt reportedly rides up easily. It is not a strap dress and has no center-chest feature.  \n**Data conflict/missing:** The appearance reason says the breast fit while sitting or sleeping is “still ok,” but the structured sitting-fit field is **“?”** Side-fit data is missing.\n\n## Care and wash priority\n**Observed:** The dress has been unwashed for **19:00 hours**. Drying status is **“little wet.”** Unwashed bra time is **0:00**.  \n**Recommendation:** Wash the dress now, then dry it fully before storing or wearing. Follow the garment’s care label because no washing instructions are provided.\n\n## Usage value\n**Observed:** Price is **$65.55**, and wearing frequency is **45.0**, though the meaning or unit of that number is not given.  \n**Inference:** If 45 represents actual wears, the approximate cost per wear is **$1.46**, suggesting good usage value. This cannot be confirmed without knowing the frequency unit.\n\n## Recommended next action\n1. **Wash and fully dry** the dress.\n2. Reserve it mainly for **nighttime or cooler weather**.\n3. On the next wear, verify the **sitting and side fit** and whether the skirt still rides up.\n4. Consider a simple **waist adjustment or belt** only after confirming that the loose waist is the main appearance issue.\n5. No discard decision can be made because **“May throw”** and **last action** data are missing. Related bra-wearing reports are also missing.",
       "Pictures": [],
       "may throw": "",
@@ -1771,8 +1783,8 @@
       "Descriptions 2": "",
       "price": 44,
       "wearing frequency(how many times legacy washed)": 160,
-      "Tracked App Washes": 1,
-      "Total Washed Count": 161,
+      "Tracked App Washes": 9,
+      "Total Washed Count": 169,
       "Last Washed": "2026-08-20T00:00:00.000Z",
       "AI Clothes Analysis": "### 1. Overall assessment\nThis \"white marry old\" dress is a delicate and visually appealing garment crafted from lace, highly rated for its beauty. The name suggests a romantic, possibly vintage or bridal-inspired style, making it suitable for special occasions where elegance and a classic aesthetic are desired. The $44 price point indicates it offers an accessible option for a lace dress.\n\n### 2. Comfort and climate\n*   **Sensory:** Lace generally offers a lightweight and airy feel against the skin. Depending on the quality, it can range from very soft and smooth to slightly textured. The intricate patterns of the lace contribute to a rich visual and tactile experience.\n*   **Climate:** Due to its open weave, lace is exceptionally breathable, making this dress ideal for warm weather, summer events, or indoor settings. It provides minimal insulation, rendering it unsuitable for cold climates without significant layering.\n*   **Ergonomics:** The inherent lightness of lace allows for unrestricted movement. Potential ergonomic considerations might include the finish of seams or the softness of the lace against sensitive skin, but generally, it should feel comfortable and airy.\n\n### 3. Fit and appearance\n*   **Appearance:** As a \"Beautiful\" white lace dress, it likely projects an elegant, romantic, and perhaps ethereal aesthetic. The \"marry old\" moniker implies a timeless or classic silhouette, possibly with vintage-inspired details, which can be flattering and sophisticated. White lace traditionally conveys purity, grace, and femininity.\n*   **Fit:** While specific fit details are undefined, lace often drapes gracefully, contributing to an elegant silhouette. The fit will depend on the garment's cut (e.g., A-line, sheath). Due to the potential sheerness of lace, a lining or a slip is often incorporated to maintain modesty and enhance comfort.\n\n### 4. Care and wearing tips\n*   **Care:** Lace is delicate and requires gentle care to maintain its beauty. Hand washing in cool water with a mild detergent is highly recommended to prevent snagging or stretching. If machine washing, use a mesh laundry bag on a delicate cycle. Air dry flat or hang carefully to preserve its shape and texture. Avoid harsh chemicals or excessive wringing.\n*   **Wearing:** This dress is best suited for special events, celebrations, or romantic occasions. Pair it with seamless, nude-colored undergarments to ensure a smooth, elegant appearance, especially if the lace is sheer. Be mindful of jewelry, rough surfaces, and bag straps that could snag the delicate lace. A slip might be beneficial for added comfort and coverage.",
       "Pictures": [
@@ -1899,9 +1911,9 @@
       "Descriptions 2": "",
       "price": 67.7,
       "wearing frequency(how many times legacy washed)": 25,
-      "Tracked App Washes": 0,
-      "Total Washed Count": 25,
-      "Last Washed": "",
+      "Tracked App Washes": 4,
+      "Total Washed Count": 29,
+      "Last Washed": "2026-09-03T00:00:00.000Z",
       "AI Clothes Analysis": "## Overall assessment\n**Observed:** A short, strappy soft-chiffon dress priced at **$67.70**. It is rated **“Middle beautiful,”** and the description says it is beautiful but creates a flatter, less breast-emphasized appearance.  \n**Inference:** It appears usable and generally satisfactory, though the chest appearance may limit how flattering it feels to the wearer.\n\n## Comfort and climate\n**Observed:** The dress is **not thick**, was rated **medium for noon heat**, and is currently recorded as **dry**.  \n**Inference:** The thin chiffon may suit warm conditions, but the medium heat rating suggests it is not especially cooling. Comfort details such as breathability, lining, or irritation are missing.\n\n## Fit and appearance\n**Observed:** It is a **short dress** with straps, covers the **center chest**, and the breast shape is recorded as acceptable while sitting. The appearance rating is medium, with small/flat-looking breasts given as the reason.  \n**Missing:** Side-breast fit and a second description were not provided.\n\n## Care and wash priority\n**Observed:** The dress has accumulated **12:00 hours unwashed**; unwashed bra time is **0:00**. It is dry.  \n**Recommendation:** Wash it before the next wear, especially if the 12 hours include warm-weather use. Follow the care label; chiffon often requires gentle handling, but the exact fiber composition and washing instructions are unknown.\n\n## Usage value\n**Observed:** Wearing frequency is listed as **25.0**, but its unit is unclear. Four clothing reports are linked, including one marked as a copy.  \n**Inference:** The existing reports indicate repeated use, but cost per wear cannot be calculated reliably unless **25.0** means 25 actual wears.\n\n## Recommended next action\n1. **Wash gently according to the care label.**\n2. At the next wear, record the missing **side fit**, comfort/breathability, and whether the chest appearance remains acceptable.\n3. Keep the dress if its light, short style is useful; reassess only if the chest fit consistently feels unflattering.\n\n**Missing data:** Additional description, drying reason, side fit, last action/comment, may-throw status, and related bra reports.",
       "Pictures": [],
       "may throw": "",
@@ -7440,6 +7452,253 @@
       "washStated": "need wash",
       "durationVal": 1200,
       "wearDate": "2026-09-21"
+    }
+  ],
+  "drilldownPresets": [
+    {
+      "id": "preset-aircond-hot",
+      "name": "Aircond Suitable: Upper Body (not cold / hot)",
+      "description": "Tier 1: when with aircond: hot feeling (not cold, not so cold, hot, undefined). Tier 2: Clothes Type (dress/bra).",
+      "groupTiers": [
+        "when with aircond: hot feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when with aircond: hot feeling",
+        "when with aircond: leg feeling",
+        "material",
+        "thick clothes"
+      ]
+    },
+    {
+      "id": "preset-aircond-leg",
+      "name": "Aircond Suitable: Leg Feeling (not cold leg)",
+      "description": "Tier 1: when with aircond: leg feeling (not cold, not so cold, hot, undefined). Tier 2: Clothes Type.",
+      "groupTiers": [
+        "when with aircond: leg feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when with aircond: leg feeling",
+        "when with aircond: hot feeling",
+        "material",
+        "long dress"
+      ]
+    },
+    {
+      "id": "preset-without-aircond-hot",
+      "name": "Normal / No Aircond: Upper Body (hot feeling)",
+      "description": "Tier 1: when without aircond: hot feeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).",
+      "groupTiers": [
+        "when without aircond: hot feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when without aircond: hot feeling",
+        "when without aircond: leg feeling",
+        "material",
+        "thick clothes"
+      ]
+    },
+    {
+      "id": "preset-without-aircond-leg",
+      "name": "Normal / No Aircond: Leg Feeling (not cold leg)",
+      "description": "Tier 1: when without aircond: leg feeling (not cold, not so cold, hot, undefined). Tier 2: Clothes Type.",
+      "groupTiers": [
+        "when without aircond: leg feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when without aircond: leg feeling",
+        "when without aircond: hot feeling",
+        "material",
+        "thick clothes"
+      ]
+    },
+    {
+      "id": "preset-sleep-fan-hot",
+      "name": "Sleep Under Fan: Upper Body (hot feeling)",
+      "description": "Tier 1: when sleep under fan: hot feeling (not cold, hot, undefined). Tier 2: Clothes Type.",
+      "groupTiers": [
+        "when sleep under fan: hot feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when sleep under fan: hot feeling",
+        "when sleep under fan: leg feeling",
+        "material",
+        "long dress"
+      ]
+    },
+    {
+      "id": "preset-sleep-fan-leg",
+      "name": "Sleep Under Fan: Leg Feeling (not cold leg)",
+      "description": "Tier 1: when sleep under fan: leg feeling (not cold, not so cold, hot, undefined). Tier 2: Clothes Type.",
+      "groupTiers": [
+        "when sleep under fan: leg feeling",
+        "Clothes Type"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "when sleep under fan: leg feeling",
+        "when sleep under fan: hot feeling",
+        "material",
+        "long dress"
+      ]
+    },
+    {
+      "id": "preset-wet-performance",
+      "name": "Clothes Wet / Dry Performance",
+      "description": "Tier 1: Clothes Type (dress/bra). Tier 2: wet (dry, little wet, wet, undefined).",
+      "groupTiers": [
+        "Clothes Type",
+        "wet"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "wet",
+        "wet reason",
+        "material",
+        "Hot at noon"
+      ]
+    },
+    {
+      "id": "preset-breast-gather-bra",
+      "name": "Breast Fit: With 聚拢bra",
+      "description": "Tier 1: Clothes Type (dress/bra). Tier 2: sit breast ok: With 聚拢bra.",
+      "groupTiers": [
+        "Clothes Type",
+        "sit breast ok: With 聚拢bra"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "sit breast ok: With 聚拢bra",
+        "side breast ok: with 聚拢 bra",
+        "beautiful",
+        "diao dai"
+      ]
+    },
+    {
+      "id": "preset-thickness-climate",
+      "name": "Thickness & Climate",
+      "description": "Hierarchical drill by clothing category, noon thermal feel, and fabric thickness.",
+      "groupTiers": [
+        "Clothes Type",
+        "Hot at noon",
+        "thick clothes"
+      ],
+      "sortField": "wearing frequency(how many times legacy washed)",
+      "sortOrder": "desc",
+      "visibleFields": [
+        "Clothes Type",
+        "material",
+        "thick clothes",
+        "Hot at noon",
+        "beautiful",
+        "wearing frequency(how many times legacy washed)",
+        "wash stated"
+      ]
+    },
+    {
+      "id": "preset-aesthetic-fit",
+      "name": "Aesthetic & Fit Ratings",
+      "description": "Drill down by category, aesthetic score, and strap/chest silhouette.",
+      "groupTiers": [
+        "Clothes Type",
+        "beautiful",
+        "diao dai"
+      ],
+      "sortField": "Name",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "Clothes Type",
+        "beautiful",
+        "diao dai",
+        "side breast ok",
+        "material",
+        "price"
+      ]
+    },
+    {
+      "id": "preset-wash-care",
+      "name": "Wash Care & Laundry Priority",
+      "description": "Exclusive drill by wash backlog state, clothing category, and fabric material.",
+      "groupTiers": [
+        "wash stated",
+        "Clothes Type",
+        "material"
+      ],
+      "sortField": "wearing frequency(how many times legacy washed)",
+      "sortOrder": "desc",
+      "visibleFields": [
+        "wash stated",
+        "Clothes Type",
+        "material",
+        "Tracked App Washes",
+        "Total Washed Count",
+        "Last Washed"
+      ]
+    },
+    {
+      "id": "preset-sensory-heat",
+      "name": "Sensory Heat & Moisture",
+      "description": "Drill by midday heat sensitivity, moisture performance, and thickness.",
+      "groupTiers": [
+        "Hot at noon",
+        "wet",
+        "thick clothes"
+      ],
+      "sortField": "wearing frequency(how many times legacy washed)",
+      "sortOrder": "desc",
+      "visibleFields": [
+        "Clothes Type",
+        "Hot at noon",
+        "wet",
+        "thick clothes",
+        "material",
+        "beautiful"
+      ]
+    },
+    {
+      "id": "preset-declutter-audit",
+      "name": "Declutter & Discard Audit",
+      "description": "Audit garments flagged for possible decluttering or disposal by category.",
+      "groupTiers": [
+        "may throw",
+        "Clothes Type",
+        "beautiful"
+      ],
+      "sortField": "wearing frequency(how many times legacy washed)",
+      "sortOrder": "asc",
+      "visibleFields": [
+        "may throw",
+        "Clothes Type",
+        "material",
+        "beautiful",
+        "price",
+        "wearing frequency(how many times legacy washed)"
+      ]
     }
   ]
 }

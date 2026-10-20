@@ -8,7 +8,7 @@ import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { ImageViewerModal } from './ImageViewerModal';
 import { CustomAttributesManager } from './CustomAttributesManager';
 import { toDateKey, formatCalendarDate, getTodayDateKey } from '../utils/calendarCalculations';
-import { getCustomApiKey, getSelectedModel, GeminiModelId } from '../services/aiSettings';
+import { getCustomApiKey, getSelectedModel, GeminiModelId, useAiGenerationPaused } from '../services/aiSettings';
 import { fieldDictionaryService } from '../services/fieldDictionaryService';
 import { FieldDictionaryDrawer } from './FieldDictionaryDrawer';
 import { FieldExplainBox } from './FieldExplainBox';
@@ -246,6 +246,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
   } | null>(null);
 
   // Teable-Style AI Wearing Analysis Multi-Version State & Handlers
+  const isAiPaused = useAiGenerationPaused();
   const [isAnalyzingWearing, setIsAnalyzingWearing] = useState(false);
   const [wearingAnalysisError, setWearingAnalysisError] = useState('');
 
@@ -846,25 +847,27 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
               </>
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={() => handleGenerateNewReportVersion()}
-                  disabled={isAnalyzingWearing}
-                  className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-60 cursor-pointer active:scale-95"
-                  title="Generate a new AI report version for this wearing session"
-                >
-                  {isAnalyzingWearing ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-3.5 h-3.5 text-purple-200" />
-                  )}
-                  <span className="hidden sm:inline">
-                    {isAnalyzingWearing ? 'Diagnosing...' : (reportVersions.length > 0 ? '+ New AI Report' : 'AI Analysis')}
-                  </span>
-                  <span className="sm:hidden text-[11px]">
-                    {isAnalyzingWearing ? '...' : '+AI'}
-                  </span>
-                </button>
+                {!isAiPaused && (
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateNewReportVersion()}
+                    disabled={isAnalyzingWearing}
+                    className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-60 cursor-pointer active:scale-95"
+                    title="Generate a new AI report version for this wearing session"
+                  >
+                    {isAnalyzingWearing ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5 text-purple-200" />
+                    )}
+                    <span className="hidden sm:inline">
+                      {isAnalyzingWearing ? 'Diagnosing...' : (reportVersions.length > 0 ? '+ New AI Report' : 'AI Analysis')}
+                    </span>
+                    <span className="sm:hidden text-[11px]">
+                      {isAnalyzingWearing ? '...' : '+AI'}
+                    </span>
+                  </button>
+                )}
 
                 <button
                   type="button"
@@ -1795,23 +1798,25 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
                             )}
 
                             {/* Junction AI Diagnostic Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setJunctionForAiModal({ junction, garment });
-                              }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 active:scale-95 text-purple-700 border border-purple-200/80 transition-all cursor-pointer shadow-2xs self-start sm:self-auto"
-                              title="View or generate single-garment AI diagnosis"
-                            >
-                              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                              <span>AI Outfit Diagnosis</span>
-                              {junction.aiReports && junction.aiReports.length > 0 && (
-                                <span className="px-1.5 py-0.2 rounded-full bg-purple-200/80 text-[10px] text-purple-900 font-mono font-bold">
-                                  {junction.aiReports.length}
-                                </span>
-                              )}
-                            </button>
+                            {!isAiPaused && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setJunctionForAiModal({ junction, garment });
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 active:scale-95 text-purple-700 border border-purple-200/80 transition-all cursor-pointer shadow-2xs self-start sm:self-auto"
+                                title="View or generate single-garment AI diagnosis"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                                <span>AI Outfit Diagnosis</span>
+                                {junction.aiReports && junction.aiReports.length > 0 && (
+                                  <span className="px-1.5 py-0.2 rounded-full bg-purple-200/80 text-[10px] text-purple-900 font-mono font-bold">
+                                    {junction.aiReports.length}
+                                  </span>
+                                )}
+                              </button>
+                            )}
                           </div>
                         </div>
                       );
@@ -1819,7 +1824,8 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
                   </div>
                 </div>
 
-                {/* Teable-Style Multi-Version AI Wearing Diagnostics Card */}
+                {/* Teable-Style Multi-Version AI Wearing Diagnostics Card - Hidden when AI generation is paused */}
+                {!isAiPaused && (
                 <div className="p-5 sm:p-6 rounded-3xl bg-linear-to-br from-purple-50/80 via-white to-indigo-50/50 border border-purple-200/90 shadow-xs space-y-4">
                   {/* Header with Title and Generation Controls */}
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-purple-100">
@@ -2093,6 +2099,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Comfort & Fit Sensory Log */}
                 <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-4">

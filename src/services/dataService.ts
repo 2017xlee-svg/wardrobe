@@ -170,6 +170,59 @@ export async function processImageFile(file: File): Promise<PictureAttachment> {
 }
 
 // Standardize Clothes with exact DB field names and values
+function extractClimateScenarioField(f: any, scenario: 'withAircond' | 'withoutAircond' | 'sleepFan', feeling: 'hot' | 'leg'): string {
+  if (!f || typeof f !== 'object') return '';
+  const custom = { ...(f.customFields || {}), ...(f.extraAttributes || {}) };
+
+  let canonical = '';
+  if (scenario === 'withAircond') {
+    canonical = feeling === 'hot' ? 'when with aircond: hot feeling' : 'when with aircond: leg feeling';
+  } else if (scenario === 'withoutAircond') {
+    canonical = feeling === 'hot' ? 'when without aircond: hot feeling' : 'when without aircond: leg feeling';
+  } else {
+    canonical = feeling === 'hot' ? 'when sleep under fan: hot feeling' : 'when sleep under fan: leg feeling';
+  }
+
+  // 1. Direct canonical lookup
+  if (typeof f[canonical] === 'string' && f[canonical].trim()) return f[canonical].trim();
+  if (typeof custom[canonical] === 'string' && custom[canonical].trim()) return custom[canonical].trim();
+
+  // 2. Direct camelCase lookup
+  if (scenario === 'withAircond') {
+    const cc = feeling === 'hot' ? (f.whenWithAircondHot || f.whenWithAircondHotFeeling) : (f.whenWithAircondLeg || f.whenWithAircondLegFeeling);
+    if (typeof cc === 'string' && cc.trim()) return cc.trim();
+  } else if (scenario === 'withoutAircond') {
+    const cc = feeling === 'hot' ? (f.whenWithoutAircondHot || f.whenWithoutAircondHotFeeling) : (f.whenWithoutAircondLeg || f.whenWithoutAircondLegFeeling);
+    if (typeof cc === 'string' && cc.trim()) return cc.trim();
+  } else {
+    const cc = feeling === 'hot' ? (f.whenSleepUnderFanHot || f.whenSleepUnderFanHotFeeling) : (f.whenSleepUnderFanLeg || f.whenSleepUnderFanLegFeeling);
+    if (typeof cc === 'string' && cc.trim()) return cc.trim();
+  }
+
+  // 3. Flexible normalized key search across all entries
+  const isMatch = (key: string): boolean => {
+    const k = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+    let sc = false;
+    if (scenario === 'withAircond') {
+      sc = (k.includes('withaircond') || k.includes('withairconditioning')) && !k.includes('without');
+    } else if (scenario === 'withoutAircond') {
+      sc = k.includes('withoutaircond') || k.includes('withoutairconditioning') || k.includes('noaircond');
+    } else if (scenario === 'sleepFan') {
+      sc = k.includes('sleepunderfan') || k.includes('sleepfan') || k.includes('underfan');
+    }
+    const fe = k.includes(feeling + 'feeling') || k.endsWith(feeling);
+    return sc && fe;
+  };
+
+  for (const [k, v] of [...Object.entries(f), ...Object.entries(custom)]) {
+    if (typeof v === 'string' && v.trim() && isMatch(k)) {
+      return v.trim();
+    }
+  }
+
+  return '';
+}
+
 export function normalizeGarment(r: any): ClothesItem {
   const f = r.fields || r;
   const id = r.id || f.id || `garment_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -182,6 +235,47 @@ export function normalizeGarment(r: any): ClothesItem {
     : (typeof f.trackedAppWashes === 'number' ? f.trackedAppWashes : 0);
   // User formula: Total Washed Count = wearing frequency(legacy) + Tracked App Washes
   const totalWashed = legacyWashed + trackedAppWashes;
+
+  // Collect all dynamic custom attributes from customFields and extraAttributes
+  const explicitCustom: Record<string, any> = {
+    ...(typeof f.extraAttributes === 'object' && f.extraAttributes !== null ? f.extraAttributes : {}),
+    ...(typeof f.customFields === 'object' && f.customFields !== null ? f.customFields : {})
+  };
+
+  // Also collect any top-level non-standard dynamic custom attributes present in f (e.g. Color, Brand, Stretch, Fabric Weight)
+  const standardGarmentKeys = new Set([
+    'id', 'fields', 'name', 'Name', 'clothesType', 'Clothes Type', 'material', 'materialProp',
+    'thickClothes', 'thick clothes', 'hotAtNoon', 'Hot at noon', 'diaoDai', 'diao dai',
+    'sideBreastOk', 'side breast ok', 'side breast ok: with 聚拢 bra', 'side breast ok: With 聚拢bra',
+    'sideBreastOkWithGatherBra', 'side breast ok: with side out bra', 'side breast ok: With side out bra',
+    'sideBreastOkWithSideOutBra', 'sitBreastOk', 'sit breast ok', 'sit breast ok: With 聚拢bra',
+    'sit breast ok: with 聚拢bra', 'sitBreastOkWithGatherBra', 'sit breast ok: with side out bra',
+    'sit breast ok: With side out bra', 'sitBreastOkWithSideOutBra',
+    'when with aircond: hot feeling', 'when with aircond: leg feeling',
+    'when without aircond: hot feeling', 'when without aircond: leg feeling',
+    'when sleep under fan: hot feeling', 'when sleep under fan: leg feeling',
+    'whenWithAircondHot', 'whenWithAircondHotFeeling', 'whenWithAircondLeg', 'whenWithAircondLegFeeling',
+    'whenWithoutAircondHot', 'whenWithoutAircondHotFeeling', 'whenWithoutAircondLeg', 'whenWithoutAircondLegFeeling',
+    'whenSleepUnderFanHot', 'whenSleepUnderFanHotFeeling', 'whenSleepUnderFanLeg', 'whenSleepUnderFanLegFeeling',
+    'centerChest', 'center chest', 'beautiful', 'beatifulReason', 'beatiful reason', 'wet', 'wetReason', 'wet reason',
+    'descriptions', 'Descriptions', 'descriptions2', 'Descriptions 2', 'price',
+    'wearingFrequency', 'wearing frequency(how many times legacy washed)', 'trackedAppWashes', 'Tracked App Washes',
+    'Total Washed Count', 'lastWashed', 'Last Washed', 'aiClothesAnalysis', 'AI Clothes Analysis',
+    'pictures', 'Pictures', 'mayThrow', 'may throw', 'lastComment', 'lastCommentOrAction', 'last comment or action',
+    'tags', 'created', 'longDress', 'long dress', 'unwash time rollup',
+    'wash stated (from Full Wearing Report (new design) clothes list (linked))',
+    'fieldExplanations', 'field_explanations', 'customFields', 'extraAttributes', 'aiReports', 'contentBlocks'
+  ]);
+
+  for (const [k, v] of Object.entries(f)) {
+    if (!standardGarmentKeys.has(k) && !k.startsWith('_') && !k.endsWith('_explain') && typeof v !== 'function') {
+      if (v !== undefined && v !== null && String(v).trim() !== '') {
+        if (explicitCustom[k] === undefined || explicitCustom[k] === null || String(explicitCustom[k]).trim() === '') {
+          explicitCustom[k] = v;
+        }
+      }
+    }
+  }
 
   const garment: ClothesItem = {
     ...f,
@@ -198,12 +292,15 @@ export function normalizeGarment(r: any): ClothesItem {
     'sit breast ok': f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
     'sit breast ok: With 聚拢bra': f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
     'sit breast ok: with side out bra': f['sit breast ok: with side out bra'] || f['sit breast ok: With side out bra'] || f.sitBreastOkWithSideOutBra || f['sit breast ok'] || f.sitBreastOk || 'ugly',
-    'when with aircond: hot feeling': f['when with aircond: hot feeling'] || '',
-    'when with aircond: leg feeling': f['when with aircond: leg feeling'] || '',
-    'when without aircond: hot feeling': f['when without aircond: hot feeling'] || '',
-    'when without aircond: leg feeling': f['when without aircond: leg feeling'] || '',
-    'when sleep under fan: hot feeling': f['when sleep under fan: hot feeling'] || '',
-    'when sleep under fan: leg feeling': f['when sleep under fan: leg feeling'] || '',
+    'when with aircond: hot feeling': extractClimateScenarioField(f, 'withAircond', 'hot'),
+    'when with aircond: leg feeling': extractClimateScenarioField(f, 'withAircond', 'leg'),
+    'when without aircond: hot feeling': extractClimateScenarioField(f, 'withoutAircond', 'hot'),
+    'when without aircond: leg feeling': extractClimateScenarioField(f, 'withoutAircond', 'leg'),
+    'when sleep under fan: hot feeling': extractClimateScenarioField(f, 'sleepFan', 'hot'),
+    'when sleep under fan: leg feeling': extractClimateScenarioField(f, 'sleepFan', 'leg'),
+    fieldExplanations: typeof f.fieldExplanations === 'object' && f.fieldExplanations !== null
+      ? { ...f.fieldExplanations }
+      : (typeof f.field_explanations === 'object' && f.field_explanations !== null ? { ...f.field_explanations } : {}),
     'center chest': f['center chest'] || f.centerChest || 'no center chest',
     'beautiful': f['beautiful'] || f.beautiful || 'Beautiful',
     'beatiful reason': f['beatiful reason'] || f.beatifulReason || '',
@@ -227,9 +324,16 @@ export function normalizeGarment(r: any): ClothesItem {
     'wash stated (from Full Wearing Report (new design) clothes list (linked))': Array.isArray(f['wash stated (from Full Wearing Report (new design) clothes list (linked))'])
       ? f['wash stated (from Full Wearing Report (new design) clothes list (linked))']
       : [],
-    customFields: f.customFields || f.extraAttributes || {},
-    extraAttributes: f.extraAttributes || f.customFields || {}
+    customFields: explicitCustom,
+    extraAttributes: explicitCustom
   };
+
+  // Mirror all custom attributes onto top-level garment properties
+  for (const [k, v] of Object.entries(explicitCustom)) {
+    if ((garment as any)[k] === undefined || (garment as any)[k] === null || String((garment as any)[k]).trim() === '') {
+      (garment as any)[k] = v;
+    }
+  }
 
   // Normalize multi-version AI diagnostic reports for garment
   const rawGarmentAiReports = Array.isArray(f.aiReports) ? f.aiReports : [];
@@ -319,6 +423,30 @@ export function normalizeReport(r: any): WearingReport {
   const primaryReport = aiReports.find(r => r.isPrimary) || aiReports[0];
   const activeAnalysis = primaryReport ? primaryReport.content : legacyAnalysis;
 
+  const explicitReportCustom: Record<string, any> = {
+    ...(typeof f.extraAttributes === 'object' && f.extraAttributes !== null ? f.extraAttributes : {}),
+    ...(typeof f.customFields === 'object' && f.customFields !== null ? f.customFields : {})
+  };
+
+  const standardReportKeys = new Set([
+    'id', 'fields', 'name', 'Name', 'wearDate', 'wear date', 'created', 'createdTime', 'createdAt',
+    'categories', 'tags', 'shoulderFeel', 'shoulder feel', 'midBreast', 'mid breast',
+    'nightMidBreast', 'night mid breast', 'sweat', 'sweatProp', 'nightSweat', 'night sweat',
+    'legFeel', 'leg feel', 'nightLegFeel', 'night leg feel', 'reportDetail', 'report detail',
+    'aiWearingAnalysis', 'AI Wearing Analysis', 'pictures', 'Pictures', 'aiReports',
+    'fieldExplanations', 'customFields', 'extraAttributes'
+  ]);
+
+  for (const [k, v] of Object.entries(f)) {
+    if (!standardReportKeys.has(k) && !k.startsWith('_') && !k.endsWith('_explain') && typeof v !== 'function') {
+      if (v !== undefined && v !== null && String(v).trim() !== '') {
+        if (explicitReportCustom[k] === undefined || explicitReportCustom[k] === null || String(explicitReportCustom[k]).trim() === '') {
+          explicitReportCustom[k] = v;
+        }
+      }
+    }
+  }
+
   const report: WearingReport = {
     ...f,
     id,
@@ -339,9 +467,16 @@ export function normalizeReport(r: any): WearingReport {
     'Pictures': Array.isArray(f['Pictures']) ? f['Pictures'] : (Array.isArray(f.pictures) ? f.pictures : []),
     aiReports,
     fieldExplanations: f.fieldExplanations || f.customFields?._fieldExplanations || {},
-    customFields: f.customFields || f.extraAttributes || {},
-    extraAttributes: f.extraAttributes || f.customFields || {}
+    customFields: explicitReportCustom,
+    extraAttributes: explicitReportCustom
   };
+
+  // Mirror all custom attributes onto top-level report properties
+  for (const [k, v] of Object.entries(explicitReportCustom)) {
+    if ((report as any)[k] === undefined || (report as any)[k] === null || String((report as any)[k]).trim() === '') {
+      (report as any)[k] = v;
+    }
+  }
 
   report.name = report['Name'];
   report.wearDate = report['wear date'];
@@ -501,6 +636,31 @@ export class DataService {
         const serverUpdatedAt = serverData.updatedAt ? new Date(serverData.updatedAt).getTime() : 0;
 
         if (loadedFromLocal) {
+          // Reconcile non-empty fields from serverData into this.clothes (e.g. climate fields, fieldExplanations)
+          if (Array.isArray(serverData.clothes) && serverData.clothes.length > 0) {
+            const serverClothesMap = new Map<string, any>(serverData.clothes.map((sc: any) => [sc.id, sc]));
+            this.clothes.forEach(localC => {
+              const sC = serverClothesMap.get(localC.id);
+              if (sC) {
+                for (const [k, v] of Object.entries(sC)) {
+                  if (v !== undefined && v !== null && String(v).trim() !== '') {
+                    const localVal = (localC as any)[k];
+                    if (localVal === undefined || localVal === null || String(localVal).trim() === '') {
+                      (localC as any)[k] = v;
+                    }
+                  }
+                }
+                if (sC.fieldExplanations && typeof sC.fieldExplanations === 'object') {
+                  localC.fieldExplanations = {
+                    ...sC.fieldExplanations,
+                    ...(localC.fieldExplanations || {})
+                  };
+                }
+              }
+            });
+            this.persistLocalOnly();
+          }
+
           // If server was freshly rebuilt or client local storage has more/newer edits:
           if (!serverData.clothes || serverData.clothes.length === 0 || this.clothes.length > serverData.clothes.length || localUpdatedAt >= serverUpdatedAt) {
             console.log('[DataService] Preserving latest user local data to container disk...');
@@ -1383,22 +1543,43 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             if (newKey) mergedCustom[newKey] = val;
           } else {
             // Keep
-            mergedCustom[key] = val;
+            if (val !== undefined && val !== null && String(val).trim() !== '') {
+              if (mergedCustom[key] === undefined || mergedCustom[key] === null || String(mergedCustom[key]).trim() === '') {
+                mergedCustom[key] = val;
+              }
+            }
           }
         }
         c.customFields = mergedCustom;
         c.extraAttributes = mergedCustom;
 
-        // Preserve any custom non-standard top-level properties from existing item
+        // Also ensure every dynamic custom attribute in mergedCustom is accessible as a top-level property on c
+        for (const [mk, mv] of Object.entries(mergedCustom)) {
+          if ((c as any)[mk] === undefined || (c as any)[mk] === null || String((c as any)[mk]).trim() === '') {
+            (c as any)[mk] = mv;
+          }
+        }
+
+        // Preserve and merge fieldExplanations (e.g. climate rationale, fit notes)
+        if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+          c.fieldExplanations = {
+            ...existing.fieldExplanations,
+            ...(c.fieldExplanations || {})
+          };
+        }
+
+        // Safe Field Preservation: NEVER overwrite non-empty existing data with empty strings/blank data!
         for (const [k, v] of Object.entries(existing)) {
-          if (!(k in c) && v !== undefined && v !== null && v !== '') {
+          if (v !== undefined && v !== null && String(v).trim() !== '') {
             const action = fieldActions[k] || 'keep';
             if (action === 'delete') continue;
-            if (action === 'rename') {
-              const newK = (fieldRenames[k] || k).trim();
-              if (newK) (c as any)[newK] = v;
-            } else {
-              (c as any)[k] = v;
+            const targetKey = action === 'rename' ? (fieldRenames[k] || k).trim() : k;
+            if (!targetKey) continue;
+
+            const incomingVal = (c as any)[targetKey];
+            // If incoming has no value or an empty string, preserve existing value!
+            if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === '') {
+              (c as any)[targetKey] = v;
             }
           }
         }
@@ -1449,21 +1630,42 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             const newKey = (fieldRenames[key] || key).trim();
             if (newKey) mergedCustom[newKey] = val;
           } else {
-            mergedCustom[key] = val;
+            if (val !== undefined && val !== null && String(val).trim() !== '') {
+              if (mergedCustom[key] === undefined || mergedCustom[key] === null || String(mergedCustom[key]).trim() === '') {
+                mergedCustom[key] = val;
+              }
+            }
           }
         }
         r.customFields = mergedCustom;
         r.extraAttributes = mergedCustom;
 
+        // Also ensure every dynamic custom attribute in mergedCustom is accessible as a top-level property on r
+        for (const [mk, mv] of Object.entries(mergedCustom)) {
+          if ((r as any)[mk] === undefined || (r as any)[mk] === null || String((r as any)[mk]).trim() === '') {
+            (r as any)[mk] = mv;
+          }
+        }
+
+        // Preserve and merge fieldExplanations for reports
+        if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+          r.fieldExplanations = {
+            ...existing.fieldExplanations,
+            ...(r.fieldExplanations || {})
+          };
+        }
+
+        // Safe Field Preservation for Reports: NEVER overwrite non-empty existing data with empty strings!
         for (const [k, v] of Object.entries(existing)) {
-          if (!(k in r) && v !== undefined && v !== null && v !== '') {
+          if (v !== undefined && v !== null && String(v).trim() !== '') {
             const action = fieldActions[k] || 'keep';
             if (action === 'delete') continue;
-            if (action === 'rename') {
-              const newK = (fieldRenames[k] || k).trim();
-              if (newK) (r as any)[newK] = v;
-            } else {
-              (r as any)[k] = v;
+            const targetKey = action === 'rename' ? (fieldRenames[k] || k).trim() : k;
+            if (!targetKey) continue;
+
+            const incomingVal = (r as any)[targetKey];
+            if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === '') {
+              (r as any)[targetKey] = v;
             }
           }
         }
@@ -2203,16 +2405,127 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       throw new Error('Invalid backup file format: missing clothes or reports arrays.');
     }
 
-    // Safe Merge strategy: update with backup items without dropping any newer un-backed-up records
-    const clothesMap = new Map<string, ClothesItem>();
-    this.clothes.forEach(c => clothesMap.set(c.id, c));
-    rawClothes.map(normalizeGarment).forEach(c => clothesMap.set(c.id, c));
-    this.clothes = Array.from(clothesMap.values());
+    // Safe Merge strategy: update with backup items without dropping any newer un-backed-up records,
+    // and protect existing custom attributes and non-empty values from ever being overwritten with empty/blank strings!
+    const currentClothesMap = new Map<string, ClothesItem>(this.clothes.map(c => [c.id, c]));
+    const mergedClothes: ClothesItem[] = [];
+    const restoredClothesIds = new Set<string>();
 
-    const reportsMap = new Map<string, WearingReport>();
-    this.reports.forEach(r => reportsMap.set(r.id, r));
-    rawReports.map(normalizeReport).forEach(r => reportsMap.set(r.id, r));
-    this.reports = sortReportsDescending(Array.from(reportsMap.values()));
+    for (const rawC of rawClothes) {
+      const c = normalizeGarment(rawC);
+      restoredClothesIds.add(c.id);
+      const existing = currentClothesMap.get(c.id);
+
+      if (existing) {
+        // Merge custom attributes and extraAttributes
+        const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
+        const incomingCustom = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
+        const mergedCustom = { ...existingCustom, ...incomingCustom };
+
+        for (const [key, val] of Object.entries(existingCustom)) {
+          if (val !== undefined && val !== null && String(val).trim() !== '') {
+            if (mergedCustom[key] === undefined || mergedCustom[key] === null || String(mergedCustom[key]).trim() === '') {
+              mergedCustom[key] = val;
+            }
+          }
+        }
+        c.customFields = mergedCustom;
+        c.extraAttributes = mergedCustom;
+
+        // Mirror all merged custom attributes to top-level properties
+        for (const [mk, mv] of Object.entries(mergedCustom)) {
+          if ((c as any)[mk] === undefined || (c as any)[mk] === null || String((c as any)[mk]).trim() === '') {
+            (c as any)[mk] = mv;
+          }
+        }
+
+        // Preserve field explanations (fit notes, climate rationale)
+        if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+          c.fieldExplanations = {
+            ...existing.fieldExplanations,
+            ...(c.fieldExplanations || {})
+          };
+        }
+
+        // Safe Field Preservation: NEVER overwrite non-empty existing data with empty strings/blank data!
+        for (const [k, v] of Object.entries(existing)) {
+          if (v !== undefined && v !== null && String(v).trim() !== '') {
+            const incomingVal = (c as any)[k];
+            if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === '') {
+              (c as any)[k] = v;
+            }
+          }
+        }
+      }
+
+      mergedClothes.push(c);
+    }
+
+    // Preserve any newer clothes in the current app not present in the backup
+    for (const existing of this.clothes) {
+      if (!restoredClothesIds.has(existing.id)) {
+        mergedClothes.push(existing);
+      }
+    }
+    this.clothes = mergedClothes;
+
+    // Safe Reports Merge
+    const currentReportsMap = new Map<string, WearingReport>(this.reports.map(r => [r.id, r]));
+    const mergedReports: WearingReport[] = [];
+    const restoredReportIds = new Set<string>();
+
+    for (const rawR of rawReports) {
+      const r = normalizeReport(rawR);
+      restoredReportIds.add(r.id);
+      const existing = currentReportsMap.get(r.id);
+
+      if (existing) {
+        const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
+        const incomingCustom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
+        const mergedCustom = { ...existingCustom, ...incomingCustom };
+
+        for (const [key, val] of Object.entries(existingCustom)) {
+          if (val !== undefined && val !== null && String(val).trim() !== '') {
+            if (mergedCustom[key] === undefined || mergedCustom[key] === null || String(mergedCustom[key]).trim() === '') {
+              mergedCustom[key] = val;
+            }
+          }
+        }
+        r.customFields = mergedCustom;
+        r.extraAttributes = mergedCustom;
+
+        for (const [mk, mv] of Object.entries(mergedCustom)) {
+          if ((r as any)[mk] === undefined || (r as any)[mk] === null || String((r as any)[mk]).trim() === '') {
+            (r as any)[mk] = mv;
+          }
+        }
+
+        if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
+          r.fieldExplanations = {
+            ...existing.fieldExplanations,
+            ...(r.fieldExplanations || {})
+          };
+        }
+
+        for (const [k, v] of Object.entries(existing)) {
+          if (v !== undefined && v !== null && String(v).trim() !== '') {
+            const incomingVal = (r as any)[k];
+            if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === '') {
+              (r as any)[k] = v;
+            }
+          }
+        }
+      }
+
+      mergedReports.push(r);
+    }
+
+    for (const existing of this.reports) {
+      if (!restoredReportIds.has(existing.id)) {
+        mergedReports.push(existing);
+      }
+    }
+    this.reports = sortReportsDescending(mergedReports);
 
     const junctionsMap = new Map<string, ReportClothesJunction>();
     this.junctions.forEach(j => junctionsMap.set(j.id, j));

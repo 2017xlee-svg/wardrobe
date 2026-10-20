@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan to automatically deduplicate presets and filter tier options during backup restore and expand the drill-down list view column to display complete clothes names with full horizontal scroll support.",
-  "updatedAt": "2026-10-17T01:06:48.542169609Z",
+  "summary": "Implementation plan to resolve missing climate scenario restore (when with aircond, when without aircond, when sleep under fan hot/leg feeling): add comprehensive fuzzy and alias matching, prevent empty string overwriting during restore merges on both server and client, restore and preserve fieldExplanations, and sync existing seed values into local database.",
+  "updatedAt": "2026-10-19T07:48:37.433289952Z",
   "requestFeedback": true,
   "userFacing": true
 }

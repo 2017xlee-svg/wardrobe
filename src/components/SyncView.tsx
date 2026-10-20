@@ -40,7 +40,9 @@ import {
   Info,
   CheckCheck,
   Sliders,
-  Type
+  Type,
+  FileArchive,
+  Download
 } from 'lucide-react';
 import {
   FONT_SCALE_OPTIONS,
@@ -49,12 +51,15 @@ import {
   FontScale
 } from './FontSizeSwitcher';
 import { ConfirmModal } from './ConfirmModal';
+import { notebookLmExportService } from '../services/notebookLmExportService';
+import { NotebookLmPreviewModal } from './NotebookLmPreviewModal';
 import { dataService, SyncStatus, BackupInspectionResult, BackupFieldDiff, RestoreFieldResolutions } from '../services/dataService';
 import { syncOutbox } from '../services/syncOutbox';
 import { mediaOutbox } from '../services/mediaOutbox';
 import {
   getCustomApiKey, setCustomApiKey, clearCustomApiKey, testGeminiApiKey,
-  getSelectedModel, setSelectedModel, GeminiModelId
+  getSelectedModel, setSelectedModel, GeminiModelId,
+  useAiGenerationPaused, setAiGenerationPaused
 } from '../services/aiSettings';
 
 interface SyncViewProps {
@@ -123,6 +128,7 @@ export const SyncView: React.FC<SyncViewProps> = ({
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [keyTestResult, setKeyTestResult] = useState<{ ok: boolean; message: string; model?: string; isPrepaymentDepleted?: boolean } | null>(null);
   const [activeKeySaved, setActiveKeySaved] = useState(false);
+  const isAiPaused = useAiGenerationPaused();
 
   // Database Reset & Empty Modals State
   const [showEmptyConfirmModal, setShowEmptyConfirmModal] = useState(false);
@@ -145,6 +151,35 @@ export const SyncView: React.FC<SyncViewProps> = ({
   const handleScaleSelect = (scale: FontScale) => {
     setFontScale(scale);
     setGlobalFontScale(scale);
+  };
+
+  const [isNotebookLmModalOpen, setIsNotebookLmModalOpen] = useState(false);
+  const [notebookLmTopicId, setNotebookLmTopicId] = useState('catalog');
+  const [isDownloadingNotebookLmZip, setIsDownloadingNotebookLmZip] = useState(false);
+
+  const handleDownloadNotebookLmZip = async () => {
+    try {
+      setIsDownloadingNotebookLmZip(true);
+      const zipBlob = await notebookLmExportService.generateNotebookLmKnowledgeZip();
+      notebookLmExportService.downloadFile('NotebookLM_Wardrobe_Knowledge_Pack.zip', zipBlob, 'application/zip');
+      setBannerNotice({
+        type: 'success',
+        message: 'NotebookLM Wardrobe Knowledge Pack (.zip) downloaded! Extract and upload into notebooklm.google.com as sources.'
+      });
+    } catch (err: any) {
+      console.error('Failed to create NotebookLM zip:', err);
+      setBannerNotice({
+        type: 'error',
+        message: 'Failed to generate NotebookLM ZIP archive.'
+      });
+    } finally {
+      setIsDownloadingNotebookLmZip(false);
+    }
+  };
+
+  const handleOpenNotebookLmPreview = (topicId: string) => {
+    setNotebookLmTopicId(topicId);
+    setIsNotebookLmModalOpen(true);
   };
 
   const handleSelectModel = (m: GeminiModelId) => {
@@ -1116,6 +1151,78 @@ export const SyncView: React.FC<SyncViewProps> = ({
         </div>
       </div>
 
+      {/* GLOBAL AI GENERATION MASTER CONTROL CARD (PAUSE / RESUME) */}
+      <div className={`rounded-3xl p-6 sm:p-7 border-2 transition-all space-y-4 shadow-xs ${
+        isAiPaused
+          ? 'bg-linear-to-br from-amber-50/70 via-white to-slate-50 border-amber-300/90'
+          : 'bg-linear-to-br from-purple-50/70 via-white to-indigo-50/50 border-purple-200'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-xs shrink-0 ${
+              isAiPaused ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-purple-600 text-white shadow-purple-200'
+            }`}>
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`text-[10px] font-bold uppercase tracking-wider font-mono ${
+                  isAiPaused ? 'text-amber-700' : 'text-purple-700'
+                }`}>
+                  Global AI Generation Control
+                </span>
+                <span className="text-slate-300">·</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono border ${
+                  isAiPaused
+                    ? 'bg-amber-100 text-amber-800 border-amber-300'
+                    : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                }`}>
+                  {isAiPaused ? '⏸️ AI Generation Paused (Zero Token Mode)' : '▶️ AI Generation Active'}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                AI 智能生成总控制开关 (AI Advisor &amp; Generation Master Switch)
+              </h3>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const nextState = !isAiPaused;
+              setAiGenerationPaused(nextState);
+            }}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0 ${
+              isAiPaused
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200'
+                : 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200'
+            }`}
+          >
+            <span>{isAiPaused ? '▶️ 一键恢复 AI 智能生成 (Resume AI)' : '⏸️ 暂停全部 AI 生成 (Pause AI)'}</span>
+          </button>
+        </div>
+
+        <div className={`p-4 rounded-2xl text-xs space-y-2 border ${
+          isAiPaused ? 'bg-amber-50/80 border-amber-200/90 text-amber-950' : 'bg-purple-50/60 border-purple-100 text-purple-950'
+        }`}>
+          <div className="flex items-start gap-2.5">
+            <span className="text-sm shrink-0 mt-0.5">{isAiPaused ? '🛡️' : '✨'}</span>
+            <div className="space-y-1 leading-relaxed">
+              <p className="font-semibold">
+                {isAiPaused
+                  ? '当前已暂停所有 AI 顾问、单品人体工学诊断、穿戴日记评估与字典代码生成调用。'
+                  : 'AI 智能生成已处于启用状态，支持在单品、日记与衣橱顾问中运行 Gemini 进行穿搭与体感推导。'}
+              </p>
+              <p className="text-[11px] opacity-85">
+                {isAiPaused
+                  ? '零 Token 消耗、零多余等待，重新构建与载入应用更加快速。所有算法与提示词完整保留未被删除，您可随时再次开启。推荐使用 Google NotebookLM 承担深度分析与播客生成，获得无偏见的纯客观洞察！'
+                  : '可随时点击上方按钮暂停，节约个人 API Quota 额度并将原始客观数据导出至 Google NotebookLM 分析。'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* PERSONAL GOOGLE AI STUDIO / GEMINI API KEY CARD */}
       <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-purple-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
@@ -1401,6 +1508,157 @@ export const SyncView: React.FC<SyncViewProps> = ({
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* GOOGLE NOTEBOOKLM COLLABORATION & AI KNOWLEDGE SOURCES CARD */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-indigo-200/90 shadow-sm space-y-5 relative overflow-hidden">
+        {/* Decorative corner glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-bl from-indigo-100/60 via-purple-50/40 to-transparent pointer-events-none rounded-bl-full" />
+
+        {/* Card Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-linear-to-tr from-indigo-600 via-indigo-700 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 font-mono">
+                  AI Collaboration &amp; External RAG
+                </span>
+                <span className="text-slate-300">·</span>
+                <span className="text-[10px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">
+                  Google NotebookLM Ready
+                </span>
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  ✓ 100% 纯客观事实 · 已排除所有 AI 预分析报告
+                </span>
+              </div>
+              <h3 className="text-lg font-bold text-slate-950 tracking-tight">
+                NotebookLM Knowledge Base Exporter
+              </h3>
+            </div>
+          </div>
+
+          <a
+            href="https://notebooklm.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-indigo-600 hover:text-indigo-800 font-semibold text-xs border border-slate-200 transition-colors self-start sm:self-auto cursor-pointer"
+          >
+            <span>notebooklm.google.com</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        {/* Explanation & Workflow Steps */}
+        <div className="space-y-3 relative z-10 text-xs text-slate-600">
+          <p className="leading-relaxed">
+            协同 <strong>Google NotebookLM</strong> 进行深度智能分析。导出结构化 Markdown 档案，包含您全部衣物客观参数、穿戴体感日记、洗护状态与双语名词定义。<strong>所有 AI 预生成报告已全部被自动排除</strong>，让 NotebookLM 基于 100% 真实纯粹的人类体感数据生成 <strong>Audio Overviews</strong> 播客音频、推导穿搭舒适度并回答问题，彻底避免已有 AI 的二次偏见。
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-[10px] font-bold text-indigo-600 font-mono uppercase tracking-wide">Step 1</span>
+              <h4 className="font-bold text-slate-800 text-xs">Download Knowledge Pack</h4>
+              <p className="text-[11px] text-slate-500">Download the bundled ZIP or individual topical Markdown (.md) sources below.</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-[10px] font-bold text-indigo-600 font-mono uppercase tracking-wide">Step 2</span>
+              <h4 className="font-bold text-slate-800 text-xs">Upload to NotebookLM</h4>
+              <p className="text-[11px] text-slate-500">In notebooklm.google.com, click "Add Source" and upload the markdown files.</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <span className="text-[10px] font-bold text-indigo-600 font-mono uppercase tracking-wide">Step 3</span>
+              <h4 className="font-bold text-slate-800 text-xs">Analyze &amp; Listen</h4>
+              <p className="text-[11px] text-slate-500">Generate an Audio Overview podcast, ask fit comparisons, or query wash schedules.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Primary Action Strip: 1-Click ZIP Download */}
+        <div className="pt-2 relative z-10">
+          <div className="p-4 sm:p-5 rounded-2xl bg-linear-to-r from-indigo-50 via-purple-50/70 to-slate-50 border border-indigo-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <FileArchive className="w-4 h-4 text-indigo-600" />
+                <h4 className="font-bold text-slate-900 text-sm">
+                  Complete NotebookLM Wardrobe Knowledge Pack (.zip)
+                </h4>
+              </div>
+              <p className="text-xs text-slate-600">
+                Includes all 4 topical Markdown files + Quickstart Guide with ready-to-use analysis prompts.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleDownloadNotebookLmZip}
+              disabled={isDownloadingNotebookLmZip}
+              className="py-2.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-indigo-200 flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 active:scale-95 cursor-pointer"
+            >
+              <Download className="w-4 h-4" />
+              <span>{isDownloadingNotebookLmZip ? 'Compiling Pack...' : 'Download Knowledge Pack (ZIP)'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Topical Knowledge Sources Grid */}
+        <div className="space-y-2 pt-2 relative z-10">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">
+              Individual Topical Source Files
+            </h4>
+            <span className="text-[11px] text-slate-400">4 structured files ready for direct upload</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {notebookLmExportService.getAllTopicDocs().map((doc) => (
+              <div
+                key={doc.id}
+                className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-xs transition-all flex flex-col justify-between space-y-3"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <span className="text-[10px] font-mono font-bold text-indigo-600 uppercase tracking-wide px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">
+                      {doc.filename}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">
+                      {doc.wordCount.toLocaleString()} words
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-slate-900 text-sm">
+                    {doc.title}
+                  </h5>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    {doc.description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => notebookLmExportService.downloadFile(doc.filename, doc.content)}
+                    className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-98"
+                  >
+                    <Download className="w-3.5 h-3.5 text-indigo-300" />
+                    <span>Download .md</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleOpenNotebookLmPreview(doc.id)}
+                    className="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-98"
+                    title="Inspect markdown content and copy text"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Preview &amp; Copy</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -2326,6 +2584,13 @@ export const SyncView: React.FC<SyncViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* NotebookLM Knowledge Dossier Preview Modal */}
+      <NotebookLmPreviewModal
+        isOpen={isNotebookLmModalOpen}
+        onClose={() => setIsNotebookLmModalOpen(false)}
+        initialTopicId={notebookLmTopicId}
+      />
     </div>
   );
 };

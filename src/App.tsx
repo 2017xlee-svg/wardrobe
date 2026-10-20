@@ -17,6 +17,7 @@ import { AndroidInstallModal } from './components/AndroidInstallModal';
 import { FontSizeSwitcher } from './components/FontSizeSwitcher';
 import { mediaOutbox } from './services/mediaOutbox';
 import { syncOutbox } from './services/syncOutbox';
+import { useAiGenerationPaused } from './services/aiSettings';
 import {
   Shirt, Droplets, BookOpen, Sparkles, Plus, RotateCcw,
   Cloud, CloudOff, RefreshCw, CheckCircle2, AlertCircle, Loader2, X, FolderTree,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 
 export function App() {
+  const isAiPaused = useAiGenerationPaused();
   const [activeTab, setActiveTab] = useState<'closet' | 'laundry' | 'journal' | 'drilldown' | 'advisor' | 'sync'>('closet');
   const [clothes, setClothes] = useState<ClothesItem[]>(dataService.getClothes());
   const [reports, setReports] = useState<WearingReport[]>(dataService.getReports());
@@ -326,6 +328,13 @@ export function App() {
               >
                 <Sparkles className={`w-3.5 h-3.5 ${activeTab === 'advisor' ? 'text-white' : 'text-amber-500'}`} />
                 <span>AI Styling</span>
+                {isAiPaused && (
+                  <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider ${
+                    activeTab === 'advisor' ? 'bg-amber-800 text-amber-100' : 'bg-amber-100 text-amber-900 border border-amber-300'
+                  }`}>
+                    Paused
+                  </span>
+                )}
               </button>
 
               <button
@@ -564,7 +573,9 @@ export function App() {
           }`}
         >
           <Sparkles className="w-5 h-5 shrink-0" />
-          <span className="text-[10px] leading-tight truncate mt-0.5">AI Advisor</span>
+          <span className="text-[10px] leading-tight truncate mt-0.5">
+            {isAiPaused ? 'AI (Paused)' : 'AI Advisor'}
+          </span>
         </button>
 
         <button

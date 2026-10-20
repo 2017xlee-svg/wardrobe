@@ -4,8 +4,11 @@
  * and syncing with browser local storage, so the user NEVER has to key it in every time!
  */
 
+import { useEffect, useState } from 'react';
+
 const KEY_STORAGE = 'gemini_api_key_custom';
 const MODEL_STORAGE = 'gemini_model_selected';
+const AI_PAUSED_STORAGE = 'wardrobe_ai_generation_paused';
 
 export type GeminiModelId = 'gemini-3.8-flash' | 'gemini-3.1-flash-lite';
 
@@ -14,6 +17,7 @@ export interface AIKeyStatus {
   source: 'saved_secret' | 'env' | 'none';
   maskedKey: string;
   model: GeminiModelId;
+  isAiPaused?: boolean;
 }
 
 let cachedStatus: AIKeyStatus = {
@@ -104,6 +108,89 @@ export function getCustomApiKey(): string | undefined {
   if (typeof localStorage === 'undefined') return undefined;
   const key = localStorage.getItem(KEY_STORAGE)?.trim();
   return key || undefined;
+}
+
+// -------------------------------------------------------------
+// Global AI Generation Master Pause State
+// Stops in-app Gemini generation, saves tokens & execution time.
+// Defaults to true (paused) per user instruction.
+// -------------------------------------------------------------
+
+let cachedAiPaused: boolean = true;
+if (typeof localStorage !== 'undefined') {
+  const saved = localStorage.getItem(AI_PAUSED_STORAGE);
+  if (saved !== null) {
+    cachedAiPaused = saved === 'true';
+  } else {
+    // Default to true (paused)
+    localStorage.setItem(AI_PAUSED_STORAGE, 'true');
+    cachedAiPaused = true;
+  }
+}
+
+const pauseListeners = new Set<(paused: boolean) => void>();
+
+export function isAiGenerationPaused(): boolean {
+  if (typeof localStorage !== 'undefined') {
+    const saved = localStorage.getItem(AI_PAUSED_STORAGE);
+    if (saved !== null) {
+      return saved === 'true';
+    }
+  }
+  return cachedAiPaused;
+}
+
+export function setAiGenerationPaused(paused: boolean): void {
+  cachedAiPaused = paused;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(AI_PAUSED_STORAGE, paused ? 'true' : 'false');
+  }
+  pauseListeners.forEach(fn => {
+    try { fn(paused); } catch {}
+  });
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('wardrobe_ai_pause_changed', { detail: { paused } }));
+  }
+  // Sync with server
+  fetch('/api/ai/set-paused', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paused })
+  }).catch(() => {});
+}
+
+export function subscribeAiPaused(listener: (paused: boolean) => void): () => void {
+  pauseListeners.add(listener);
+  listener(isAiGenerationPaused());
+  return () => {
+    pauseListeners.delete(listener);
+  };
+}
+
+export function useAiGenerationPaused(): boolean {
+  const [paused, setPaused] = useState<boolean>(isAiGenerationPaused());
+
+  useEffect(() => {
+    const unsubscribe = subscribeAiPaused(setPaused);
+    const handleEvent = (e: any) => {
+      if (e?.detail?.paused !== undefined) {
+        setPaused(e.detail.paused);
+      } else {
+        setPaused(isAiGenerationPaused());
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('wardrobe_ai_pause_changed', handleEvent);
+    }
+    return () => {
+      unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('wardrobe_ai_pause_changed', handleEvent);
+      }
+    };
+  }, []);
+
+  return paused;
 }
 
 /**
