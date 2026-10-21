@@ -405,35 +405,71 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
 
   // Custom Attributes & Specifications Handlers for this Wearing Report
   const handleAddReportCustomField = async (key: string, val: any) => {
-    await dataService.setReportCustomField(report.id, key, val);
-    const updated = { ...(report.customFields || report.extraAttributes || {}), [key]: val };
+    const prevDeleted = Array.isArray(report._deletedCustomFields) ? report._deletedCustomFields : [];
+    const newDeleted = prevDeleted.filter(k => k !== key);
+    report._deletedCustomFields = newDeleted;
+
+    const updated = { ...(report.customFields || report.extraAttributes || {}) };
+    delete (updated as any)._deletedCustomFields;
+    if (newDeleted.length > 0) updated._deletedCustomFields = newDeleted;
+    updated[key] = val;
+
     report.customFields = updated;
     report.extraAttributes = updated;
     (report as any)[key] = val;
     setCustomFieldsVersion(v => v + 1);
-    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, [key]: val });
+
+    await dataService.setReportCustomField(report.id, key, val);
+    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
   };
 
   const handleUpdateReportCustomField = async (key: string, val: any) => {
-    await dataService.setReportCustomField(report.id, key, val);
-    const updated = { ...(report.customFields || report.extraAttributes || {}), [key]: val };
+    const prevDeleted = Array.isArray(report._deletedCustomFields) ? report._deletedCustomFields : [];
+    const newDeleted = prevDeleted.filter(k => k !== key);
+    report._deletedCustomFields = newDeleted;
+
+    const updated = { ...(report.customFields || report.extraAttributes || {}) };
+    delete (updated as any)._deletedCustomFields;
+    if (newDeleted.length > 0) updated._deletedCustomFields = newDeleted;
+    updated[key] = val;
+
     report.customFields = updated;
     report.extraAttributes = updated;
     (report as any)[key] = val;
     setCustomFieldsVersion(v => v + 1);
-    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, [key]: val });
+
+    await dataService.setReportCustomField(report.id, key, val);
+    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
   };
 
   const handleDeleteReportCustomField = async (key: string) => {
-    await dataService.removeReportCustomField(report.id, key);
+    // 1. Maintain cumulative _deletedCustomFields
+    const prevDeleted = Array.isArray(report._deletedCustomFields) ? report._deletedCustomFields : [];
+    const newDeleted = Array.from(new Set([...prevDeleted, key]));
+    report._deletedCustomFields = newDeleted;
+
+    // 2. Remove key from customFields and extraAttributes
     const updated = { ...(report.customFields || report.extraAttributes || {}) };
     delete updated[key];
     delete (updated as any)[key];
+    updated._deletedCustomFields = newDeleted;
+
+    // 3. Remove key from top-level report properties
     delete (report as any)[key];
     report.customFields = updated;
     report.extraAttributes = updated;
     setCustomFieldsVersion(v => v + 1);
-    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated });
+
+    // 4. Call dataService to remove the custom field and persist
+    await dataService.removeReportCustomField(report.id, key);
+
+    // 5. Update parent state
+    onUpdateReport?.({
+      ...report,
+      customFields: updated,
+      extraAttributes: updated,
+      _deletedCustomFields: newDeleted
+    });
   };
 
   // Calculate session duration stats

@@ -614,35 +614,70 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
 
   // Custom Dynamic Attributes Handlers for this Garment
   const handleAddGarmentCustomField = async (key: string, val: any) => {
-    await dataService.setGarmentCustomField(garment.id, key, val);
-    const updated = { ...(garment.customFields || garment.extraAttributes || {}), [key]: val };
+    const prevDeleted = Array.isArray(garment._deletedCustomFields) ? garment._deletedCustomFields : [];
+    const newDeleted = prevDeleted.filter(k => k !== key);
+    garment._deletedCustomFields = newDeleted;
+
+    const updated = { ...(garment.customFields || garment.extraAttributes || {}) };
+    delete (updated as any)._deletedCustomFields;
+    if (newDeleted.length > 0) updated._deletedCustomFields = newDeleted;
+    updated[key] = val;
+
     garment.customFields = updated;
     garment.extraAttributes = updated;
     (garment as any)[key] = val;
     setDataVersion(v => v + 1);
-    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, [key]: val });
+
+    await dataService.setGarmentCustomField(garment.id, key, val);
+    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
   };
 
   const handleUpdateGarmentCustomField = async (key: string, val: any) => {
-    await dataService.setGarmentCustomField(garment.id, key, val);
-    const updated = { ...(garment.customFields || garment.extraAttributes || {}), [key]: val };
+    const prevDeleted = Array.isArray(garment._deletedCustomFields) ? garment._deletedCustomFields : [];
+    const newDeleted = prevDeleted.filter(k => k !== key);
+    garment._deletedCustomFields = newDeleted;
+
+    const updated = { ...(garment.customFields || garment.extraAttributes || {}) };
+    delete (updated as any)._deletedCustomFields;
+    if (newDeleted.length > 0) updated._deletedCustomFields = newDeleted;
+    updated[key] = val;
+
     garment.customFields = updated;
     garment.extraAttributes = updated;
     (garment as any)[key] = val;
     setDataVersion(v => v + 1);
-    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, [key]: val });
+
+    await dataService.setGarmentCustomField(garment.id, key, val);
+    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
   };
 
   const handleDeleteGarmentCustomField = async (key: string) => {
-    await dataService.removeGarmentCustomField(garment.id, key);
+    // 1. Maintain cumulative _deletedCustomFields
+    const prevDeleted = Array.isArray(garment._deletedCustomFields) ? garment._deletedCustomFields : [];
+    const newDeleted = Array.from(new Set([...prevDeleted, key]));
+    garment._deletedCustomFields = newDeleted;
+
+    // 2. Remove key from customFields and extraAttributes
     const updated = { ...(garment.customFields || garment.extraAttributes || {}) };
     delete updated[key];
     delete (updated as any)[key];
+    updated._deletedCustomFields = newDeleted;
+
+    // 3. Remove key from top-level garment properties
     delete (garment as any)[key];
     garment.customFields = updated;
     garment.extraAttributes = updated;
     setDataVersion(v => v + 1);
-    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated });
+
+    // 4. Call dataService to remove the custom field and persist to disk/storage
+    await dataService.removeGarmentCustomField(garment.id, key);
+
+    // 5. Update local parent state with sanitized updates including _deletedCustomFields
+    onUpdateGarment(garment.id, {
+      customFields: updated,
+      extraAttributes: updated,
+      _deletedCustomFields: newDeleted
+    });
   };
 
   // Picture file upload handler (Uploads to Firebase Cloud Storage with local fallback)

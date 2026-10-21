@@ -91,6 +91,7 @@ export interface Clothes {
   // Dynamic custom attributes/fields (extensible over time by the user)
   customFields?: Record<string, any>;
   extraAttributes?: Record<string, any>;
+  _deletedCustomFields?: string[];
 
   // Optional normalized accessors for UI compatibility
   name?: string;
@@ -147,6 +148,7 @@ export interface WearingReport {
   // Dynamic custom session observation fields (extensible over time, e.g. Weather, Room Temp)
   customFields?: Record<string, any>;
   extraAttributes?: Record<string, any>;
+  _deletedCustomFields?: string[];
 
   // Optional normalized accessors
   name?: string;

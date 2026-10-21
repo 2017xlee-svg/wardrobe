@@ -1042,19 +1042,46 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         for (const c of mergedClothes) {
           const existing = existingClothesMap.get(c.id);
           if (existing) {
+            const deletedSet = new Set<string>([
+              ...(Array.isArray(existing._deletedCustomFields) ? existing._deletedCustomFields : []),
+              ...(Array.isArray(existing.customFields?._deletedCustomFields) ? existing.customFields._deletedCustomFields : []),
+              ...(Array.isArray(existing.extraAttributes?._deletedCustomFields) ? existing.extraAttributes._deletedCustomFields : []),
+              ...(Array.isArray(c._deletedCustomFields) ? c._deletedCustomFields : []),
+              ...(Array.isArray(c.customFields?._deletedCustomFields) ? c.customFields._deletedCustomFields : [])
+            ]);
+
             const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
             const incomingCustom = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
+
+            deletedSet.forEach(k => {
+              delete existingCustom[k];
+              delete incomingCustom[k];
+              delete (c as any)[k];
+            });
+
             const mergedCustom = { ...existingCustom, ...incomingCustom };
             for (const [k, v] of Object.entries(existingCustom)) {
+              if (deletedSet.has(k)) continue;
               if (v !== undefined && v !== null && String(v).trim() !== "") {
                 if (mergedCustom[k] === undefined || mergedCustom[k] === null || String(mergedCustom[k]).trim() === "") {
                   mergedCustom[k] = v;
                 }
               }
             }
+
+            deletedSet.forEach(k => {
+              delete mergedCustom[k];
+              delete (c as any)[k];
+            });
+            if (deletedSet.size > 0) {
+              mergedCustom._deletedCustomFields = Array.from(deletedSet);
+              c._deletedCustomFields = Array.from(deletedSet);
+            }
+
             c.customFields = mergedCustom;
             c.extraAttributes = mergedCustom;
             for (const [mk, mv] of Object.entries(mergedCustom)) {
+              if (mk.startsWith('_') || deletedSet.has(mk)) continue;
               if (c[mk] === undefined || c[mk] === null || String(c[mk]).trim() === "") {
                 c[mk] = mv;
               }
@@ -1067,6 +1094,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               };
             }
             for (const [k, v] of Object.entries(existing)) {
+              if (deletedSet.has(k)) continue; // Never resurrect deleted fields!
               if (v !== undefined && v !== null && String(v).trim() !== "") {
                 const incomingVal = c[k];
                 if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === "") {
@@ -1091,19 +1119,46 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         for (const r of mergedReports) {
           const existing = existingReportsMap.get(r.id);
           if (existing) {
+            const deletedSet = new Set<string>([
+              ...(Array.isArray(existing._deletedCustomFields) ? existing._deletedCustomFields : []),
+              ...(Array.isArray(existing.customFields?._deletedCustomFields) ? existing.customFields._deletedCustomFields : []),
+              ...(Array.isArray(existing.extraAttributes?._deletedCustomFields) ? existing.extraAttributes._deletedCustomFields : []),
+              ...(Array.isArray(r._deletedCustomFields) ? r._deletedCustomFields : []),
+              ...(Array.isArray(r.customFields?._deletedCustomFields) ? r.customFields._deletedCustomFields : [])
+            ]);
+
             const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
             const incomingCustom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
+
+            deletedSet.forEach(k => {
+              delete existingCustom[k];
+              delete incomingCustom[k];
+              delete (r as any)[k];
+            });
+
             const mergedCustom = { ...existingCustom, ...incomingCustom };
             for (const [k, v] of Object.entries(existingCustom)) {
+              if (deletedSet.has(k)) continue;
               if (v !== undefined && v !== null && String(v).trim() !== "") {
                 if (mergedCustom[k] === undefined || mergedCustom[k] === null || String(mergedCustom[k]).trim() === "") {
                   mergedCustom[k] = v;
                 }
               }
             }
+
+            deletedSet.forEach(k => {
+              delete mergedCustom[k];
+              delete (r as any)[k];
+            });
+            if (deletedSet.size > 0) {
+              mergedCustom._deletedCustomFields = Array.from(deletedSet);
+              r._deletedCustomFields = Array.from(deletedSet);
+            }
+
             r.customFields = mergedCustom;
             r.extraAttributes = mergedCustom;
             for (const [mk, mv] of Object.entries(mergedCustom)) {
+              if (mk.startsWith('_') || deletedSet.has(mk)) continue;
               if (r[mk] === undefined || r[mk] === null || String(r[mk]).trim() === "") {
                 r[mk] = mv;
               }
@@ -1116,6 +1171,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               };
             }
             for (const [k, v] of Object.entries(existing)) {
+              if (deletedSet.has(k)) continue; // Never resurrect deleted fields!
               if (v !== undefined && v !== null && String(v).trim() !== "") {
                 const incomingVal = r[k];
                 if (incomingVal === undefined || incomingVal === null || String(incomingVal).trim() === "") {
