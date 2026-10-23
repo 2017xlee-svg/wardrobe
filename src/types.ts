@@ -47,11 +47,20 @@ export interface Clothes {
   'side breast ok: with side out bra'?: string;
   sideBreastOkWithGatherBra?: string;
   sideBreastOkWithSideOutBra?: string;
+  sidebreastsideoutbra?: string;
+  sidebreastsifeoutbra?: string;
+  sidebreastgatherbra?: string;
   'sit breast ok'?: 'sit breast shape ok' | 'stand breast ugly, because alot zhouwhen' | 'stand breast ugly, because loose tie not as white marry' | '?' | string;
   'sit breast ok: With 聚拢bra'?: string;
   'sit breast ok: with side out bra'?: string;
   sitBreastOkWithGatherBra?: string;
   sitBreastOkWithSideOutBra?: string;
+  sitbreastsideoutbra?: string;
+  sitbreastgatherbra?: string;
+  'stand breast'?: string;
+  'stand breast ok'?: string;
+  standBreast?: string;
+  standBreastOk?: string;
   // Multi-scenario climate and sensory ergonomics
   'when with aircond: hot feeling'?: string;
   'when with aircond: leg feeling'?: string;

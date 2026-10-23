@@ -15,6 +15,7 @@ import { SyncView } from './components/SyncView';
 import { UndoToast } from './components/UndoToast';
 import { AndroidInstallModal } from './components/AndroidInstallModal';
 import { FontSizeSwitcher } from './components/FontSizeSwitcher';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { mediaOutbox } from './services/mediaOutbox';
 import { syncOutbox } from './services/syncOutbox';
 import { useAiGenerationPaused } from './services/aiSettings';
@@ -197,9 +198,6 @@ export function App() {
   }) => {
     const existingCustom: Record<string, any> = {};
     if (params.fieldExplanations) {
-      Object.entries(params.fieldExplanations).forEach(([k, v]) => {
-        if (v && v.trim()) existingCustom[`${k}_explain`] = v.trim();
-      });
       existingCustom._fieldExplanations = params.fieldExplanations;
     }
 
@@ -619,24 +617,32 @@ export function App() {
 
       {/* Modals with event stop and backdrop barrier */}
       {selectedClothes && (
-        <ClothesModal
-          clothes={selectedClothes}
-          stats={selectedClothesStats}
-          junctions={junctions}
-          reports={reports}
-          onClose={() => {
+        <ErrorBoundary
+          fallbackTitle="Unable to display garment details"
+          onReset={() => {
             setSelectedClothes(null);
             setReturnToClothes(null);
           }}
-          onMarkWashed={handleMarkWashed}
-          onUpdateClothes={handleUpdateClothes}
-          onDeleteClothes={handleDeleteClothes}
-          onSelectReport={(report) => {
-            setReturnToClothes(selectedClothes);
-            setSelectedClothes(null);
-            setSelectedWearingReport(report);
-          }}
-        />
+        >
+          <ClothesModal
+            clothes={selectedClothes}
+            stats={selectedClothesStats}
+            junctions={junctions}
+            reports={reports}
+            onClose={() => {
+              setSelectedClothes(null);
+              setReturnToClothes(null);
+            }}
+            onMarkWashed={handleMarkWashed}
+            onUpdateClothes={handleUpdateClothes}
+            onDeleteClothes={handleDeleteClothes}
+            onSelectReport={(report) => {
+              setReturnToClothes(selectedClothes);
+              setSelectedClothes(null);
+              setSelectedWearingReport(report);
+            }}
+          />
+        </ErrorBoundary>
       )}
 
       {isLogModalOpen && (

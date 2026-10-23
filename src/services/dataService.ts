@@ -223,6 +223,69 @@ function extractClimateScenarioField(f: any, scenario: 'withAircond' | 'withoutA
   return '';
 }
 
+export function isStandardGarmentField(rawKey: string): boolean {
+  if (!rawKey) return false;
+  if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+  if (rawKey.startsWith('_')) return true;
+  if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+
+  const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+
+  // Breast ergonomics and variations
+  if (k.startsWith('standbreast') || k.includes('standbreast')) return true;
+  if (k.startsWith('sitbreast') || k.startsWith('sidebreast')) return true;
+  if (k.includes('sideoutbra') || k.includes('sifeoutbra') || k.includes('gatherbra') || k.includes('聚拢bra')) return true;
+  if (k === 'centerchest') return true;
+
+  // Garment core fields
+  if (k === 'name' || k === 'clothestype') return true;
+  if (k === 'material' || k === 'materialprop') return true;
+  if (k === 'thickclothes') return true;
+  if (k === 'hotatnoon') return true;
+  if (k === 'diaodai') return true;
+  if (k === 'beautiful' || k === 'beatifulreason' || k === 'beautifulreason') return true;
+  if (k === 'wet' || k === 'wetreason') return true;
+  if (k === 'descriptions' || k === 'descriptions2') return true;
+  if (k === 'price') return true;
+  if (k.includes('wearingfrequency') || k.includes('legacywashed')) return true;
+  if (k === 'trackedappwashes' || k === 'totalwashedcount' || k === 'lastwashed' || k === 'unwashtimerollup') return true;
+  if (k === 'aiclothesanalysis' || k === 'aireports') return true;
+  if (k === 'pictures') return true;
+  if (k === 'maythrow' || k === 'lastcommentoraction' || k === 'lastcomment') return true;
+  if (k === 'tags' || k === 'created') return true;
+  if (k === 'longdress') return true;
+  if (k.includes('washstated')) return true;
+
+  // Climate scenarios
+  if (k.includes('withaircond') || k.includes('withoutaircond') || k.includes('noaircond') || k.includes('sleepunderfan') || k.includes('sleepfan') || k.includes('hoyfeeling') || k.includes('hotfeeling') || k.includes('legfeeling')) return true;
+
+  // Explanations
+  if (k.includes('fieldexplanations')) return true;
+
+  return false;
+}
+
+export function isStandardReportField(rawKey: string): boolean {
+  if (!rawKey) return false;
+  if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+  if (rawKey.startsWith('_')) return true;
+  if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+
+  const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+
+  if (k.includes('garments') || k.includes('clothes') || k.includes('clotheslinked')) return true;
+  if (k === 'wearingdate' || k === 'time' || k === 'timestamp' || k === 'weardate') return true;
+  if (k.includes('shoulderfeel')) return true;
+  if (k === 'sweat' || k === 'nightsweat' || k === 'sweatprop') return true;
+  if (k.includes('midbreast') || k.includes('nightmidbreast')) return true;
+  if (k.includes('legfeel') || k.includes('nightlegfeel')) return true;
+  if (k.includes('reportdetail') || k.includes('aiwearinganalysis')) return true;
+  if (k === 'comfort' || k === 'satisfaction') return true;
+  if (k.includes('fieldexplanations')) return true;
+
+  return false;
+}
+
 export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem {
   const f = r.fields || r;
   const id = r.id || f.id || `garment_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -256,36 +319,17 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     delete explicitCustom[k];
   });
 
-  // Also collect any top-level non-standard dynamic custom attributes present in f (e.g. Color, Brand, Stretch, Fabric Weight)
-  const standardGarmentKeys = new Set([
-    'id', 'fields', 'name', 'Name', 'clothesType', 'Clothes Type', 'material', 'materialProp',
-    'thickClothes', 'thick clothes', 'hotAtNoon', 'Hot at noon', 'diaoDai', 'diao dai',
-    'sideBreastOk', 'side breast ok', 'side breast ok: with 聚拢 bra', 'side breast ok: With 聚拢bra',
-    'sideBreastOkWithGatherBra', 'sideBreastGatherBra',
-    'sideBreastOkWithSideOutBra', 'sideBreastSideOutBra', 'side breast ok: with side out bra', 'side breast ok: With side out bra',
-    'sitBreastOk', 'sit breast ok', 'sit breast ok: With 聚拢bra', 'sit breast ok: with 聚拢bra',
-    'sitBreastOkWithGatherBra', 'sitBreastGatherBra',
-    'sitBreastOkWithSideOutBra', 'sitBreastSideOutBra', 'sit breast ok: with side out bra', 'sit breast ok: With side out bra',
-    'when with aircond: hot feeling', 'when with aircond: leg feeling',
-    'when without aircond: hot feeling', 'when without aircond: leg feeling',
-    'when sleep under fan: hot feeling', 'when sleep under fan: leg feeling',
-    'whenWithAircondHot', 'whenWithAircondHotFeeling', 'whenWithAircondLeg', 'whenWithAircondLegFeeling',
-    'whenWithoutAircondHot', 'whenWithoutAircondHotFeeling', 'whenWithoutAircondLeg', 'whenWithoutAircondLegFeeling',
-    'whenSleepUnderFanHot', 'whenSleepUnderFanHotFeeling', 'whenSleepUnderFanLeg', 'whenSleepUnderFanLegFeeling',
-    'centerChest', 'center chest', 'beautiful', 'beatifulReason', 'beatiful reason', 'wet', 'wetReason', 'wet reason',
-    'descriptions', 'Descriptions', 'descriptions2', 'Descriptions 2', 'price',
-    'wearingFrequency', 'wearing frequency(how many times legacy washed)', 'trackedAppWashes', 'Tracked App Washes',
-    'Total Washed Count', 'lastWashed', 'Last Washed', 'aiClothesAnalysis', 'AI Clothes Analysis',
-    'pictures', 'Pictures', 'mayThrow', 'may throw', 'lastComment', 'lastCommentOrAction', 'last comment or action',
-    'tags', 'created', 'longDress', 'long dress', 'unwash time rollup',
-    'wash stated (from Full Wearing Report (new design) clothes list (linked))',
-    'fieldExplanations', 'field_explanations', 'customFields', 'extraAttributes', 'aiReports', 'contentBlocks',
-    '_deletedCustomFields'
-  ]);
+  // Extract breast fields and aliases before processing custom attributes
+  const rawSideBreastGather = f['side breast ok: with 聚拢 bra'] || f['side breast ok: With 聚拢bra'] || f.sideBreastOkWithGatherBra || f.sidebreastgatherbra || f['sidebreastgatherbra'] || explicitCustom['side breast ok: with 聚拢 bra'] || explicitCustom['sidebreastgatherbra'];
+  const rawSideBreastSideOut = f['side breast ok: with side out bra'] || f['side breast ok: With side out bra'] || f.sideBreastOkWithSideOutBra || f.sidebreastsideoutbra || f.sidebreastsifeoutbra || f['sidebreastsideoutbra'] || f['sidebreastsifeoutbra'] || explicitCustom['side breast ok: with side out bra'] || explicitCustom['sidebreastsideoutbra'] || explicitCustom['sidebreastsifeoutbra'];
+  const rawSitBreastGather = f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f.sitbreastgatherbra || f['sitbreastgatherbra'] || explicitCustom['sit breast ok: With 聚拢bra'] || explicitCustom['sitbreastgatherbra'];
+  const rawSitBreastSideOut = f['sit breast ok: with side out bra'] || f['sit breast ok: With side out bra'] || f.sitBreastOkWithSideOutBra || f.sitbreastsideoutbra || f['sitbreastsideoutbra'] || explicitCustom['sit breast ok: with side out bra'] || explicitCustom['sitbreastsideoutbra'];
+  const rawStandBreast = f['stand breast ok'] || f['stand breast'] || f.standBreast || f.standBreastOk || f.standbreast || f['standbreast'] || explicitCustom['stand breast ok'] || explicitCustom['stand breast'] || explicitCustom['standbreast'];
 
+  // Collect top-level non-standard custom attributes present in f (e.g. Color, Brand, Stretch, Fabric Weight)
   for (const [k, v] of Object.entries(f)) {
     if (deletedFields.has(k)) continue;
-    if (!standardGarmentKeys.has(k) && !k.startsWith('_') && !k.endsWith('_explain') && typeof v !== 'function') {
+    if (!isStandardGarmentField(k) && typeof v !== 'function') {
       if (v !== undefined && v !== null && String(v).trim() !== '') {
         if (explicitCustom[k] === undefined || explicitCustom[k] === null || String(explicitCustom[k]).trim() === '') {
           explicitCustom[k] = v;
@@ -294,13 +338,73 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     }
   }
 
-  // Ensure deleted fields are never left in explicitCustom
-  deletedFields.forEach(k => {
-    delete explicitCustom[k];
-  });
+  // Ensure ALL standard garment fields and aliases are completely purged from explicitCustom
+  for (const k of Object.keys(explicitCustom)) {
+    if (isStandardGarmentField(k) || deletedFields.has(k)) {
+      delete explicitCustom[k];
+    }
+  }
   if (deletedFields.size > 0) {
     explicitCustom._deletedCustomFields = Array.from(deletedFields);
   }
+
+  // Harvest and consolidate all field explanations into canonical dictionary
+  const extractedExplanations: Record<string, string> = {
+    ...(typeof f.fieldExplanations === 'object' && f.fieldExplanations !== null ? f.fieldExplanations : {}),
+    ...(typeof f.field_explanations === 'object' && f.field_explanations !== null ? f.field_explanations : {}),
+    ...(typeof f.customFields?._fieldExplanations === 'object' && f.customFields?._fieldExplanations !== null ? f.customFields._fieldExplanations : {}),
+    ...(typeof f.extraAttributes?._fieldExplanations === 'object' && f.extraAttributes?._fieldExplanations !== null ? f.extraAttributes._fieldExplanations : {})
+  };
+
+  const resolveGarmentExplainBaseKey = (rawKey: string): string => {
+    const clean = rawKey.replace(/_explain$/i, '').trim();
+    const lower = clean.toLowerCase().replace(/[\s_:-]/g, '');
+    if (lower === 'material') return 'material';
+    if (lower === 'thickclothes') return 'thick clothes';
+    if (lower === 'hotatnoon') return 'Hot at noon';
+    if (lower === 'diaodai') return 'diao dai';
+    if (lower === 'sidebreastokwithgatherbra' || lower === 'sidebreastgatherbra' || lower === 'sidebreastokwith聚拢bra') return 'side breast ok: with 聚拢 bra';
+    if (lower === 'sidebreastokwithsideoutbra' || lower === 'sidebreastsideoutbra' || lower === 'sidebreastsifeoutbra') return 'side breast ok: with side out bra';
+    if (lower === 'sitbreastokwithgatherbra' || lower === 'sitbreastgatherbra' || lower === 'sitbreastokwith聚拢bra') return 'sit breast ok: With 聚拢bra';
+    if (lower === 'sitbreastokwithsideoutbra' || lower === 'sitbreastsideoutbra') return 'sit breast ok: with side out bra';
+    if (lower === 'standbreastok' || lower === 'standbreast') return 'stand breast ok';
+    if (lower === 'whenwithaircondhotfeeling' || lower === 'whenwithaircondhot' || lower === 'withaircondhot') return 'when with aircond: hot feeling';
+    if (lower === 'whenwithaircondlegfeeling' || lower === 'whenwithaircondleg' || lower === 'withaircondleg') return 'when with aircond: leg feeling';
+    if (lower === 'whenwithoutaircondhotfeeling' || lower === 'whenwithoutaircondhot' || lower === 'withoutaircondhot' || lower === 'noaircindhoyfeeling' || lower === 'noaircondhotfeeling') return 'when without aircond: hot feeling';
+    if (lower === 'whenwithoutaircondlegfeeling' || lower === 'whenwithoutaircondleg' || lower === 'withoutaircondleg' || lower === 'noaircondlegfeeling') return 'when without aircond: leg feeling';
+    if (lower === 'whensleepunderfanhotfeeling' || lower === 'whensleepunderfanhot' || lower === 'sleepfanhot') return 'when sleep under fan: hot feeling';
+    if (lower === 'whensleepunderfanlegfeeling' || lower === 'whensleepunderfanleg' || lower === 'sleepfanleg') return 'when sleep under fan: leg feeling';
+    if (lower === 'centerchest') return 'center chest';
+    if (lower === 'beatifulreason' || lower === 'beautifulreason') return 'beatiful reason';
+    if (lower === 'wetreason') return 'wet reason';
+    if (lower === 'descriptions') return 'Descriptions';
+    if (lower === 'descriptions2') return 'Descriptions 2';
+    if (lower === 'lastcommentoraction' || lower === 'lastcomment') return 'last comment or action';
+    return clean;
+  };
+
+  // Harvest from explicitCustom and delete them from explicitCustom so they never show as custom attributes
+  for (const [k, v] of Object.entries(explicitCustom)) {
+    if (k.endsWith('_explain') || k.toLowerCase().includes('explain') || k.toLowerCase().includes('hoyfeeling') || (k.toLowerCase().includes('feeling') && !k.startsWith('when ')) || k.toLowerCase().includes('gatherbra') || k.toLowerCase().includes('sideoutbra') || k.toLowerCase().includes('sifeoutbra')) {
+      const baseKey = resolveGarmentExplainBaseKey(k);
+      if (v && typeof v === 'string' && v.trim() && !extractedExplanations[baseKey]) {
+        extractedExplanations[baseKey] = v.trim();
+      }
+      delete explicitCustom[k];
+    }
+  }
+
+  // Also harvest from top-level f
+  for (const [k, v] of Object.entries(f)) {
+    if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && !k.startsWith('fieldExplanations') && !k.startsWith('field_explanations') && !k.startsWith('_fieldExplanations'))) {
+      const baseKey = resolveGarmentExplainBaseKey(k);
+      if (v && typeof v === 'string' && v.trim() && !extractedExplanations[baseKey]) {
+        extractedExplanations[baseKey] = v.trim();
+      }
+    }
+  }
+
+  explicitCustom._fieldExplanations = extractedExplanations;
 
   const garment: ClothesItem = {
     ...f,
@@ -312,20 +416,22 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     'Hot at noon': f['Hot at noon'] || f.hotAtNoon || 'Not hot',
     'diao dai': f['diao dai'] || f.diaoDai || 'not diao dai',
     'side breast ok': f['side breast ok'] || f.sideBreastOk || 'side breast shape ok',
-    'side breast ok: with 聚拢 bra': f['side breast ok: with 聚拢 bra'] || f['side breast ok: With 聚拢bra'] || f.sideBreastOkWithGatherBra || f['side breast ok'] || f.sideBreastOk || 'side breast shape ok',
-    'side breast ok: with side out bra': f['side breast ok: with side out bra'] || f['side breast ok: With side out bra'] || f.sideBreastOkWithSideOutBra || 'side breast out',
+    'side breast ok: with 聚拢 bra': rawSideBreastGather || f['side breast ok'] || f.sideBreastOk || 'side breast shape ok',
+    'side breast ok: with side out bra': rawSideBreastSideOut || 'side breast out',
     'sit breast ok': f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
-    'sit breast ok: With 聚拢bra': f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
-    'sit breast ok: with side out bra': f['sit breast ok: with side out bra'] || f['sit breast ok: With side out bra'] || f.sitBreastOkWithSideOutBra || f['sit breast ok'] || f.sitBreastOk || 'ugly',
+    'sit breast ok: With 聚拢bra': rawSitBreastGather || f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
+    'sit breast ok: with side out bra': rawSitBreastSideOut || f['sit breast ok'] || f.sitBreastOk || 'ugly',
+    'stand breast ok': rawStandBreast || '',
+    'stand breast': rawStandBreast || '',
+    standBreast: rawStandBreast || '',
+    standBreastOk: rawStandBreast || '',
     'when with aircond: hot feeling': extractClimateScenarioField(f, 'withAircond', 'hot'),
     'when with aircond: leg feeling': extractClimateScenarioField(f, 'withAircond', 'leg'),
     'when without aircond: hot feeling': extractClimateScenarioField(f, 'withoutAircond', 'hot'),
     'when without aircond: leg feeling': extractClimateScenarioField(f, 'withoutAircond', 'leg'),
     'when sleep under fan: hot feeling': extractClimateScenarioField(f, 'sleepFan', 'hot'),
     'when sleep under fan: leg feeling': extractClimateScenarioField(f, 'sleepFan', 'leg'),
-    fieldExplanations: typeof f.fieldExplanations === 'object' && f.fieldExplanations !== null
-      ? { ...f.fieldExplanations }
-      : (typeof f.field_explanations === 'object' && f.field_explanations !== null ? { ...f.field_explanations } : {}),
+    fieldExplanations: extractedExplanations,
     'center chest': f['center chest'] || f.centerChest || 'no center chest',
     'beautiful': f['beautiful'] || f.beautiful || 'Beautiful',
     'beatiful reason': f['beatiful reason'] || f.beatifulReason || '',
@@ -365,6 +471,13 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     if (k.startsWith('_') || deletedFields.has(k)) continue;
     if ((garment as any)[k] === undefined || (garment as any)[k] === null || String((garment as any)[k]).trim() === '') {
       (garment as any)[k] = v;
+    }
+  }
+
+  // Remove any loose explain keys that leaked into garment top-level
+  for (const k of Object.keys(garment)) {
+    if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
+      delete (garment as any)[k];
     }
   }
 
@@ -475,18 +588,9 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     delete explicitReportCustom[k];
   });
 
-  const standardReportKeys = new Set([
-    'id', 'fields', 'name', 'Name', 'wearDate', 'wear date', 'created', 'createdTime', 'createdAt',
-    'categories', 'tags', 'shoulderFeel', 'shoulder feel', 'midBreast', 'mid breast',
-    'nightMidBreast', 'night mid breast', 'sweat', 'sweatProp', 'nightSweat', 'night sweat',
-    'legFeel', 'leg feel', 'nightLegFeel', 'night leg feel', 'reportDetail', 'report detail',
-    'aiWearingAnalysis', 'AI Wearing Analysis', 'pictures', 'Pictures', 'aiReports',
-    'fieldExplanations', 'customFields', 'extraAttributes', '_deletedCustomFields'
-  ]);
-
   for (const [k, v] of Object.entries(f)) {
     if (deletedFields.has(k)) continue;
-    if (!standardReportKeys.has(k) && !k.startsWith('_') && !k.endsWith('_explain') && typeof v !== 'function') {
+    if (!isStandardReportField(k) && typeof v !== 'function') {
       if (v !== undefined && v !== null && String(v).trim() !== '') {
         if (explicitReportCustom[k] === undefined || explicitReportCustom[k] === null || String(explicitReportCustom[k]).trim() === '') {
           explicitReportCustom[k] = v;
@@ -495,12 +599,57 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     }
   }
 
-  deletedFields.forEach(k => {
-    delete explicitReportCustom[k];
-  });
+  for (const k of Object.keys(explicitReportCustom)) {
+    if (isStandardReportField(k) || deletedFields.has(k)) {
+      delete explicitReportCustom[k];
+    }
+  }
   if (deletedFields.size > 0) {
     explicitReportCustom._deletedCustomFields = Array.from(deletedFields);
   }
+
+  // Harvest and consolidate all field explanations into canonical dictionary
+  const extractedReportExplanations: Record<string, string> = {
+    ...(typeof f.fieldExplanations === 'object' && f.fieldExplanations !== null ? f.fieldExplanations : {}),
+    ...(typeof f.field_explanations === 'object' && f.field_explanations !== null ? f.field_explanations : {}),
+    ...(typeof f.customFields?._fieldExplanations === 'object' && f.customFields?._fieldExplanations !== null ? f.customFields._fieldExplanations : {}),
+    ...(typeof f.extraAttributes?._fieldExplanations === 'object' && f.extraAttributes?._fieldExplanations !== null ? f.extraAttributes._fieldExplanations : {})
+  };
+
+  const resolveReportExplainBaseKey = (rawKey: string): string => {
+    const clean = rawKey.replace(/_explain$/i, '').trim();
+    const lower = clean.toLowerCase().replace(/[\s_:-]/g, '');
+    if (lower === 'shoulderfeel') return 'shoulder feel';
+    if (lower === 'midbreast') return 'mid breast';
+    if (lower === 'nightmidbreast') return 'night mid breast';
+    if (lower === 'sweat') return 'sweat';
+    if (lower === 'nightsweat') return 'night sweat';
+    if (lower === 'legfeel') return 'leg feel';
+    if (lower === 'nightlegfeel') return 'night leg feel';
+    if (lower === 'reportdetail') return 'report detail';
+    return clean;
+  };
+
+  for (const [k, v] of Object.entries(explicitReportCustom)) {
+    if (k.endsWith('_explain') || k.toLowerCase().includes('explain')) {
+      const baseKey = resolveReportExplainBaseKey(k);
+      if (v && typeof v === 'string' && v.trim() && !extractedReportExplanations[baseKey]) {
+        extractedReportExplanations[baseKey] = v.trim();
+      }
+      delete explicitReportCustom[k];
+    }
+  }
+
+  for (const [k, v] of Object.entries(f)) {
+    if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && !k.startsWith('fieldExplanations') && !k.startsWith('field_explanations') && !k.startsWith('_fieldExplanations'))) {
+      const baseKey = resolveReportExplainBaseKey(k);
+      if (v && typeof v === 'string' && v.trim() && !extractedReportExplanations[baseKey]) {
+        extractedReportExplanations[baseKey] = v.trim();
+      }
+    }
+  }
+
+  explicitReportCustom._fieldExplanations = extractedReportExplanations;
 
   const report: WearingReport = {
     ...f,
@@ -521,7 +670,7 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     'AI Wearing Analysis': activeAnalysis,
     'Pictures': Array.isArray(f['Pictures']) ? f['Pictures'] : (Array.isArray(f.pictures) ? f.pictures : []),
     aiReports,
-    fieldExplanations: f.fieldExplanations || f.customFields?._fieldExplanations || {},
+    fieldExplanations: extractedReportExplanations,
     customFields: explicitReportCustom,
     extraAttributes: explicitReportCustom
   };
@@ -538,6 +687,13 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     if (k.startsWith('_') || deletedFields.has(k)) continue;
     if ((report as any)[k] === undefined || (report as any)[k] === null || String((report as any)[k]).trim() === '') {
       (report as any)[k] = v;
+    }
+  }
+
+  // Remove any loose explain keys that leaked into report top-level
+  for (const k of Object.keys(report)) {
+    if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
+      delete (report as any)[k];
     }
   }
 

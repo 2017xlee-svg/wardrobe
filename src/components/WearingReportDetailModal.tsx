@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { WearingReport, ReportClothesJunction, ClothesItem, PictureAttachment, AIReportVersion } from '../types';
-import { dataService, formatDuration, processImageFile } from '../services/dataService';
+import { dataService, formatDuration, processImageFile, isStandardReportField } from '../services/dataService';
 import { uploadReportPhotoToStorage, deleteFileFromStorage } from '../services/cloudStorageService';
 import { resolveImageSource } from '../utils/imageUtils';
 import { PreviousEntriesModal, PreviousEntryItem } from './PreviousEntriesModal';
@@ -748,9 +748,10 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
     setIsSaving(true);
     try {
       const existingCustom = { ...(report.customFields || report.extraAttributes || {}) };
-      Object.entries(editFieldExplanations).forEach(([k, v]) => {
-        if (v && v.trim()) existingCustom[`${k}_explain`] = v.trim();
-        else delete existingCustom[`${k}_explain`];
+      Object.keys(existingCustom).forEach((k) => {
+        if (k.endsWith('_explain') || k.toLowerCase().includes('explain') || isStandardReportField(k)) {
+          delete existingCustom[k];
+        }
       });
       existingCustom._fieldExplanations = editFieldExplanations;
 
@@ -2265,7 +2266,16 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
                     <CustomAttributesManager
                       title="Environmental &amp; Custom Context"
                       description="Record weather, room temperature, activity or commute details for this wearing session."
-                      attributes={report.customFields || report.extraAttributes || {}}
+                      attributes={(() => {
+                        const allCustom = { ...(report.customFields || report.extraAttributes || {}) };
+                        const clean: Record<string, any> = {};
+                        for (const [k, v] of Object.entries(allCustom)) {
+                          if (!isStandardReportField(k)) {
+                            clean[k] = v;
+                          }
+                        }
+                        return clean;
+                      })()}
                       onAddAttribute={handleAddReportCustomField}
                       onUpdateAttribute={handleUpdateReportCustomField}
                       onDeleteAttribute={handleDeleteReportCustomField}

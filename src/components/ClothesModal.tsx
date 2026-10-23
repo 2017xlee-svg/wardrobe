@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ClothesItem, ReportClothesJunction, WearingReport, PictureAttachment, AIReportVersion } from '../types';
-import { dataService, processImageFile } from '../services/dataService';
+import { dataService, processImageFile, isStandardGarmentField } from '../services/dataService';
 import { uploadGarmentPhotoToStorage, deleteFileFromStorage } from '../services/cloudStorageService';
 import { PreviousEntriesModal, PreviousEntryItem } from './PreviousEntriesModal';
 import { CreateOptionModal } from './CreateOptionModal';
@@ -119,6 +119,9 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
   );
   const [editSitBreastOkWithSideOutBra, setEditSitBreastOkWithSideOutBra] = useState(
     garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
+  );
+  const [editStandBreast, setEditStandBreast] = useState(
+    garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || ''
   );
 
   // Multi-scenario climate and sensory ergonomics states
@@ -426,7 +429,32 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
             const jClothesId = typeof j['clothes(new)'] === 'object' ? j['clothes(new)']?.id : (j.clothesId || j['clothes(new)']);
             return jRepId === r.id && (jClothesId === targetId || (targetName && (j.clothesTitle || '').toLowerCase() === targetName));
           });
-          matchedReportsMap.set(r.id, { junction: matchingJunc, report: r });
+          const sisterJunc = allJunctionsForModal.find(j => {
+            const jRepId = typeof j['wearing report id'] === 'object' ? j['wearing report id']?.id : (j.wearingReportId || j['wearing report id']);
+            return jRepId === r.id;
+          });
+          const effectiveJunc: ReportClothesJunction = matchingJunc || {
+            id: `ref_junc_${r.id}_${targetId || 'garment'}`,
+            name: 0,
+            'wearing report id': {
+              id: r.id,
+              title: r['Name'] || r.name || 'Wear Session'
+            },
+            'clothes(new)': {
+              id: targetId,
+              title: garment['Name'] || garment.name || ''
+            },
+            duration: sisterJunc?.['duration'] || sisterJunc?.durationVal || 0,
+            'wash stated': (sisterJunc?.['wash stated'] as any) || 'wash',
+            'wear date': r['wear date'] || sisterJunc?.['wear date'],
+            washStated: (sisterJunc?.['wash stated'] as any) || 'wash',
+            clothesId: targetId,
+            clothesTitle: garment['Name'] || garment.name || '',
+            wearingReportId: r.id,
+            wearingReportTitle: r['Name'] || r.name || 'Wear Session',
+            durationVal: sisterJunc?.['duration'] || sisterJunc?.durationVal || 0
+          };
+          matchedReportsMap.set(r.id, { junction: effectiveJunc, report: r });
         }
       }
     });
@@ -487,6 +515,9 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
         sitBreastOkWithSideOutBra: editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra,
         'sit breast ok': editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'] || garment.sitBreastOk,
         sitBreastOk: editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'] || garment.sitBreastOk,
+        'stand breast ok': editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
+        'stand breast': editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
+        standBreast: editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
         // Multi-scenario climate ergonomics
         'when with aircond: hot feeling': editWhenAircondHot || garment['when with aircond: hot feeling'],
         'when with aircond: leg feeling': editWhenAircondLeg || garment['when with aircond: leg feeling'],
@@ -770,6 +801,10 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       'sit breast ok': editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'],
       'sit breast ok: With 聚拢bra': editSitBreastOkWithGatherBra,
       'sit breast ok: with side out bra': editSitBreastOkWithSideOutBra,
+      'stand breast ok': editStandBreast.trim(),
+      'stand breast': editStandBreast.trim(),
+      standBreast: editStandBreast.trim(),
+      standBreastOk: editStandBreast.trim(),
       // Multi-scenario climate ergonomics
       'when with aircond: hot feeling': editWhenAircondHot,
       'when with aircond: leg feeling': editWhenAircondLeg,
@@ -794,13 +829,16 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       fieldExplanations: editFieldExplanations
     };
 
-    // Mirror to customFields for backwards compatibility and easy backup inspection
+    // Store field explanations strictly in fieldExplanations and private _fieldExplanations,
+    // and remove any standard fields and loose _explain keys from customFields / extraAttributes
     const existingCustom = { ...(garment.customFields || garment.extraAttributes || {}) };
-    Object.entries(editFieldExplanations).forEach(([k, v]) => {
-      if (v && v.trim()) existingCustom[`${k}_explain`] = v.trim();
-      else delete existingCustom[`${k}_explain`];
+    Object.keys(existingCustom).forEach((k) => {
+      if (k.endsWith('_explain') || k.toLowerCase().includes('explain') || isStandardGarmentField(k)) {
+        delete existingCustom[k];
+      }
     });
     existingCustom._fieldExplanations = editFieldExplanations;
+    updates.fieldExplanations = editFieldExplanations;
     updates.customFields = existingCustom;
     updates.extraAttributes = existingCustom;
 
@@ -828,6 +866,9 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     );
     setEditSitBreastOkWithSideOutBra(
       garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
+    );
+    setEditStandBreast(
+      garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || ''
     );
     setEditWhenAircondHot(garment['when with aircond: hot feeling'] || '');
     setEditWhenAircondLeg(garment['when with aircond: leg feeling'] || '');
@@ -1301,6 +1342,27 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         placeholder="e.g. ugly / sit breast shape ok / stand breast ugly, because loose tie"
                       />
                       {renderFieldExplainBox('sit breast ok: with side out bra', 'sit breast ok: with side out bra', '例如: ugly, 没有聚拢效果显扁塌 / stand breast ugly...')}
+                    </div>
+
+                    {/* stand breast ok */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-mono font-bold uppercase text-slate-600">stand breast ok</label>
+                        <button
+                          type="button"
+                          onClick={() => openPreviousPicker('stand breast ok', 'stand breast ok', setEditStandBreast)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
+                        >
+                          <History className="w-3 h-3 text-purple-600" />
+                          Previous
+                        </button>
+                      </div>
+                      <AutoResizeTextarea
+                        value={editStandBreast}
+                        onChange={(e) => setEditStandBreast(e.target.value)}
+                        placeholder="e.g. stand breast shape ok / stand breast ugly, because loose tie"
+                      />
+                      {renderFieldExplainBox('stand breast ok', 'stand breast ok', '例如: stand breast ugly, because loose tie... / stand breast shape ok')}
                     </div>
 
                     {/* center chest */}
@@ -2172,6 +2234,11 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       'sit breast ok: with side out bra',
                       garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
+                    {renderViewAttr(
+                      'stand breast ok',
+                      'stand breast ok',
+                      garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || <span className="text-slate-400 font-normal italic">No data</span>
+                    )}
                     {renderViewAttr('center chest', 'center chest', garment['center chest'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('beautiful', 'beautiful', garment['beautiful'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('wet', 'wet', garment['wet'] || <span className="text-slate-400 font-normal italic">dry</span>)}
@@ -2192,7 +2259,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       ...((dataService.getGarment(garment.id)?.customFields) || {}),
                       ...((dataService.getGarment(garment.id)?.extraAttributes) || {})
                     })
-                      .filter(([k]) => !['id', 'fields', 'createdTime', 'customFields', 'extraAttributes'].includes(k) && !k.startsWith('_') && !k.endsWith('_explain'))
+                      .filter(([k]) => !isStandardGarmentField(k))
                       .map(([k, v]) => (
                         <React.Fragment key={k}>
                           {renderViewAttr(
@@ -2476,7 +2543,16 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                   <CustomAttributesManager
                     title="Garment Dynamic Custom Attributes"
                     description="Define new fields (e.g. Color, Fabric Weight, Stretch Level, Purchase Store) dynamically without schema migrations."
-                    attributes={garment.customFields || garment.extraAttributes || {}}
+                    attributes={(() => {
+                      const allCustom = { ...(garment.customFields || garment.extraAttributes || {}) };
+                      const clean: Record<string, any> = {};
+                      for (const [k, v] of Object.entries(allCustom)) {
+                        if (!isStandardGarmentField(k)) {
+                          clean[k] = v;
+                        }
+                      }
+                      return clean;
+                    })()}
                     onAddAttribute={handleAddGarmentCustomField}
                     onUpdateAttribute={handleUpdateGarmentCustomField}
                     onDeleteAttribute={handleDeleteGarmentCustomField}
@@ -2735,46 +2811,67 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                   {wornReports.length > 0 ? (
                     <div className="space-y-2">
                       {wornReports.map(({ junction, report }, idx) => {
-                        const hours = ((junction['duration'] || 0) / 3600).toFixed(1);
+                        const durationSec = junction?.['duration'] ?? junction?.durationVal ?? 0;
+                        const hours = (durationSec / 3600).toFixed(1);
+                        const washStated = junction?.['wash stated'] ?? junction?.washStated ?? 'wash';
+                        const washDate = junction?.['wash date'] || junction?.washDate || junction?.['washed date'] || junction?.washedDate;
+                        const reportSessionTitle = report?.['Name'] || (typeof junction?.['wearing report id'] === 'object' ? junction?.['wearing report id']?.title : '') || 'Wear Session';
                         return (
                           <div
-                            key={idx}
+                            key={junction?.id || report?.id || idx}
                             onClick={() => {
                               if (report && onSelectReport) {
                                 onSelectReport(report);
                               }
                             }}
-                            className={`group flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-300 transition-all text-xs active:scale-[0.99] ${
+                            className={`group p-3 sm:p-3.5 rounded-2xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-300 transition-all text-xs active:scale-[0.99] space-y-2 ${
                               report && onSelectReport ? 'cursor-pointer' : ''
                             }`}
                           >
-                            <div className="space-y-1 min-w-0 pr-2">
-                              <div className="flex items-center gap-1.5 font-bold text-slate-900 group-hover:text-purple-900 transition-colors truncate">
-                                <Calendar className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                                <span>
-                                  {report?.['wear date']
-                                    ? new Date(report['wear date']).toLocaleDateString()
-                                    : 'Wear Session'}
-                                </span>
+                            {/* Header row: Calendar Icon + Wear Date + Report Name + Chevron */}
+                            <div className="flex items-start justify-between gap-2.5">
+                              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                <div className="p-1.5 rounded-lg bg-purple-100 text-purple-700 shrink-0 mt-0.5 group-hover:bg-purple-200 transition-colors">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-0.5">
+                                  <div className="flex items-baseline gap-2 flex-wrap">
+                                    <span className="font-mono font-bold text-slate-900 group-hover:text-purple-900 transition-colors text-xs shrink-0">
+                                      {report?.['wear date']
+                                        ? (toDateKey(report['wear date']) || new Date(report['wear date']).toLocaleDateString())
+                                        : 'Wear Session'}
+                                    </span>
+                                    {reportSessionTitle && reportSessionTitle !== 'Wear Session' && (
+                                      <span className="text-xs font-semibold text-slate-800 group-hover:text-purple-950 transition-colors break-words">
+                                        • {reportSessionTitle}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-[11px] text-slate-500 group-hover:text-purple-700/80 truncate">
-                                {report?.['Name'] || (typeof junction['wearing report id'] === 'object' ? junction['wearing report id'].title : '')}
-                              </p>
+
+                              <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
+                                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
+                              </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-slate-500 font-medium">{hours} hrs</span>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                                junction['wash stated'] === 'need wash' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                              }`}>
-                                {junction['wash stated'] === 'wash' ? 'Clean' : junction['wash stated']}
+                            {/* Badges row: duration, wash status, wash date */}
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pl-8">
+                              <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-200/80 text-slate-700">
+                                {hours} hrs
                               </span>
-                              {(junction['wash date'] || junction.washDate || junction['washed date'] || junction.washedDate) && (
-                                <span className="text-[10px] font-mono font-bold text-purple-800 bg-purple-100/90 px-1.5 py-0.5 rounded border border-purple-200">
-                                  wash date: {toDateKey(junction['wash date'] || junction.washDate || junction['washed date'] || junction.washedDate) || String(junction['wash date'] || junction['washed date'])}
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${
+                                washStated === 'need wash'
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                  : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              }`}>
+                                {washStated === 'wash' ? 'Clean' : washStated}
+                              </span>
+                              {washDate && (
+                                <span className="text-[10px] font-mono font-medium text-purple-800 bg-purple-100/90 px-2 py-0.5 rounded-md border border-purple-200">
+                                  wash date: {toDateKey(washDate) || String(washDate)}
                                 </span>
                               )}
-                              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
                             </div>
                           </div>
                         );

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { Clothes, PictureAttachment } from '../types';
-import { dataService, processImageFile } from '../services/dataService';
+import { dataService, processImageFile, isStandardGarmentField } from '../services/dataService';
 import { fieldDictionaryService } from '../services/fieldDictionaryService';
 import { uploadGarmentPhotoToStorage, deleteFileFromStorage } from '../services/cloudStorageService';
 import { PreviousEntriesModal, PreviousEntryItem } from './PreviousEntriesModal';
@@ -38,6 +38,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
   const [sitBreastOkWithGatherBra, setSitBreastOkWithGatherBra] = useState('sit breast shape ok');
   const [sitBreastOkWithSideOutBra, setSitBreastOkWithSideOutBra] = useState('ugly');
   const [sideBreastOk, setSideBreastOk] = useState('side breast shape ok');
+  const [standBreast, setStandBreast] = useState('');
 
   // Multi-scenario climate and sensory ergonomics states
   const [whenAircondHot, setWhenAircondHot] = useState('not so cold');
@@ -323,11 +324,9 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
 
     const numPrice = price ? parseFloat(price) : undefined;
 
-    const existingCustom: Record<string, any> = {};
-    Object.entries(fieldExplanations).forEach(([k, v]) => {
-      if (v && v.trim()) existingCustom[`${k}_explain`] = v.trim();
-    });
-    existingCustom._fieldExplanations = fieldExplanations;
+    const existingCustom: Record<string, any> = {
+      _fieldExplanations: fieldExplanations
+    };
 
     const payload: Omit<Clothes, 'id'> = {
       'Name': name.trim(),
@@ -342,6 +341,10 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
       'sit breast ok': sitBreastOkWithGatherBra || sitBreastOkWithSideOutBra,
       'sit breast ok: With 聚拢bra': sitBreastOkWithGatherBra,
       'sit breast ok: with side out bra': sitBreastOkWithSideOutBra,
+      'stand breast ok': standBreast.trim(),
+      'stand breast': standBreast.trim(),
+      standBreast: standBreast.trim(),
+      standBreastOk: standBreast.trim(),
       // Multi-scenario climate ergonomics
       'when with aircond: hot feeling': whenAircondHot,
       'when with aircond: leg feeling': whenAircondLeg,
@@ -659,6 +662,27 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                     placeholder="e.g. ugly / sit breast shape ok"
                   />
                   {renderFieldExplainBox('sit breast ok: with side out bra', 'sit breast ok: with side out bra', '例如: ugly, 没有聚拢效果显扁塌 / sit breast shape ok...')}
+                </div>
+
+                {/* stand breast ok */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-mono font-bold uppercase text-slate-600">stand breast ok</label>
+                    <button
+                      type="button"
+                      onClick={() => openPreviousPicker('stand breast ok', 'stand breast ok', setStandBreast)}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
+                    >
+                      <History className="w-3 h-3 text-purple-600" />
+                      Previous
+                    </button>
+                  </div>
+                  <AutoResizeTextarea
+                    value={standBreast}
+                    onChange={(e) => setStandBreast(e.target.value)}
+                    placeholder="e.g. stand breast shape ok / stand breast ugly, because loose tie"
+                  />
+                  {renderFieldExplainBox('stand breast ok', 'stand breast ok', '例如: stand breast ugly, because loose tie... / stand breast shape ok')}
                 </div>
 
                 {/* center chest */}

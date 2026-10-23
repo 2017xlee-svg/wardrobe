@@ -430,9 +430,13 @@ export function computeGarmentLifecycle(
 
     const isWashed = j['wash stated'] === 'wash';
     const rawWash = isWashed ? (j['wash date'] || j.washDate || j['washed date'] || j.washedDate) : null;
-    const washedDateKey = isWashed
+    let washedDateKey = isWashed
       ? (toDateKey(rawWash) || (garment?.['Last Washed'] ? toDateKey(garment['Last Washed']) : null))
       : null;
+    // Safety check: a wash date cannot be before the wear date
+    if (washedDateKey && washedDateKey < wearDateKey) {
+      washedDateKey = null;
+    }
 
     wearRecords.push({
       wearDateKey,
@@ -451,14 +455,50 @@ export function computeGarmentLifecycle(
   const cycles: GarmentCycle[] = [];
 
   // Group into wear cycles
-  // A cycle spans from first wear date -> unwashed span -> wash date
-  let activeCycle: {
+  // A cycle spans from first wear date -> unwashed span -> wash date (or active unwashed if ongoing)
+  interface MutableCycle {
     cycleId: string;
     firstWearDate: string;
     washDate: string | null;
     wearDates: string[];
     totalDurationSeconds: number;
-  } | null = null;
+    hasOnlyCleanWithoutDate: boolean;
+  }
+
+  let activeCycle: MutableCycle | null = null;
+
+  const finalizeCycle = (c: MutableCycle) => {
+    if (c.washDate) {
+      const d1 = new Date(c.firstWearDate).getTime();
+      const d2 = new Date(c.washDate).getTime();
+      const daysUnwashed = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+
+      cycles.push({
+        cycleId: c.cycleId,
+        firstWearDate: c.firstWearDate,
+        washDate: c.washDate,
+        wearDates: c.wearDates,
+        totalDurationSeconds: c.totalDurationSeconds,
+        totalDurationHours: Math.round((c.totalDurationSeconds / 3600) * 10) / 10,
+        isComplete: true,
+        daysUnwashed
+      });
+    } else {
+      const todayKey = getTodayDateKey();
+      const daysUnwashed = Math.max(1, calculateDaysBetween(c.firstWearDate, todayKey));
+
+      cycles.push({
+        cycleId: c.cycleId,
+        firstWearDate: c.firstWearDate,
+        washDate: null,
+        wearDates: c.wearDates,
+        totalDurationSeconds: c.totalDurationSeconds,
+        totalDurationHours: Math.round((c.totalDurationSeconds / 3600) * 10) / 10,
+        isComplete: false,
+        daysUnwashed
+      });
+    }
+  };
 
   wearRecords.forEach((rec, idx) => {
     if (!activeCycle) {
@@ -467,51 +507,60 @@ export function computeGarmentLifecycle(
         firstWearDate: rec.wearDateKey,
         washDate: rec.washedDateKey,
         wearDates: [rec.wearDateKey],
-        totalDurationSeconds: rec.durationSec
+        totalDurationSeconds: rec.durationSec,
+        hasOnlyCleanWithoutDate: !rec.isNeedWash && !rec.washedDateKey
+      };
+      return;
+    }
+
+    let shouldCloseActiveCycle = false;
+
+    if (activeCycle.washDate) {
+      // If the active cycle already has an established wash date:
+      // A wear record occurring strictly after that wash date starts a new cycle.
+      if (rec.wearDateKey > activeCycle.washDate) {
+        shouldCloseActiveCycle = true;
+      } else if (rec.washedDateKey && rec.washedDateKey !== activeCycle.washDate) {
+        // Different explicit wash dates indicate different laundry wash events
+        shouldCloseActiveCycle = true;
+      }
+    } else {
+      // Active cycle does not have an explicit wash date yet.
+      // If previous wears in this cycle were all clean without a date, and this wear is on a later date:
+      if (activeCycle.hasOnlyCleanWithoutDate && rec.wearDateKey > activeCycle.firstWearDate) {
+        activeCycle.washDate = activeCycle.wearDates[activeCycle.wearDates.length - 1];
+        shouldCloseActiveCycle = true;
+      }
+    }
+
+    if (shouldCloseActiveCycle) {
+      finalizeCycle(activeCycle);
+      activeCycle = {
+        cycleId: `cycle_${rec.wearDateKey}_${idx}`,
+        firstWearDate: rec.wearDateKey,
+        washDate: rec.washedDateKey,
+        wearDates: [rec.wearDateKey],
+        totalDurationSeconds: rec.durationSec,
+        hasOnlyCleanWithoutDate: !rec.isNeedWash && !rec.washedDateKey
       };
     } else {
-      activeCycle.wearDates.push(rec.wearDateKey);
+      // Belongs to the same active cycle (rewear or multi-session wear before wash)
+      if (!activeCycle.wearDates.includes(rec.wearDateKey)) {
+        activeCycle.wearDates.push(rec.wearDateKey);
+      }
       activeCycle.totalDurationSeconds += rec.durationSec;
       if (rec.washedDateKey) {
         activeCycle.washDate = rec.washedDateKey;
       }
-    }
-
-    if (activeCycle.washDate && activeCycle.washDate >= rec.wearDateKey) {
-      // Completed cycle
-      const d1 = new Date(activeCycle.firstWearDate).getTime();
-      const d2 = new Date(activeCycle.washDate).getTime();
-      const daysUnwashed = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
-
-      cycles.push({
-        cycleId: activeCycle.cycleId,
-        firstWearDate: activeCycle.firstWearDate,
-        washDate: activeCycle.washDate,
-        wearDates: activeCycle.wearDates,
-        totalDurationSeconds: activeCycle.totalDurationSeconds,
-        totalDurationHours: Math.round((activeCycle.totalDurationSeconds / 3600) * 10) / 10,
-        isComplete: true,
-        daysUnwashed
-      });
-      activeCycle = null;
+      if (rec.isNeedWash) {
+        activeCycle.hasOnlyCleanWithoutDate = false;
+      }
     }
   });
 
-  // If there is an ongoing unwashed cycle
+  // Finalize last active cycle if one exists
   if (activeCycle) {
-    const todayKey = getTodayDateKey();
-    const daysUnwashed = Math.max(1, calculateDaysBetween((activeCycle as any).firstWearDate, todayKey));
-
-    cycles.push({
-      cycleId: (activeCycle as any).cycleId,
-      firstWearDate: (activeCycle as any).firstWearDate,
-      washDate: null,
-      wearDates: (activeCycle as any).wearDates,
-      totalDurationSeconds: (activeCycle as any).totalDurationSeconds,
-      totalDurationHours: Math.round(((activeCycle as any).totalDurationSeconds / 3600) * 10) / 10,
-      isComplete: false,
-      daysUnwashed
-    });
+    finalizeCycle(activeCycle);
   }
 
   // Populate dayStatusMap for each day across all cycles

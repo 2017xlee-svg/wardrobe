@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Edit2, Check, X, Tag, Sparkles } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
+import { isStandardGarmentField, isStandardReportField } from '../services/dataService';
 
 interface CustomAttributesManagerProps {
   title?: string;
@@ -31,8 +32,13 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
   const [showAddForm, setShowAddForm] = useState(false);
 
   const entries = Object.entries(attributes || {}).filter(([k]) => {
-    // Exclude internal metadata and internal _fieldExplanations from generic attribute list
-    return !['id', 'fields', 'createdTime', 'customFields', 'extraAttributes'].includes(k) && !k.startsWith('_');
+    // Exclude internal metadata, private keys, all standard fields, and all field explanation attributes
+    if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes'].includes(k)) return false;
+    if (k.startsWith('_')) return false;
+    if (k.endsWith('_explain') || k.toLowerCase().includes('explain')) return false;
+    if (entityType === 'garment' && isStandardGarmentField(k)) return false;
+    if (entityType === 'wearing report' && isStandardReportField(k)) return false;
+    return true;
   });
 
   const handleAdd = async (e: React.FormEvent) => {

@@ -960,8 +960,8 @@ export const WearCalendar: React.FC<WearCalendarProps> = ({
                               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white hover:bg-indigo-50 text-xs font-semibold text-slate-800 hover:text-indigo-700 border border-slate-300 hover:border-indigo-400 shadow-2xs transition-all cursor-pointer active:scale-95"
                               title={`Click to view wearing report: ${rep['Name']}`}
                             >
-                              <Eye className="w-3.5 h-3.5 text-indigo-600" />
-                              <span className="truncate max-w-[200px]">{rep['Name']}</span>
+                              <Eye className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                              <span className="truncate max-w-[280px] sm:max-w-none">{rep['Name']}</span>
                             </button>
                           ))}
                         </div>
@@ -978,8 +978,8 @@ export const WearCalendar: React.FC<WearCalendarProps> = ({
                                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white hover:bg-indigo-50 text-xs font-semibold text-slate-800 hover:text-indigo-700 border border-slate-300 hover:border-indigo-400 shadow-2xs transition-all cursor-pointer active:scale-95"
                                 title={`Click to view wearing report: ${title}`}
                               >
-                                <Eye className="w-3.5 h-3.5 text-indigo-600" />
-                                <span className="truncate max-w-[200px]">{title}</span>
+                                <Eye className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                <span className="truncate max-w-[280px] sm:max-w-none">{title}</span>
                               </button>
                             );
                           })}

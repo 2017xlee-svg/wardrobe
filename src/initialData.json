@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-19T07:51:42.616Z",
+  "updatedAt": "2026-10-23T00:38:28.420Z",
   "clothes": [
     {
       "id": "rec0gReSd4zD3YS5KrA",
@@ -34,8 +34,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -58,7 +62,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "rec2LJYxVLEIzYvJtFW",
@@ -92,8 +97,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -116,7 +125,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "rec7yUwr2NlVnu5lDQj",
@@ -153,8 +163,34 @@
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {
+          "when with aircond: hot feeling": "due to thick chiffon material, thick clothes so no so cold.",
+          "when with aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.",
+          "when without aircond: hot feeling": "due to thick chiffon material, thick clothes.",
+          "when without aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.little more swear",
+          "when sleep under fan: hot feeling": "under fan wind bigger and cold bed help reduce feeling of hot",
+          "when sleep under fan: leg feeling": "due to middle long dress, inner thin, easy fold up 裙底，even it is thick clothes outer",
+          "side breast ok: with 聚拢 bra": "When look for side , the breast shape beautifully, 配合聚拢bra立体饱满",
+          "side breast ok: with side out bra": "配合侧开内衣侧面副乳易外溢或扁塌，缺乏聚拢支撑",
+          "sit breast ok: With 聚拢bra": "配合聚拢bra就肯定没有胸型问题，胸型饱满稳定",
+          "sit breast ok: with side out bra": "stand breast middle ugly, because 胸型上部坍塌，配合侧开内衣非常不好看"
+        }
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {
+          "when with aircond: hot feeling": "due to thick chiffon material, thick clothes so no so cold.",
+          "when with aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.",
+          "when without aircond: hot feeling": "due to thick chiffon material, thick clothes.",
+          "when without aircond: leg feeling": "due to middle long dress, thick chiffon material, thick clothes.little more swear",
+          "when sleep under fan: hot feeling": "under fan wind bigger and cold bed help reduce feeling of hot",
+          "when sleep under fan: leg feeling": "due to middle long dress, inner thin, easy fold up 裙底，even it is thick clothes outer",
+          "side breast ok: with 聚拢 bra": "When look for side , the breast shape beautifully, 配合聚拢bra立体饱满",
+          "side breast ok: with side out bra": "配合侧开内衣侧面副乳易外溢或扁塌，缺乏聚拢支撑",
+          "sit breast ok: With 聚拢bra": "配合聚拢bra就肯定没有胸型问题，胸型饱满稳定",
+          "sit breast ok: with side out bra": "stand breast middle ugly, because 胸型上部坍塌，配合侧开内衣非常不好看"
+        }
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -224,8 +260,12 @@
       "long dress": "middle dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -248,7 +288,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recAmIsIBj2TQEoLIfQ",
@@ -283,8 +324,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -307,7 +352,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recBhjg0ta8ldYGF1ZA",
@@ -342,8 +388,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -366,7 +416,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recGeW7eELutqKpOaF0",
@@ -401,8 +452,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -425,7 +480,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recJSLfoiCZBCA3MnsP",
@@ -460,8 +516,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -484,7 +544,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recKKsiNeltlfqkMjDV",
@@ -519,8 +580,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -543,7 +608,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recKc4Sa0FgLBWtqeex",
@@ -577,8 +643,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -601,7 +671,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recMeuJu7wtgRlK5yQp",
@@ -635,8 +706,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -659,7 +734,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recNqMZF30WG7SwU2ZU",
@@ -695,8 +771,12 @@
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -719,7 +799,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recP2BQru3beOwK4gKk",
@@ -755,8 +836,12 @@
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -779,7 +864,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recPzExBdZqTFzv3H2q",
@@ -824,8 +910,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -848,7 +938,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recSlj9adNnQtkGuINu",
@@ -893,8 +984,12 @@
       "long dress": "middle dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -917,7 +1012,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recWd4dNodNZgSjiVOn",
@@ -952,8 +1048,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -976,7 +1076,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recaS6t7jzqWSqym8CT",
@@ -1011,8 +1112,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1035,7 +1140,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recd21qfqf7ixTXiEy2",
@@ -1073,8 +1179,12 @@
         "need wash",
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1097,7 +1207,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "receYRXEMznrbePfA7g",
@@ -1131,8 +1242,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1155,7 +1270,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recefNyeYJhyjpzEXZ0",
@@ -1200,8 +1316,12 @@
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1224,7 +1344,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recfCU76HcTMgQKjJqq",
@@ -1262,8 +1383,12 @@
         "need wash",
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1286,7 +1411,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "rechyB33BNWCzQWjmS2",
@@ -1321,8 +1447,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1345,7 +1475,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recjTSOwnBVTdC3fgZa",
@@ -1380,8 +1511,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1404,7 +1539,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "reclixsowPThHbi5cH6",
@@ -1439,8 +1575,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1463,7 +1603,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recqHYt9iOoQxYTMqBU",
@@ -1502,8 +1643,12 @@
         "need wash",
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1526,7 +1671,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "rectB3uVnJRPawfU8fL",
@@ -1561,8 +1707,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1585,7 +1735,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recw2wMt91sgifQM07w",
@@ -1620,8 +1771,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1644,7 +1799,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recw9ywvJO4xioV4nw5",
@@ -1679,8 +1835,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1703,7 +1863,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recwJnMXaYYIW4bfyks",
@@ -1738,8 +1899,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1762,7 +1927,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recxEOHFMuwdAUj7HtS",
@@ -1808,8 +1974,12 @@
       "long dress": "long dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1832,7 +2002,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recxQL0pZCvUnjDthVc",
@@ -1866,8 +2037,12 @@
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [
         "need wash"
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1890,7 +2065,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     },
     {
       "id": "recyjkI8vOuTncSZCch",
@@ -1925,8 +2101,12 @@
       "long dress": "short dress",
       "unwash time rollup": 0,
       "wash stated (from Full Wearing Report (new design) clothes list (linked))": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "aiReports": [
         {
           "id": "garment_initial_version",
@@ -1949,7 +2129,8 @@
       "when without aircond: hot feeling": "",
       "when without aircond: leg feeling": "",
       "when sleep under fan: hot feeling": "",
-      "when sleep under fan: leg feeling": ""
+      "when sleep under fan: leg feeling": "",
+      "fieldExplanations": {}
     }
   ],
   "reports": [
@@ -1976,8 +2157,12 @@
       "AI Wearing Analysis": "",
       "Pictures": [],
       "aiReports": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026 09 01 wearing report",
       "wearDate": "2026-09-21T00:00:00.000Z",
       "reportDetail": "",
@@ -2024,8 +2209,12 @@
         }
       ],
       "aiReports": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026 09 19 wearing report",
       "wearDate": "2026-09-19T00:00:00.000Z",
       "reportDetail": "1 to 6 am",
@@ -2061,8 +2250,12 @@
       "AI Wearing Analysis": "",
       "Pictures": [],
       "aiReports": [],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-09-02 wearing report",
       "wearDate": "2026-09-02T00:00:00.000Z",
       "reportDetail": "2 to 10am",
@@ -2117,8 +2310,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-28 wearing report",
       "wearDate": "2026-08-27T00:00:00.000Z",
       "reportDetail": "From 9.30pm to 5am , 7.30hour",
@@ -2167,8 +2364,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-15 0848 wearing report copy",
       "wearDate": "2026-08-14T00:00:00.000Z",
       "reportDetail": "11.30 to 7",
@@ -2216,8 +2417,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-14 1341 wearing report copy",
       "wearDate": "2026-08-13T00:00:00.000Z",
       "reportDetail": "3-8.30am",
@@ -2266,8 +2471,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-13 2148 wearing report copy",
       "wearDate": "2026-08-13T00:00:00.000Z",
       "reportDetail": "start 4.30pm - 6.30pm",
@@ -2316,8 +2525,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-13 0848 wearing report copy",
       "wearDate": "2026-08-12T00:00:00.000Z",
       "reportDetail": "3-9 am",
@@ -2365,8 +2578,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-13 1441 wearing report copy",
       "wearDate": "2026-08-12T00:00:00.000Z",
       "reportDetail": "10.30 to 3 am - 4.30hour",
@@ -2414,8 +2631,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-07 1338 wesring report",
       "wearDate": "2026-08-06T00:00:00.000Z",
       "reportDetail": "1 - 6",
@@ -2470,8 +2691,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-07 1257 wearing report",
       "wearDate": "2026-08-06T00:00:00.000Z",
       "reportDetail": "9-1am",
@@ -2519,8 +2744,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-07 1341 wearing report",
       "wearDate": "2026-08-05T00:00:00.000Z",
       "reportDetail": "",
@@ -2568,8 +2797,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-08-04 0846 wearing report",
       "wearDate": "2026-08-03T00:00:00.000Z",
       "reportDetail": "1.30 -7.30am",
@@ -2617,8 +2850,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-31 1054 wearing report copy",
       "wearDate": "2026-07-29T00:00:00.000Z",
       "reportDetail": "The skirt is short at sleep…",
@@ -2666,8 +2903,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-31 1054 wearing report",
       "wearDate": "2026-07-29T00:00:00.000Z",
       "reportDetail": "The skirt is short at sleep…",
@@ -2715,8 +2956,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-15 1230 wearing report",
       "wearDate": "2026-07-15T00:00:00.000Z",
       "reportDetail": "6.30 - 9",
@@ -2765,8 +3010,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-14 0848 wearing report",
       "wearDate": "2026-07-14T00:00:00.000Z",
       "reportDetail": "4.30- 7.30am",
@@ -2814,8 +3063,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-12 1020 wearing report",
       "wearDate": "2026-07-11T00:00:00.000Z",
       "reportDetail": "10.40 to 6am",
@@ -2863,8 +3116,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-11 0814 wearing report",
       "wearDate": "2026-07-10T00:00:00.000Z",
       "reportDetail": "9.30 - 3am",
@@ -2912,8 +3169,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-10 1432 wearing report",
       "wearDate": "2026-07-09T00:00:00.000Z",
       "reportDetail": "3-5pm",
@@ -2961,8 +3222,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-10 1445 wearing report",
       "wearDate": "2026-07-09T00:00:00.000Z",
       "reportDetail": "12-6am, first test , quite full , quit beautiful, can wash dry? Skirt will up ?",
@@ -3010,8 +3275,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-10 1441 wearing report",
       "wearDate": "2026-07-09T00:00:00.000Z",
       "reportDetail": "9.30 - 12",
@@ -3059,8 +3328,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-09 1011 wearing report",
       "wearDate": "2026-07-08T00:00:00.000Z",
       "reportDetail": "10.30 to 6.30",
@@ -3107,8 +3380,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-07-06 1408 wearing report",
       "wearDate": "2026-07-05T00:00:00.000Z",
       "reportDetail": "12.20 - 6pm",
@@ -3156,8 +3433,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-29 1308 wearing report",
       "wearDate": "2026-06-29T00:00:00.000Z",
       "reportDetail": "8-9am",
@@ -3205,8 +3486,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-27 0819 wearing report",
       "wearDate": "2026-06-26T00:00:00.000Z",
       "reportDetail": "11.30pm - 6am",
@@ -3254,8 +3539,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-26 0904 wearng report",
       "wearDate": "2026-06-25T00:00:00.000Z",
       "reportDetail": "10.20 - 1.20am",
@@ -3303,8 +3592,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-26 0910 weating report",
       "wearDate": "2026-06-25T00:00:00.000Z",
       "reportDetail": "1.30 to 6",
@@ -3353,8 +3646,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-25 2148 wearing report",
       "wearDate": "2026-06-25T00:00:00.000Z",
       "reportDetail": "4-7",
@@ -3402,8 +3699,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-25 2140 wearing report",
       "wearDate": "2026-06-24T00:00:00.000Z",
       "reportDetail": "10.20pm - 7am - 8.40hour",
@@ -3451,8 +3752,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-25 2144 wearing report",
       "wearDate": "2026-06-24T00:00:00.000Z",
       "reportDetail": "7-10am -3hour",
@@ -3500,8 +3805,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-24 1012 wearing report",
       "wearDate": "2026-06-23T00:00:00.000Z",
       "reportDetail": "12.20 - 6pm",
@@ -3549,8 +3858,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-23 0833 wearing report",
       "wearDate": "2026-06-22T00:00:00.000Z",
       "reportDetail": "1.30 to 7",
@@ -3598,8 +3911,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-20 1054 wearing report",
       "wearDate": "2026-06-19T00:00:00.000Z",
       "reportDetail": "Quite tight blue big bra with this white dress",
@@ -3647,8 +3964,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-19 1225 wearing report",
       "wearDate": "2026-06-18T00:00:00.000Z",
       "reportDetail": "1hour at noon\n, weather not bad, but got little swear too",
@@ -3696,8 +4017,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-19 1231 wearing report",
       "wearDate": "2026-06-18T00:00:00.000Z",
       "reportDetail": "1 hour little swear and little hot",
@@ -3745,8 +4070,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-19 wearing report",
       "wearDate": "2026-06-18T00:00:00.000Z",
       "reportDetail": "4-9am",
@@ -3794,8 +4123,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-19 1220 wearing report",
       "wearDate": "2026-06-18T00:00:00.000Z",
       "reportDetail": "1hour at noon\n, weather not bad, but got little swear too",
@@ -3843,8 +4176,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-19 1234 wearing report",
       "wearDate": "2026-06-18T00:00:00.000Z",
       "reportDetail": "9-4am",
@@ -3891,8 +4228,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-15 1216 wearing report",
       "wearDate": "2026-06-14T00:00:00.000Z",
       "reportDetail": "3am-9am",
@@ -3956,8 +4297,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-11 1144 wearing report",
       "wearDate": "2026-06-10T00:00:00.000Z",
       "reportDetail": "",
@@ -4002,8 +4347,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-11 1151 wearing report",
       "wearDate": "2026-06-10T00:00:00.000Z",
       "reportDetail": "12-9am , when wearing middle little small , material feel lace middle thick , may quite hot at noon",
@@ -4048,8 +4397,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-11 1125 wearing report",
       "wearDate": "2026-06-09T00:00:00.000Z",
       "reportDetail": "Quick big center breast. Warm if noon is hot",
@@ -4094,8 +4447,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-11 1129 wearing report",
       "wearDate": "2026-06-09T00:00:00.000Z",
       "reportDetail": "",
@@ -4140,8 +4497,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-04 wearing report 3",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4186,8 +4547,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "wearing report 1",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4232,8 +4597,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-04 wearing report 6",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4278,8 +4647,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-04 wearing report 5",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4324,8 +4697,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-04 wearing report 2",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4370,8 +4747,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-04 wearing report 4",
       "wearDate": "2026-06-04T00:00:00.000Z",
       "reportDetail": "",
@@ -4416,8 +4797,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-03 1044 wearing report",
       "wearDate": "2026-06-03T00:00:00.000Z",
       "reportDetail": "",
@@ -4462,8 +4847,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-03 wearing report",
       "wearDate": "2026-06-02T00:00:00.000Z",
       "reportDetail": "11pm to 3am",
@@ -4508,8 +4897,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-01 wearing report",
       "wearDate": "2026-05-31T00:00:00.000Z",
       "reportDetail": "Start 5am - 7am",
@@ -4554,8 +4947,12 @@
           "isPrimary": true
         }
       ],
-      "customFields": {},
-      "extraAttributes": {},
+      "customFields": {
+        "_fieldExplanations": {}
+      },
+      "extraAttributes": {
+        "_fieldExplanations": {}
+      },
       "name": "2026-06-01 wearing report 2",
       "wearDate": "2026-05-31T00:00:00.000Z",
       "reportDetail": "10.40pm to 5am",

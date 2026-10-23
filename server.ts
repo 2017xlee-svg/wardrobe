@@ -462,6 +462,99 @@ async function startServer() {
         }
       }
 
+      const isStandardGarmentKeyServer = (rawKey: string): boolean => {
+        if (!rawKey) return false;
+        if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+        if (rawKey.startsWith('_')) return true;
+        if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+        const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+        if (k.startsWith('standbreast') || k.includes('standbreast')) return true;
+        if (k.startsWith('sitbreast') || k.startsWith('sidebreast')) return true;
+        if (k.includes('sideoutbra') || k.includes('sifeoutbra') || k.includes('gatherbra') || k.includes('聚拢bra')) return true;
+        if (k === 'centerchest') return true;
+        if (k === 'name' || k === 'clothestype' || k === 'material' || k === 'materialprop' || k === 'thickclothes' || k === 'hotatnoon' || k === 'diaodai') return true;
+        if (k === 'beautiful' || k === 'beatifulreason' || k === 'wet' || k === 'wetreason' || k === 'longdress' || k === 'price' || k === 'maythrow') return true;
+        if (k.includes('wearingfrequency') || k === 'trackedappwashes' || k === 'totalwashedcount' || k === 'lastwashed' || k === 'unwashtimerollup') return true;
+        if (k === 'aiclothesanalysis' || k === 'aireports' || k === 'pictures' || k === 'tags' || k === 'created' || k.includes('washstated')) return true;
+        if (k.includes('withaircond') || k.includes('withoutaircond') || k.includes('noaircond') || k.includes('sleepunderfan') || k.includes('sleepfan') || k.includes('hoyfeeling') || k.includes('hotfeeling') || k.includes('legfeeling')) return true;
+        if (k.includes('fieldexplanations')) return true;
+        return false;
+      };
+
+      const isStandardReportKeyServer = (rawKey: string): boolean => {
+        if (!rawKey) return false;
+        if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+        if (rawKey.startsWith('_')) return true;
+        if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+        const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+        if (k.includes('garments') || k.includes('clothes') || k.includes('clotheslinked')) return true;
+        if (k === 'wearingdate' || k === 'time' || k === 'timestamp' || k === 'weardate') return true;
+        if (k.includes('shoulderfeel') || k === 'sweat' || k === 'nightsweat' || k.includes('midbreast') || k.includes('nightmidbreast')) return true;
+        if (k.includes('legfeel') || k.includes('reportdetail') || k === 'comfort' || k === 'satisfaction' || k.includes('fieldexplanations')) return true;
+        return false;
+      };
+
+      // Sanitize clothes: purge standard fields and _explain keys from customFields, migrate explanations
+      if (Array.isArray(payload.clothes)) {
+        payload.clothes.forEach((c: any) => {
+          if (!c.fieldExplanations || typeof c.fieldExplanations !== 'object') {
+            c.fieldExplanations = {};
+          }
+          const custom = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
+          for (const [k, v] of Object.entries(custom)) {
+            const isExplain = k.endsWith('_explain') || k.toLowerCase().includes('explain') || k.toLowerCase().includes('hoyfeeling') || (k.toLowerCase().includes('feeling') && !k.startsWith('when ')) || k.toLowerCase().includes('gatherbra') || k.toLowerCase().includes('sideoutbra') || k.toLowerCase().includes('sifeoutbra');
+            if (isExplain) {
+              const baseKey = k.replace(/_explain$/i, '').trim();
+              if (v && typeof v === 'string' && v.trim() && !c.fieldExplanations[baseKey]) {
+                c.fieldExplanations[baseKey] = v.trim();
+              }
+              if (c.customFields) delete c.customFields[k];
+              if (c.extraAttributes) delete c.extraAttributes[k];
+            } else if (isStandardGarmentKeyServer(k)) {
+              if (c.customFields) delete c.customFields[k];
+              if (c.extraAttributes) delete c.extraAttributes[k];
+            }
+          }
+          if (c.customFields) c.customFields._fieldExplanations = c.fieldExplanations;
+          if (c.extraAttributes) c.extraAttributes._fieldExplanations = c.fieldExplanations;
+          for (const k of Object.keys(c)) {
+            if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
+              delete c[k];
+            }
+          }
+        });
+      }
+
+      // Sanitize reports: purge standard fields and _explain keys from customFields
+      if (Array.isArray(payload.reports)) {
+        payload.reports.forEach((r: any) => {
+          if (!r.fieldExplanations || typeof r.fieldExplanations !== 'object') {
+            r.fieldExplanations = {};
+          }
+          const custom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
+          for (const [k, v] of Object.entries(custom)) {
+            if (k.endsWith('_explain') || k.toLowerCase().includes('explain')) {
+              const baseKey = k.replace(/_explain$/i, '').trim();
+              if (v && typeof v === 'string' && v.trim() && !r.fieldExplanations[baseKey]) {
+                r.fieldExplanations[baseKey] = v.trim();
+              }
+              if (r.customFields) delete r.customFields[k];
+              if (r.extraAttributes) delete r.extraAttributes[k];
+            } else if (isStandardReportKeyServer(k)) {
+              if (r.customFields) delete r.customFields[k];
+              if (r.extraAttributes) delete r.extraAttributes[k];
+            }
+          }
+          if (r.customFields) r.customFields._fieldExplanations = r.fieldExplanations;
+          if (r.extraAttributes) r.extraAttributes._fieldExplanations = r.fieldExplanations;
+          for (const k of Object.keys(r)) {
+            if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
+              delete r[k];
+            }
+          }
+        });
+      }
+
       await fs.promises.mkdir(dataDir, { recursive: true });
       const jsonString = JSON.stringify(payload, null, 2);
       await fs.promises.writeFile(localDbPath, jsonString, "utf-8");

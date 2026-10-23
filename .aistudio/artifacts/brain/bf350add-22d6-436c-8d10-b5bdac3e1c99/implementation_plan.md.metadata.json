@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan to resolve missing climate scenario restore (when with aircond, when without aircond, when sleep under fan hot/leg feeling): add comprehensive fuzzy and alias matching, prevent empty string overwriting during restore merges on both server and client, restore and preserve fieldExplanations, and sync existing seed values into local database.",
-  "updatedAt": "2026-10-19T07:48:37.433289952Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Implementation plan to fix the wearing report name truncation in the Garment Details modal and fix the unwashed calendar day counter to properly continue accumulation on rewear (Day 10 on the 7th after being reworn on the 6th, instead of resetting to Day 2).",
+  "updatedAt":  "2026-10-23T08:08:47.151466862Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }
