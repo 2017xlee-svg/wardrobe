@@ -122,6 +122,44 @@ function findFileByName(dir: string, targetName: string): string | null {
   return null;
 }
 
+function isStandardGarmentKeyServer(rawKey: string): boolean {
+  if (!rawKey) return false;
+  if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+  if (rawKey.startsWith('_')) return true;
+  if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+  const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+  if (k.startsWith('standbreast') || k.includes('standbreast')) return true;
+  if (k.startsWith('sitbreast') || k.startsWith('sidebreast')) return true;
+  if (k.includes('sideoutbra') || k.includes('sifeoutbra') || k.includes('gatherbra') || k.includes('聚拢bra')) return true;
+  if (k === 'centerchest') return true;
+  if (k === 'name' || k === 'clothestype' || k === 'material' || k === 'materialprop' || k === 'thickclothes' || k === 'hotatnoon' || k === 'diaodai') return true;
+  if (k === 'beautiful' || k === 'beatifulreason' || k === 'beautifulreason' || k === 'wet' || k === 'wetreason' || k === 'dryness' || k === 'drynessreason' || k === 'longdress' || k === 'price' || k === 'maythrow') return true;
+  if (k === 'descriptions' || k === 'descriptions2' || k === 'lastcommentoraction' || k === 'lastcomment') return true;
+  if (k.includes('wearingfrequency') || k === 'trackedappwashes' || k === 'totalwashedcount' || k === 'lastwashed' || k === 'unwashtimerollup') return true;
+  if (k === 'aiclothesanalysis' || k === 'aireports' || k === 'pictures' || k === 'tags' || k === 'created' || k.includes('washstated')) return true;
+  if (k.includes('withaircond') || k.includes('withoutaircond') || k.includes('noaircond') || k.includes('sleepunderfan') || k.includes('sleepfan') || k.includes('hoyfeeling') || k.includes('hotfeeling') || k.includes('legfeeling')) return true;
+  if (k.includes('fieldexplanations')) return true;
+  return false;
+}
+
+function normalizeGarmentForStorage(item: any): any {
+  const garment = migrateGarmentFieldAliases(item);
+  const customFields = {
+    ...(garment.extraAttributes || {}),
+    ...(garment.customFields || {})
+  };
+  for (const [key, value] of Object.entries(garment)) {
+    if (isStandardGarmentKeyServer(key)) continue;
+    if (customFields[key] === undefined || customFields[key] === null || String(customFields[key]).trim() === '') {
+      customFields[key] = value;
+    }
+    delete garment[key];
+  }
+  delete garment.extraAttributes;
+  garment.customFields = customFields;
+  return garment;
+}
+
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
@@ -235,7 +273,6 @@ async function startServer() {
   const fieldDefsPath = path.join(dataDir, "field_definitions.json");
   const srcFieldDefsPath = path.join(process.cwd(), "src", "fieldDefinitions.json");
   const aiReportsPath = path.join(dataDir, "ai_advisor_reports.json");
-  const drilldownPresetsPath = path.join(dataDir, "drilldown_presets.json");
 
   // Get AI key status & configuration
   app.get("/api/ai/key-status", (req, res) => {
@@ -380,52 +417,17 @@ async function startServer() {
     }
   });
 
-  // Get drill-down report presets from server disk
-  app.get("/api/drilldown-presets", async (req, res) => {
-    try {
-      if (fs.existsSync(drilldownPresetsPath)) {
-        const content = await fs.promises.readFile(drilldownPresetsPath, "utf-8");
-        return res.json(JSON.parse(content));
-      }
-      res.json([]);
-    } catch (e: any) {
-      res.status(500).json({ error: e.message || "Failed to read drilldown presets" });
-    }
-  });
-
-  // Save drill-down report presets to server disk
-  app.post("/api/drilldown-presets", async (req, res) => {
-    try {
-      await fs.promises.mkdir(dataDir, { recursive: true });
-      const presets = Array.isArray(req.body) ? req.body : [];
-      await fs.promises.writeFile(drilldownPresetsPath, JSON.stringify(presets, null, 2), "utf-8");
-      res.json({ status: "ok", count: presets.length });
-    } catch (e: any) {
-      res.status(500).json({ error: e.message || "Failed to save drilldown presets" });
-    }
-  });
-
   // Get local database from disk
   app.get("/api/local-db", async (req, res) => {
     try {
       if (fs.existsSync(localDbPath)) {
         const content = await fs.promises.readFile(localDbPath, "utf-8");
         const parsed = JSON.parse(content);
-        if ((!parsed.drilldownPresets || parsed.drilldownPresets.length === 0) && fs.existsSync(drilldownPresetsPath)) {
-          try {
-            parsed.drilldownPresets = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
-          } catch {}
-        }
         return res.json(parsed);
       }
       if (fs.existsSync(initialDataPath)) {
         const content = await fs.promises.readFile(initialDataPath, "utf-8");
         const parsed = JSON.parse(content);
-        if ((!parsed.drilldownPresets || parsed.drilldownPresets.length === 0) && fs.existsSync(drilldownPresetsPath)) {
-          try {
-            parsed.drilldownPresets = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
-          } catch {}
-        }
         return res.json(parsed);
       }
       res.json({ clothes: [], reports: [], junctions: [] });
@@ -467,25 +469,6 @@ async function startServer() {
         }
       }
 
-      const isStandardGarmentKeyServer = (rawKey: string): boolean => {
-        if (!rawKey) return false;
-        if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
-        if (rawKey.startsWith('_')) return true;
-        if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
-        const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
-        if (k.startsWith('standbreast') || k.includes('standbreast')) return true;
-        if (k.startsWith('sitbreast') || k.startsWith('sidebreast')) return true;
-        if (k.includes('sideoutbra') || k.includes('sifeoutbra') || k.includes('gatherbra') || k.includes('聚拢bra')) return true;
-        if (k === 'centerchest') return true;
-        if (k === 'name' || k === 'clothestype' || k === 'material' || k === 'materialprop' || k === 'thickclothes' || k === 'hotatnoon' || k === 'diaodai') return true;
-        if (k === 'beautiful' || k === 'beatifulreason' || k === 'wet' || k === 'wetreason' || k === 'longdress' || k === 'price' || k === 'maythrow') return true;
-        if (k.includes('wearingfrequency') || k === 'trackedappwashes' || k === 'totalwashedcount' || k === 'lastwashed' || k === 'unwashtimerollup') return true;
-        if (k === 'aiclothesanalysis' || k === 'aireports' || k === 'pictures' || k === 'tags' || k === 'created' || k.includes('washstated')) return true;
-        if (k.includes('withaircond') || k.includes('withoutaircond') || k.includes('noaircond') || k.includes('sleepunderfan') || k.includes('sleepfan') || k.includes('hoyfeeling') || k.includes('hotfeeling') || k.includes('legfeeling')) return true;
-        if (k.includes('fieldexplanations')) return true;
-        return false;
-      };
-
       const isStandardReportKeyServer = (rawKey: string): boolean => {
         if (!rawKey) return false;
         if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
@@ -501,11 +484,12 @@ async function startServer() {
 
       // Sanitize clothes: purge standard fields and _explain keys from customFields, migrate explanations
       if (Array.isArray(payload.clothes)) {
+        payload.clothes = payload.clothes.map((item: any) => normalizeGarmentForStorage(item));
         payload.clothes.forEach((c: any) => {
           if (!c.fieldExplanations || typeof c.fieldExplanations !== 'object') {
             c.fieldExplanations = {};
           }
-          const custom = { ...(c.customFields || {}), ...(c.extraAttributes || {}) };
+          const custom = { ...(c.customFields || {}) };
           for (const [k, v] of Object.entries(custom)) {
             const isExplain = k.endsWith('_explain') || k.toLowerCase().includes('explain') || k.toLowerCase().includes('hoyfeeling') || (k.toLowerCase().includes('feeling') && !k.startsWith('when ')) || k.toLowerCase().includes('gatherbra') || k.toLowerCase().includes('sideoutbra') || k.toLowerCase().includes('sifeoutbra');
             if (isExplain) {
@@ -514,14 +498,12 @@ async function startServer() {
                 c.fieldExplanations[baseKey] = v.trim();
               }
               if (c.customFields) delete c.customFields[k];
-              if (c.extraAttributes) delete c.extraAttributes[k];
             } else if (isStandardGarmentKeyServer(k)) {
               if (c.customFields) delete c.customFields[k];
-              if (c.extraAttributes) delete c.extraAttributes[k];
             }
           }
-          if (c.customFields) c.customFields._fieldExplanations = c.fieldExplanations;
-          if (c.extraAttributes) c.extraAttributes._fieldExplanations = c.fieldExplanations;
+          c.customFields = custom;
+          delete c.extraAttributes;
           for (const k of Object.keys(c)) {
             if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
               delete c[k];
@@ -563,15 +545,6 @@ async function startServer() {
       await fs.promises.mkdir(dataDir, { recursive: true });
       const jsonString = JSON.stringify(payload, null, 2);
       await fs.promises.writeFile(localDbPath, jsonString, "utf-8");
-
-      // Also persist drilldownPresets if included in database payload
-      if (Array.isArray(payload.drilldownPresets) && payload.drilldownPresets.length > 0) {
-        try {
-          await fs.promises.writeFile(drilldownPresetsPath, JSON.stringify(payload.drilldownPresets, null, 2), "utf-8");
-        } catch (presetErr) {
-          console.warn("[LocalDB] Presets write warning:", presetErr);
-        }
-      }
 
       // Also keep initialData.json up to date as backup
       try {
@@ -697,22 +670,18 @@ async function startServer() {
   // Export Full Archive: Database + High-Resolution Photos + Markdown AI Reports
   app.get("/api/backup/download-zip", async (req, res) => {
     try {
-      let dbData = { clothes: [], reports: [], junctions: [] };
+      let dbData: any = { clothes: [], reports: [], junctions: [], drilldownPresets: [] };
       if (fs.existsSync(localDbPath)) {
         dbData = JSON.parse(await fs.promises.readFile(localDbPath, "utf-8"));
       } else if (fs.existsSync(initialDataPath)) {
         dbData = JSON.parse(await fs.promises.readFile(initialDataPath, "utf-8"));
       }
 
-      let presetsList: any[] = [];
-      if (fs.existsSync(drilldownPresetsPath)) {
-        try {
-          const parsedPresets = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
-          presetsList = Array.isArray(parsedPresets) ? parsedPresets.map((preset: any) => canonicalizeReportPresetFields(preset)) : [];
-        } catch {}
-      }
+      const presetsList: any[] = Array.isArray(dbData.drilldownPresets)
+        ? dbData.drilldownPresets.map((preset: any) => canonicalizeReportPresetFields(preset))
+        : [];
 
-      const backupClothes = (dbData.clothes || []).map((item: any) => migrateGarmentFieldAliases(item));
+      const backupClothes = (dbData.clothes || []).map((item: any) => normalizeGarmentForStorage(item));
 
       const zip = new JSZip();
 
@@ -849,7 +818,6 @@ ${aiDiagnosticsSection}
 
       zip.file("ai_advisor_reports.json", JSON.stringify(aiReportsList, null, 2));
       zip.file("field_definitions.json", JSON.stringify(fieldDefsList, null, 2));
-      zip.file("drilldown_presets.json", JSON.stringify(presetsList, null, 2));
 
       const metadata = {
         app: "Wardrobe & Wear Journal",
@@ -1131,14 +1099,14 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         } catch {}
       }
 
-      let mergedClothes = clothes.map((item: any) => migrateGarmentFieldAliases(item));
+      let mergedClothes = clothes.map((item: any) => normalizeGarmentForStorage(item));
       let mergedReports = [...reports];
       let mergedJunctions = [...junctions];
 
       if (existingDb) {
         // 1. Merge clothes: preserve customFields, extraAttributes, and any new custom properties from existing clothes
         const existingClothesMap = new Map<string, any>(
-          (Array.isArray(existingDb.clothes) ? existingDb.clothes.map((c: any) => migrateGarmentFieldAliases(c)) : []).map((c: any) => [c.id, c])
+          (Array.isArray(existingDb.clothes) ? existingDb.clothes.map((c: any) => normalizeGarmentForStorage(c)) : []).map((c: any) => [c.id, c])
         );
         for (const c of mergedClothes) {
           const existing = existingClothesMap.get(c.id);
@@ -1180,13 +1148,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             }
 
             c.customFields = mergedCustom;
-            c.extraAttributes = mergedCustom;
-            for (const [mk, mv] of Object.entries(mergedCustom)) {
-              if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-              if (c[mk] === undefined || c[mk] === null || String(c[mk]).trim() === "") {
-                c[mk] = mv;
-              }
-            }
+            delete c.extraAttributes;
 
             if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
               c.fieldExplanations = {
@@ -1209,7 +1171,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         const backupClothesIds = new Set(mergedClothes.map((c: any) => c.id));
         for (const existingC of existingDb.clothes || []) {
           if (!backupClothesIds.has(existingC.id)) {
-            mergedClothes.push(migrateGarmentFieldAliases(existingC));
+            mergedClothes.push(normalizeGarmentForStorage(existingC));
           }
         }
 
@@ -1301,11 +1263,43 @@ and select this file. All your clothes, photos, definitions, and AI reports will
 
       // Write sanitized merged database to disk
       const nowIso = new Date().toISOString();
+      let backupPresets = Array.isArray(parsedDb.drilldownPresets)
+        ? parsedDb.drilldownPresets.map((preset: any) => canonicalizeReportPresetFields(preset))
+        : [];
+      if (backupPresets.length === 0) {
+        const legacyPresetsKey = allFiles.find((f) =>
+          !zip.files[f].dir && (f.endsWith("drilldown_presets.json") || f.endsWith("report_presets.json"))
+        );
+        if (legacyPresetsKey) {
+          try {
+            const legacyPresets = JSON.parse(await zip.file(legacyPresetsKey)!.async("string"));
+            if (Array.isArray(legacyPresets)) {
+              backupPresets = legacyPresets.map((preset: any) => canonicalizeReportPresetFields(preset));
+            }
+          } catch (e) {
+            console.warn("[Restore] Legacy presets extract warning:", e);
+          }
+        }
+      }
+      const presetMap = new Map<string, any>();
+      const currentPresets = Array.isArray(existingDb?.drilldownPresets)
+        ? existingDb.drilldownPresets.map((preset: any) => canonicalizeReportPresetFields(preset))
+        : [];
+      currentPresets.forEach((preset: any) => {
+        if (preset?.id) presetMap.set(preset.id, preset);
+      });
+      backupPresets.forEach((preset: any) => {
+        if (!preset?.id) return;
+        const existing = presetMap.get(preset.id);
+        presetMap.set(preset.id, existing ? { ...existing, ...preset } : preset);
+      });
+      const mergedPresets = Array.from(presetMap.values());
       const sanitizedPayload = {
         updatedAt: nowIso,
         clothes: mergedClothes,
         reports: mergedReports,
         junctions: mergedJunctions,
+        drilldownPresets: mergedPresets,
       };
       await fs.promises.writeFile(localDbPath, JSON.stringify(sanitizedPayload, null, 2), "utf-8");
       try {
@@ -1388,57 +1382,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         }
       }
 
-      // Safely extract and merge drilldown_presets.json if present in backup archive
-      let restoredPresetsCount = 0;
-      const presetsKey = allFiles.find((f) => !zip.files[f].dir && (f.endsWith("drilldown_presets.json") || f.endsWith("report_presets.json")));
-      let backupPresets: any[] = [];
-      if (presetsKey) {
-        try {
-          const presetsZipFile = zip.file(presetsKey);
-          if (presetsZipFile) {
-            const presetsText = await presetsZipFile.async("string");
-            const parsed = JSON.parse(presetsText);
-            if (Array.isArray(parsed)) backupPresets = parsed.map((preset: any) => canonicalizeReportPresetFields(preset));
-          }
-        } catch (e) {
-          console.warn("[Restore] Presets extract warning:", e);
-        }
-      } else if (Array.isArray(parsedDb.drilldownPresets)) {
-        backupPresets = parsedDb.drilldownPresets.map((preset: any) => canonicalizeReportPresetFields(preset));
-      }
-
-      if (backupPresets.length > 0) {
-        try {
-          let currentPresets: any[] = [];
-          if (fs.existsSync(drilldownPresetsPath)) {
-            try {
-              const parsedCurrent = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
-              currentPresets = Array.isArray(parsedCurrent) ? parsedCurrent.map((preset: any) => canonicalizeReportPresetFields(preset)) : [];
-            } catch {}
-          }
-          const presetMap = new Map<string, any>();
-          // Preserve existing server presets
-          currentPresets.forEach((p: any) => {
-            if (p && p.id) presetMap.set(p.id, p);
-          });
-          // Merge backup presets (always restore incoming presets from backup archive)
-          backupPresets.forEach((p: any) => {
-            if (p && p.id) {
-              const existing = presetMap.get(p.id);
-              if (!existing) {
-                presetMap.set(p.id, p);
-              } else {
-                presetMap.set(p.id, { ...existing, ...p });
-              }
-            }
-          });
-          const mergedPresets = Array.from(presetMap.values());
-          await fs.promises.writeFile(drilldownPresetsPath, JSON.stringify(mergedPresets, null, 2), "utf-8");
-          restoredPresetsCount = mergedPresets.length;
-        } catch (presetMergeErr) {
-          console.warn("[Restore] Drilldown presets merge warning:", presetMergeErr);
-        }
-      }
+      const restoredPresetsCount = mergedPresets.length;
 
       res.json({
         status: "ok",
@@ -1509,7 +1453,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         type: c.type || c.clothesType || c['Clothes Type'],
         material: c.material || c['material'] || c.materialProp || 'Chiffon',
         thickClothes: c.thickClothes || c['thick clothes'] || '02 middle thick clothes',
-        hotAtNoon: c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(未记录中午炎热度)',
+        hotAtNoon: c['when without aircond: hot feeling'] || c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(未记录中午炎热度)',
         diaoDai: c.diaoDai || c['diao dai'] || '(未记录吊带款式)',
         sitBreastOk: c.sitBreastGatherBra || c.sitBreastOk || c['sit breast ok'] || '(未记录)',
         sideBreastOk: c.sideBreastGatherBra || c.sideBreastOk || c['side breast ok'] || '(未记录)',
@@ -1681,7 +1625,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           recordedProperties: {
             material: candidate.material,
             thickClothes: candidate.thickClothes,
-            hotAtNoon: candidate.noAircondHotFeeling || candidate.hotAtNoon,
+            hotAtNoon: candidate['when without aircond: hot feeling'] || candidate.noAircondHotFeeling || candidate.hotAtNoon,
             diaoDai: candidate.diaoDai,
             sitBreastOk: candidate.sitBreastOk,
             sideBreastOk: candidate.sideBreastOk,
@@ -1833,7 +1777,7 @@ ${JSON.stringify(formattedJunctions, null, 2)}
       const clothesType = garment.clothesType || garment['Clothes Type'] || garment.type || 'Dress';
       const material = garment.material || garment['material'] || garment.materialProp || '(未记录面料)';
       const thickClothes = garment.thickClothes || garment['thick clothes'] || garment.thickness || '(未记录厚度)';
-      const hotAtNoon = garment.noAircondHotFeeling || garment.hotAtNoon || garment['Hot at noon'] || '(未记录中午炎热度)';
+      const hotAtNoon = garment['when without aircond: hot feeling'] || garment.noAircondHotFeeling || garment.hotAtNoon || garment['Hot at noon'] || '(未记录中午炎热度)';
       const diaoDai = garment.diaoDai || garment['diao dai'] || '(未记录吊带款式)';
       const sitBreastOkGather = garment.sitBreastGatherBra || garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || '';
       const sitBreastOkSideOut = garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || '';
@@ -1843,7 +1787,7 @@ ${JSON.stringify(formattedJunctions, null, 2)}
       const sideBreastOk = garment.sideBreastGatherBra || garment.sideBreastOk || garment['side breast ok'] || '(未记录侧面胸型)';
       const whenAircondHot = garment['when with aircond: hot feeling'] || '';
       const whenAircondLeg = garment['when with aircond: leg feeling'] || '';
-      const whenNoAircondHot = garment.noAircondHotFeeling || garment['when without aircond: hot feeling'] || '';
+      const whenNoAircondHot = garment['when without aircond: hot feeling'] || garment.noAircondHotFeeling || '';
       const whenNoAircondLeg = garment['when without aircond: leg feeling'] || '';
       const whenSleepFanHot = garment['when sleep under fan: hot feeling'] || '';
       const whenSleepFanLeg = garment['when sleep under fan: leg feeling'] || '';
@@ -2389,7 +2333,7 @@ Garment Name: ${garment ? (garment['Name'] || garment.name) : (junction['clothes
 Garment Type: ${garment ? (garment['Clothes Type'] || garment.clothesType) : junction['Clothes Type (from clothes(new))'] || 'Dress'}
 Material: ${garment?.['material'] || '(未记录)'}
 Thickness: ${garment?.['thick clothes'] || '(未记录)'}
-No-air-conditioning heat feeling: ${garment?.noAircondHotFeeling || garment?.['Hot at noon'] || '(未记录)'}
+No-air-conditioning heat feeling: ${garment?.['when without aircond: hot feeling'] || garment?.noAircondHotFeeling || garment?.['Hot at noon'] || '(未记录)'}
 Strap Style (diao dai): ${garment?.['diao dai'] || '(未记录)'}
 Sit Breast Comfort (久坐胸部体感): ${garment?.sitBreastGatherBra || garment?.['sit breast ok'] || '(未记录)'}
 Dryness Behavior: ${garment?.Dryness || garment?.['wet'] || 'dry'}
@@ -2469,7 +2413,7 @@ Session Notes: ${report?.['report detail'] || '(无)'}
         type: c.clothesType || c['Clothes Type'],
         material: c.material || c['material'] || '(unrecorded)',
         thickClothes: c.thickClothes || c['thick clothes'] || '(unrecorded)',
-        hotAtNoon: c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(unrecorded)',
+        hotAtNoon: c['when without aircond: hot feeling'] || c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(unrecorded)',
         diaoDai: c.diaoDai || c['diao dai'] || '(unrecorded)',
         sitBreastOk: c.sitBreastGatherBra || c.sitBreastOk || c['sit breast ok'] || '(unrecorded)',
         sideBreastOk: c.sideBreastGatherBra || c.sideBreastOk || c['side breast ok'] || '(unrecorded)',

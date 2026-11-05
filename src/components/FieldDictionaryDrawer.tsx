@@ -307,7 +307,7 @@ export const FieldDictionaryDrawer: React.FC<FieldDictionaryDrawerProps> = ({ in
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="搜索字段名称、中文含义或输入值 (例如: noAircondHotFeeling, Dryness, 细肩带)..."
+                placeholder="搜索字段名称、中文含义或输入值 (例如: when without aircond: hot feeling, Dryness, 细肩带)..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-purple-500 placeholder:text-slate-400"
@@ -380,7 +380,7 @@ export const FieldDictionaryDrawer: React.FC<FieldDictionaryDrawerProps> = ({ in
                       required
                       value={editingItem.fieldNameEn}
                       onChange={e => setEditingItem({ ...editingItem, fieldNameEn: e.target.value })}
-                      placeholder="e.g. noAircondHotFeeling, diao dai"
+                      placeholder="e.g. when without aircond: hot feeling, diao dai"
                       className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>

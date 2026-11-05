@@ -110,19 +110,19 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     garment.sideBreastGatherBra || ''
   );
   const [editSideBreastOkWithSideOutBra, setEditSideBreastOkWithSideOutBra] = useState(
-    garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || ''
+    garment['side breast ok: with side out bra'] || ''
   );
   const [editSitBreastOkWithGatherBra, setEditSitBreastOkWithGatherBra] = useState(
     garment.sitBreastGatherBra || ''
   );
   const [editSitBreastOkWithSideOutBra, setEditSitBreastOkWithSideOutBra] = useState(
-    garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
+    garment['sit breast ok: with side out bra'] || ''
   );
 
   // Multi-scenario climate and sensory ergonomics states
   const [editWhenAircondHot, setEditWhenAircondHot] = useState(garment['when with aircond: hot feeling'] || '');
   const [editWhenAircondLeg, setEditWhenAircondLeg] = useState(garment['when with aircond: leg feeling'] || '');
-  const [editWhenNoAircondHot, setEditWhenNoAircondHot] = useState(garment.noAircondHotFeeling || '');
+  const [editWhenNoAircondHot, setEditWhenNoAircondHot] = useState(garment['when without aircond: hot feeling'] || '');
   const [editWhenNoAircondLeg, setEditWhenNoAircondLeg] = useState(garment['when without aircond: leg feeling'] || '');
   const [editWhenSleepFanHot, setEditWhenSleepFanHot] = useState(garment['when sleep under fan: hot feeling'] || '');
   const [editWhenSleepFanLeg, setEditWhenSleepFanLeg] = useState(garment['when sleep under fan: leg feeling'] || '');
@@ -477,10 +477,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       const freshGarment = dataService.getGarment(garment.id) || garment;
       const combinedCustom = {
         ...(garment.customFields || {}),
-        ...(garment.extraAttributes || {}),
         ...(freshGarment.customFields || {}),
-        ...(freshGarment.extraAttributes || {}),
-        _fieldExplanations: editFieldExplanations
+        ...(freshGarment.extraAttributes || {})
       };
 
       // Consolidate current edited state with fresh garment properties
@@ -494,15 +492,13 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
         material: editMaterial || garment['material'] || garment.materialProp,
         'thick clothes': editThickClothes || garment['thick clothes'] || garment.thickClothes,
         thickClothes: editThickClothes || garment['thick clothes'] || garment.thickClothes,
-        noAircondHotFeeling: editWhenNoAircondHot || garment.noAircondHotFeeling,
+        'when without aircond: hot feeling': editWhenNoAircondHot || garment['when without aircond: hot feeling'],
         'diao dai': editDiaoDai || garment['diao dai'] || garment.diaoDai,
         diaoDai: editDiaoDai || garment['diao dai'] || garment.diaoDai,
         sideBreastGatherBra: editSideBreastOkWithGatherBra || garment.sideBreastGatherBra,
-        'side breast ok: with side out bra': editSideBreastOkWithSideOutBra || garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra,
-        sideBreastOkWithSideOutBra: editSideBreastOkWithSideOutBra || garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra,
+        'side breast ok: with side out bra': editSideBreastOkWithSideOutBra || garment['side breast ok: with side out bra'],
         sitBreastGatherBra: editSitBreastOkWithGatherBra || garment.sitBreastGatherBra,
-        'sit breast ok: with side out bra': editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra,
-        sitBreastOkWithSideOutBra: editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra,
+        'sit breast ok: with side out bra': editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'],
         // Multi-scenario climate ergonomics
         'when with aircond: hot feeling': editWhenAircondHot || garment['when with aircond: hot feeling'],
         'when with aircond: leg feeling': editWhenAircondLeg || garment['when with aircond: leg feeling'],
@@ -530,7 +526,6 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
         tags: editTags,
         fieldExplanations: editFieldExplanations,
         customFields: combinedCustom,
-        extraAttributes: combinedCustom
       };
 
       // Extract all comprehensively linked reports and junctions from wornReports
@@ -628,7 +623,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
   };
 
   // Custom Dynamic Attributes Handlers for this Garment
-  const handleAddGarmentCustomField = async (key: string, val: any) => {
+  const handleAddGarmentCustomField = async (key: string, val: any, explanation?: string) => {
     const prevDeleted = Array.isArray(garment._deletedCustomFields) ? garment._deletedCustomFields : [];
     const newDeleted = prevDeleted.filter(k => k !== key);
     garment._deletedCustomFields = newDeleted;
@@ -639,15 +634,18 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     updated[key] = val;
 
     garment.customFields = updated;
-    garment.extraAttributes = updated;
-    (garment as any)[key] = val;
+    const explanations = { ...(garment.fieldExplanations || {}) };
+    if (explanation?.trim()) explanations[key] = explanation.trim();
+    else delete explanations[key];
+    garment.fieldExplanations = explanations;
+    setEditFieldExplanations(explanations);
     setDataVersion(v => v + 1);
 
-    await dataService.setGarmentCustomField(garment.id, key, val);
-    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
+    await dataService.setGarmentCustomField(garment.id, key, val, explanation);
+    onUpdateGarment(garment.id, { customFields: updated, fieldExplanations: explanations, _deletedCustomFields: newDeleted });
   };
 
-  const handleUpdateGarmentCustomField = async (key: string, val: any) => {
+  const handleUpdateGarmentCustomField = async (key: string, val: any, explanation?: string) => {
     const prevDeleted = Array.isArray(garment._deletedCustomFields) ? garment._deletedCustomFields : [];
     const newDeleted = prevDeleted.filter(k => k !== key);
     garment._deletedCustomFields = newDeleted;
@@ -658,12 +656,15 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     updated[key] = val;
 
     garment.customFields = updated;
-    garment.extraAttributes = updated;
-    (garment as any)[key] = val;
+    const explanations = { ...(garment.fieldExplanations || {}) };
+    if (explanation?.trim()) explanations[key] = explanation.trim();
+    else delete explanations[key];
+    garment.fieldExplanations = explanations;
+    setEditFieldExplanations(explanations);
     setDataVersion(v => v + 1);
 
-    await dataService.setGarmentCustomField(garment.id, key, val);
-    onUpdateGarment(garment.id, { customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
+    await dataService.setGarmentCustomField(garment.id, key, val, explanation);
+    onUpdateGarment(garment.id, { customFields: updated, fieldExplanations: explanations, _deletedCustomFields: newDeleted });
   };
 
   const handleDeleteGarmentCustomField = async (key: string) => {
@@ -681,7 +682,10 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     // 3. Remove key from top-level garment properties
     delete (garment as any)[key];
     garment.customFields = updated;
-    garment.extraAttributes = updated;
+    const explanations = { ...(garment.fieldExplanations || {}) };
+    delete explanations[key];
+    garment.fieldExplanations = explanations;
+    setEditFieldExplanations(explanations);
     setDataVersion(v => v + 1);
 
     // 4. Call dataService to remove the custom field and persist to disk/storage
@@ -690,7 +694,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     // 5. Update local parent state with sanitized updates including _deletedCustomFields
     onUpdateGarment(garment.id, {
       customFields: updated,
-      extraAttributes: updated,
+      fieldExplanations: explanations,
       _deletedCustomFields: newDeleted
     });
   };
@@ -777,7 +781,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       'Clothes Type': editClothesType,
       'material': editMaterial,
       'thick clothes': editThickClothes,
-      noAircondHotFeeling: editWhenNoAircondHot,
+      'when without aircond: hot feeling': editWhenNoAircondHot,
       'diao dai': editDiaoDai,
       sideBreastGatherBra: editSideBreastOkWithGatherBra,
       'side breast ok: with side out bra': editSideBreastOkWithSideOutBra,
@@ -806,18 +810,15 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       fieldExplanations: editFieldExplanations
     };
 
-    // Store field explanations strictly in fieldExplanations and private _fieldExplanations,
-    // and remove any standard fields and loose _explain keys from customFields / extraAttributes
+    // Store field explanations separately from dynamic custom field values.
     const existingCustom = { ...(garment.customFields || garment.extraAttributes || {}) };
     Object.keys(existingCustom).forEach((k) => {
       if (k.endsWith('_explain') || k.toLowerCase().includes('explain') || isStandardGarmentField(k)) {
         delete existingCustom[k];
       }
     });
-    existingCustom._fieldExplanations = editFieldExplanations;
     updates.fieldExplanations = editFieldExplanations;
     updates.customFields = existingCustom;
-    updates.extraAttributes = existingCustom;
 
     onUpdateGarment(garment.id, updates);
     setIsEditing(false);
@@ -834,17 +835,17 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       garment.sideBreastGatherBra || ''
     );
     setEditSideBreastOkWithSideOutBra(
-      garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || ''
+      garment['side breast ok: with side out bra'] || ''
     );
     setEditSitBreastOkWithGatherBra(
       garment.sitBreastGatherBra || ''
     );
     setEditSitBreastOkWithSideOutBra(
-      garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
+      garment['sit breast ok: with side out bra'] || ''
     );
     setEditWhenAircondHot(garment['when with aircond: hot feeling'] || '');
     setEditWhenAircondLeg(garment['when with aircond: leg feeling'] || '');
-    setEditWhenNoAircondHot(garment.noAircondHotFeeling || '');
+    setEditWhenNoAircondHot(garment['when without aircond: hot feeling'] || '');
     setEditWhenNoAircondLeg(garment['when without aircond: leg feeling'] || '');
     setEditWhenSleepFanHot(garment['when sleep under fan: hot feeling'] || '');
     setEditWhenSleepFanLeg(garment['when sleep under fan: leg feeling'] || '');
@@ -1146,7 +1147,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       type="button"
                       onClick={() => {
                         const ergoKeys = [
-                          'thick clothes', 'noAircondHotFeeling', 'diao dai',
+                          'thick clothes', 'when without aircond: hot feeling', 'diao dai',
                           'sideBreastGatherBra', 'side breast ok: with side out bra',
                           'sitBreastGatherBra', 'sit breast ok: with side out bra', 'center chest', 'beautiful', 'beatiful reason',
                           'Dryness', 'Dryness reason', 'long dress', 'may throw', 'Last Washed',
@@ -1164,7 +1165,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       className="text-[10px] font-semibold text-purple-700 hover:text-purple-900 px-2 py-0.5 rounded-lg hover:bg-purple-100/70 border border-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                     >
                       <MessageSquare className="w-3 h-3" />
-                      <span>{['thick clothes', 'noAircondHotFeeling', 'diao dai'].some(k => expandedExplainFields[k]) ? '收起说明' : '展开说明'}</span>
+                      <span>{['thick clothes', 'when without aircond: hot feeling', 'diao dai'].some(k => expandedExplainFields[k]) ? '收起说明' : '展开说明'}</span>
                     </button>
                   </div>
 
@@ -1568,7 +1569,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                                 </label>
                                 <button
                                   type="button"
-                                  onClick={() => openPreviousPicker('noAircondHotFeeling', 'No-air-conditioning hot feeling', setEditWhenNoAircondHot)}
+                                  onClick={() => openPreviousPicker('when without aircond: hot feeling', 'No-air-conditioning hot feeling', setEditWhenNoAircondHot)}
                                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                                 >
                                   <History className="w-3 h-3 text-purple-600" />
@@ -1580,7 +1581,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                                 onChange={(e) => setEditWhenNoAircondHot(e.target.value)}
                                 placeholder="e.g. hot / middle hot / not hot"
                               />
-                              {renderFieldExplainBox('noAircondHotFeeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
+                              {renderFieldExplainBox('when without aircond: hot feeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
                             </div>
 
                             {/* leg feeling */}
@@ -2142,7 +2143,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                     {renderViewAttr('Clothes Type', 'Clothes Type', garment['Clothes Type'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('material', 'material', garment['material'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('thick clothes', 'thick clothes', garment['thick clothes'] || <span className="text-slate-400 font-normal italic">No data</span>)}
-                    {renderViewAttr('noAircondHotFeeling', 'No-air-conditioning hot feeling', garment.noAircondHotFeeling || <span className="text-slate-400 font-normal italic">No data</span>)}
+                    {renderViewAttr('when without aircond: hot feeling', 'No-air-conditioning hot feeling', garment['when without aircond: hot feeling'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('diao dai', 'diao dai', garment['diao dai'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr(
                       'sideBreastGatherBra',
@@ -2152,7 +2153,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                     {renderViewAttr(
                       'side breast ok: with side out bra',
                       'side breast ok: with side out bra',
-                      garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || <span className="text-slate-400 font-normal italic">No data</span>
+                      garment['side breast ok: with side out bra'] || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
                     {renderViewAttr(
                       'sitBreastGatherBra',
@@ -2162,7 +2163,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                     {renderViewAttr(
                       'sit breast ok: with side out bra',
                       'sit breast ok: with side out bra',
-                      garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || <span className="text-slate-400 font-normal italic">No data</span>
+                      garment['sit breast ok: with side out bra'] || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
                     {renderViewAttr('center chest', 'center chest', garment['center chest'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('beautiful', 'beautiful', garment['beautiful'] || <span className="text-slate-400 font-normal italic">No data</span>)}
@@ -2282,11 +2283,11 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         <div>
                           <span className="text-[11px] font-mono text-slate-500 font-bold block">&gt; hot feeling:</span>
                           <span className="font-semibold text-slate-800">
-                            {garment.noAircondHotFeeling || <span className="text-slate-400 font-normal italic">No data</span>}
+                            {garment['when without aircond: hot feeling'] || <span className="text-slate-400 font-normal italic">No data</span>}
                           </span>
-                          {getFieldExplainText('noAircondHotFeeling') && (
+                          {getFieldExplainText('when without aircond: hot feeling') && (
                             <p className="mt-0.5 text-[10px] text-purple-700 bg-purple-50 p-1.5 rounded-md border border-purple-100 break-words">
-                              💡 {getFieldExplainText('noAircondHotFeeling')}
+                              💡 {getFieldExplainText('when without aircond: hot feeling')}
                             </p>
                           )}
                         </div>
@@ -2478,6 +2479,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       }
                       return clean;
                     })()}
+                    explanations={garment.fieldExplanations}
                     onAddAttribute={handleAddGarmentCustomField}
                     onUpdateAttribute={handleUpdateGarmentCustomField}
                     onDeleteAttribute={handleDeleteGarmentCustomField}
@@ -2503,7 +2505,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500">
-                          基于材质、厚薄度、无空调热感(noAircondHotFeeling)、干爽度(Dryness)、肩带(diao dai)与胸型等字段的专项诊断。支持多版本生成、查看、编辑与删除。
+                          基于材质、厚薄度、无空调热感、干爽度(Dryness)、肩带(diao dai)与胸型等字段的专项诊断。支持多版本生成、查看、编辑与删除。
                         </p>
                       </div>
                     </div>
