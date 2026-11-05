@@ -23,7 +23,7 @@ export const SavedReportsList: React.FC<SavedReportsListProps> = ({ reports, onS
       <div className="p-8 rounded-2xl bg-slate-50/60 border border-dashed border-slate-200 text-center space-y-1.5">
         <p className="text-xs font-semibold text-slate-700">暂无已保存的独立 AI 穿搭与体感分析报告</p>
         <p className="text-[11px] text-slate-400">
-          在上方配置好天气（如仅选 Hot at noon）、场合、优先级或衣服后点击「获取穿搭与体感分析」，生成的报告将自动独立存档于此，并支持查看、编辑与删除。
+          在上方配置好天气、场合、优先级或衣服后点击「获取穿搭与体感分析」，生成的报告将自动独立存档于此，并支持查看、编辑与删除。
         </p>
       </div>
     );

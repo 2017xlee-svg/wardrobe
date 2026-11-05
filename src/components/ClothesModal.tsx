@@ -105,37 +105,32 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
   const [editClothesType, setEditClothesType] = useState(garment['Clothes Type'] || 'Dress');
   const [editMaterial, setEditMaterial] = useState(garment['material'] || '');
   const [editThickClothes, setEditThickClothes] = useState(garment['thick clothes'] || '');
-  const [editHotAtNoon, setEditHotAtNoon] = useState(garment['Hot at noon'] || '');
   const [editDiaoDai, setEditDiaoDai] = useState(garment['diao dai'] || '');
-  const [editSideBreastOk, setEditSideBreastOk] = useState(garment['side breast ok'] || '');
   const [editSideBreastOkWithGatherBra, setEditSideBreastOkWithGatherBra] = useState(
-    garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || garment['side breast ok'] || ''
+    garment.sideBreastGatherBra || ''
   );
   const [editSideBreastOkWithSideOutBra, setEditSideBreastOkWithSideOutBra] = useState(
     garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || ''
   );
   const [editSitBreastOkWithGatherBra, setEditSitBreastOkWithGatherBra] = useState(
-    garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || garment['sit breast ok'] || ''
+    garment.sitBreastGatherBra || ''
   );
   const [editSitBreastOkWithSideOutBra, setEditSitBreastOkWithSideOutBra] = useState(
     garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
-  );
-  const [editStandBreast, setEditStandBreast] = useState(
-    garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || ''
   );
 
   // Multi-scenario climate and sensory ergonomics states
   const [editWhenAircondHot, setEditWhenAircondHot] = useState(garment['when with aircond: hot feeling'] || '');
   const [editWhenAircondLeg, setEditWhenAircondLeg] = useState(garment['when with aircond: leg feeling'] || '');
-  const [editWhenNoAircondHot, setEditWhenNoAircondHot] = useState(garment['when without aircond: hot feeling'] || '');
+  const [editWhenNoAircondHot, setEditWhenNoAircondHot] = useState(garment.noAircondHotFeeling || '');
   const [editWhenNoAircondLeg, setEditWhenNoAircondLeg] = useState(garment['when without aircond: leg feeling'] || '');
   const [editWhenSleepFanHot, setEditWhenSleepFanHot] = useState(garment['when sleep under fan: hot feeling'] || '');
   const [editWhenSleepFanLeg, setEditWhenSleepFanLeg] = useState(garment['when sleep under fan: leg feeling'] || '');
   const [editCenterChest, setEditCenterChest] = useState(garment['center chest'] || '');
   const [editBeautiful, setEditBeautiful] = useState(garment['beautiful'] || '');
   const [editBeatifulReason, setEditBeatifulReason] = useState(garment['beatiful reason'] || '');
-  const [editWet, setEditWet] = useState(garment['wet'] || 'dry');
-  const [editWetReason, setEditWetReason] = useState(garment['wet reason'] || '');
+  const [editWet, setEditWet] = useState(garment.Dryness || 'dry');
+  const [editWetReason, setEditWetReason] = useState(garment['Dryness reason'] || '');
   const [editLongDress, setEditLongDress] = useState(garment['long dress'] || '');
   const [editPrice, setEditPrice] = useState<string>(garment['price'] !== undefined ? String(garment['price']) : '');
   const [editMayThrow, setEditMayThrow] = useState(garment['may throw'] || '');
@@ -176,8 +171,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
   } | null>(null);
 
   const wetOptions = React.useMemo(() => {
-    const dictValues = fieldDictionaryService.getFieldTypicalValues('wet');
-    const histValues = dataService.getFieldPreviousValues('wet', 'clothes');
+    const dictValues = fieldDictionaryService.getFieldTypicalValues('Dryness');
+    const histValues = dataService.getFieldPreviousValues('Dryness', 'clothes');
     const optMap = new Map<string, { value: string; label: string; meaningCn?: string }>();
 
     // Standard baseline options
@@ -312,7 +307,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     });
 
     // 2. Special defaults for wet
-    if (fieldKey === 'wet') {
+    if (fieldKey === 'Dryness') {
       const defaultWet = [
         { value: 'dry', labelCn: '干爽 / 不易受潮', meaningCn: '不易吸湿发黏或透气快干，穿着全程保持干爽舒适' },
         { value: 'middle', labelCn: '适中 / 半干半湿', meaningCn: '排湿透气适中，微有体感但未明显积汗黏腻' },
@@ -499,29 +494,18 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
         material: editMaterial || garment['material'] || garment.materialProp,
         'thick clothes': editThickClothes || garment['thick clothes'] || garment.thickClothes,
         thickClothes: editThickClothes || garment['thick clothes'] || garment.thickClothes,
-        'Hot at noon': editHotAtNoon || garment['Hot at noon'] || garment.hotAtNoon,
-        hotAtNoon: editHotAtNoon || garment['Hot at noon'] || garment.hotAtNoon,
+        noAircondHotFeeling: editWhenNoAircondHot || garment.noAircondHotFeeling,
         'diao dai': editDiaoDai || garment['diao dai'] || garment.diaoDai,
         diaoDai: editDiaoDai || garment['diao dai'] || garment.diaoDai,
-        'side breast ok: with 聚拢 bra': editSideBreastOkWithGatherBra || garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || garment['side breast ok'],
-        sideBreastOkWithGatherBra: editSideBreastOkWithGatherBra || garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || garment['side breast ok'],
+        sideBreastGatherBra: editSideBreastOkWithGatherBra || garment.sideBreastGatherBra,
         'side breast ok: with side out bra': editSideBreastOkWithSideOutBra || garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra,
         sideBreastOkWithSideOutBra: editSideBreastOkWithSideOutBra || garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra,
-        'side breast ok': editSideBreastOkWithGatherBra || editSideBreastOkWithSideOutBra || garment['side breast ok'] || garment.sideBreastOk,
-        sideBreastOk: editSideBreastOkWithGatherBra || editSideBreastOkWithSideOutBra || garment['side breast ok'] || garment.sideBreastOk,
-        'sit breast ok: With 聚拢bra': editSitBreastOkWithGatherBra || garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || garment['sit breast ok'],
-        sitBreastOkWithGatherBra: editSitBreastOkWithGatherBra || garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || garment['sit breast ok'],
+        sitBreastGatherBra: editSitBreastOkWithGatherBra || garment.sitBreastGatherBra,
         'sit breast ok: with side out bra': editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra,
         sitBreastOkWithSideOutBra: editSitBreastOkWithSideOutBra || garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra,
-        'sit breast ok': editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'] || garment.sitBreastOk,
-        sitBreastOk: editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'] || garment.sitBreastOk,
-        'stand breast ok': editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
-        'stand breast': editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
-        standBreast: editStandBreast || garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk,
         // Multi-scenario climate ergonomics
         'when with aircond: hot feeling': editWhenAircondHot || garment['when with aircond: hot feeling'],
         'when with aircond: leg feeling': editWhenAircondLeg || garment['when with aircond: leg feeling'],
-        'when without aircond: hot feeling': editWhenNoAircondHot || garment['when without aircond: hot feeling'],
         'when without aircond: leg feeling': editWhenNoAircondLeg || garment['when without aircond: leg feeling'],
         'when sleep under fan: hot feeling': editWhenSleepFanHot || garment['when sleep under fan: hot feeling'],
         'when sleep under fan: leg feeling': editWhenSleepFanLeg || garment['when sleep under fan: leg feeling'],
@@ -529,8 +513,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
         centerChest: editCenterChest || garment['center chest'] || garment.centerChest,
         beautiful: editBeautiful || garment['beautiful'] || garment.beautiful,
         'beatiful reason': editBeatifulReason || garment['beatiful reason'] || garment.beatifulReason,
-        wet: editWet || garment['wet'] || garment.wet,
-        'wet reason': editWetReason || garment['wet reason'] || garment.wetReason,
+        Dryness: editWet || garment.Dryness,
+        'Dryness reason': editWetReason || garment['Dryness reason'],
         'long dress': editLongDress || garment['long dress'] || garment.longDress,
         longDress: editLongDress || garment['long dress'] || garment.longDress,
         price: editPrice ? parseFloat(editPrice) : garment.price,
@@ -793,30 +777,23 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
       'Clothes Type': editClothesType,
       'material': editMaterial,
       'thick clothes': editThickClothes,
-      'Hot at noon': editHotAtNoon,
+      noAircondHotFeeling: editWhenNoAircondHot,
       'diao dai': editDiaoDai,
-      'side breast ok': editSideBreastOkWithGatherBra || editSideBreastOkWithSideOutBra || garment['side breast ok'],
-      'side breast ok: with 聚拢 bra': editSideBreastOkWithGatherBra,
+      sideBreastGatherBra: editSideBreastOkWithGatherBra,
       'side breast ok: with side out bra': editSideBreastOkWithSideOutBra,
-      'sit breast ok': editSitBreastOkWithGatherBra || editSitBreastOkWithSideOutBra || garment['sit breast ok'],
-      'sit breast ok: With 聚拢bra': editSitBreastOkWithGatherBra,
+      sitBreastGatherBra: editSitBreastOkWithGatherBra,
       'sit breast ok: with side out bra': editSitBreastOkWithSideOutBra,
-      'stand breast ok': editStandBreast.trim(),
-      'stand breast': editStandBreast.trim(),
-      standBreast: editStandBreast.trim(),
-      standBreastOk: editStandBreast.trim(),
       // Multi-scenario climate ergonomics
       'when with aircond: hot feeling': editWhenAircondHot,
       'when with aircond: leg feeling': editWhenAircondLeg,
-      'when without aircond: hot feeling': editWhenNoAircondHot,
       'when without aircond: leg feeling': editWhenNoAircondLeg,
       'when sleep under fan: hot feeling': editWhenSleepFanHot,
       'when sleep under fan: leg feeling': editWhenSleepFanLeg,
       'center chest': editCenterChest,
       'beautiful': editBeautiful,
       'beatiful reason': editBeatifulReason,
-      'wet': editWet as any,
-      'wet reason': editWetReason,
+      Dryness: editWet as any,
+      'Dryness reason': editWetReason,
       'long dress': editLongDress,
       'price': isNaN(numPrice as number) ? undefined : numPrice,
       'may throw': editMayThrow,
@@ -852,35 +829,30 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
     setEditClothesType(garment['Clothes Type'] || 'Dress');
     setEditMaterial(garment['material'] || '');
     setEditThickClothes(garment['thick clothes'] || '');
-    setEditHotAtNoon(garment['Hot at noon'] || '');
     setEditDiaoDai(garment['diao dai'] || '');
-    setEditSideBreastOk(garment['side breast ok'] || '');
     setEditSideBreastOkWithGatherBra(
-      garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || garment['side breast ok'] || ''
+      garment.sideBreastGatherBra || ''
     );
     setEditSideBreastOkWithSideOutBra(
       garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || ''
     );
     setEditSitBreastOkWithGatherBra(
-      garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || garment['sit breast ok'] || ''
+      garment.sitBreastGatherBra || ''
     );
     setEditSitBreastOkWithSideOutBra(
       garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || ''
     );
-    setEditStandBreast(
-      garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || ''
-    );
     setEditWhenAircondHot(garment['when with aircond: hot feeling'] || '');
     setEditWhenAircondLeg(garment['when with aircond: leg feeling'] || '');
-    setEditWhenNoAircondHot(garment['when without aircond: hot feeling'] || '');
+    setEditWhenNoAircondHot(garment.noAircondHotFeeling || '');
     setEditWhenNoAircondLeg(garment['when without aircond: leg feeling'] || '');
     setEditWhenSleepFanHot(garment['when sleep under fan: hot feeling'] || '');
     setEditWhenSleepFanLeg(garment['when sleep under fan: leg feeling'] || '');
     setEditCenterChest(garment['center chest'] || '');
     setEditBeautiful(garment['beautiful'] || '');
     setEditBeatifulReason(garment['beatiful reason'] || '');
-    setEditWet(garment['wet'] || 'dry');
-    setEditWetReason(garment['wet reason'] || '');
+    setEditWet(garment.Dryness || 'dry');
+    setEditWetReason(garment['Dryness reason'] || '');
     setEditLongDress(garment['long dress'] || '');
     setEditPrice(garment['price'] !== undefined ? String(garment['price']) : '');
     setEditMayThrow(garment['may throw'] || '');
@@ -1174,12 +1146,12 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       type="button"
                       onClick={() => {
                         const ergoKeys = [
-                          'thick clothes', 'Hot at noon', 'diao dai',
-                          'side breast ok: with 聚拢 bra', 'side breast ok: with side out bra',
-                          'sit breast ok: With 聚拢bra', 'sit breast ok: with side out bra', 'center chest', 'beautiful', 'beatiful reason',
-                          'wet', 'wet reason', 'long dress', 'may throw', 'Last Washed',
+                          'thick clothes', 'noAircondHotFeeling', 'diao dai',
+                          'sideBreastGatherBra', 'side breast ok: with side out bra',
+                          'sitBreastGatherBra', 'sit breast ok: with side out bra', 'center chest', 'beautiful', 'beatiful reason',
+                          'Dryness', 'Dryness reason', 'long dress', 'may throw', 'Last Washed',
                           'when with aircond: hot feeling', 'when with aircond: leg feeling',
-                          'when without aircond: hot feeling', 'when without aircond: leg feeling',
+                          'when without aircond: leg feeling',
                           'when sleep under fan: hot feeling', 'when sleep under fan: leg feeling'
                         ];
                         const anyExpanded = ergoKeys.some(k => expandedExplainFields[k]);
@@ -1192,7 +1164,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       className="text-[10px] font-semibold text-purple-700 hover:text-purple-900 px-2 py-0.5 rounded-lg hover:bg-purple-100/70 border border-slate-200 transition-colors cursor-pointer flex items-center gap-1"
                     >
                       <MessageSquare className="w-3 h-3" />
-                      <span>{['thick clothes', 'Hot at noon', 'diao dai'].some(k => expandedExplainFields[k]) ? '收起说明' : '展开说明'}</span>
+                      <span>{['thick clothes', 'noAircondHotFeeling', 'diao dai'].some(k => expandedExplainFields[k]) ? '收起说明' : '展开说明'}</span>
                     </button>
                   </div>
 
@@ -1218,27 +1190,6 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       {renderFieldExplainBox('thick clothes', 'Thick Clothes', '面料厚度、保暖或透气实测感受...')}
                     </div>
 
-                    {/* Hot at noon */}
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-mono font-bold uppercase text-slate-600">Hot at noon</label>
-                        <button
-                          type="button"
-                          onClick={() => openPreviousPicker('Hot at noon', 'Hot at noon', setEditHotAtNoon)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
-                        >
-                          <History className="w-3 h-3 text-purple-600" />
-                          Previous
-                        </button>
-                      </div>
-                      <AutoResizeTextarea
-                        value={editHotAtNoon}
-                        onChange={(e) => setEditHotAtNoon(e.target.value)}
-                        placeholder="e.g. noon not hot / cool"
-                      />
-                      {renderFieldExplainBox('Hot at noon', 'Hot at noon', '中午炎热度体感（如: noon not hot / cool but fabric thin）...')}
-                    </div>
-
                     {/* diao dai */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
@@ -1260,13 +1211,13 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       {renderFieldExplainBox('diao dai', 'Diao dai', '例如: diao dai not hook at noon, but pain in shoulder.')}
                     </div>
 
-                    {/* side breast ok: with 聚拢 bra */}
+                    {/* Side breast shape with gathering bra */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-mono font-bold uppercase text-slate-600">side breast ok: with 聚拢 bra</label>
+                        <label className="text-xs font-mono font-bold uppercase text-slate-600">Side breast shape with gathering bra</label>
                         <button
                           type="button"
-                          onClick={() => openPreviousPicker('side breast ok: with 聚拢 bra', 'side breast ok: with 聚拢 bra', setEditSideBreastOkWithGatherBra)}
+                          onClick={() => openPreviousPicker('sideBreastGatherBra', 'Side breast shape with gathering bra', setEditSideBreastOkWithGatherBra)}
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                         >
                           <History className="w-3 h-3 text-purple-600" />
@@ -1278,7 +1229,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         onChange={(e) => setEditSideBreastOkWithGatherBra(e.target.value)}
                         placeholder="e.g. side breast shape ok"
                       />
-                      {renderFieldExplainBox('side breast ok: with 聚拢 bra', 'side breast ok: with 聚拢 bra', '例如: 配合聚拢bra侧面胸型优美饱满 / side breast shape ok...')}
+                      {renderFieldExplainBox('sideBreastGatherBra', 'Side breast shape with gathering bra', '例如: 配合聚拢bra侧面胸型优美饱满 / side breast shape ok...')}
                     </div>
 
                     {/* side breast ok: with side out bra */}
@@ -1302,13 +1253,13 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       {renderFieldExplainBox('side breast ok: with side out bra', 'side breast ok: with side out bra', '例如: side breast out, 配合侧开内衣侧面副乳外溢或扁塌...')}
                     </div>
 
-                    {/* sit breast ok: With 聚拢bra */}
+                    {/* Sitting breast shape with gathering bra */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-mono font-bold uppercase text-slate-600">sit breast ok: With 聚拢bra</label>
+                        <label className="text-xs font-mono font-bold uppercase text-slate-600">Sitting breast shape with gathering bra</label>
                         <button
                           type="button"
-                          onClick={() => openPreviousPicker('sit breast ok: With 聚拢bra', 'sit breast ok: With 聚拢bra', setEditSitBreastOkWithGatherBra)}
+                          onClick={() => openPreviousPicker('sitBreastGatherBra', 'Sitting breast shape with gathering bra', setEditSitBreastOkWithGatherBra)}
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                         >
                           <History className="w-3 h-3 text-purple-600" />
@@ -1320,7 +1271,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         onChange={(e) => setEditSitBreastOkWithGatherBra(e.target.value)}
                         placeholder="e.g. sit breast shape ok"
                       />
-                      {renderFieldExplainBox('sit breast ok: With 聚拢bra', 'sit breast ok: With 聚拢bra', '例如: 配合聚拢bra胸型美观稳定 / sit breast shape ok...')}
+                      {renderFieldExplainBox('sitBreastGatherBra', 'Sitting breast shape with gathering bra', '例如: 配合聚拢bra胸型美观稳定 / sit breast shape ok...')}
                     </div>
 
                     {/* sit breast ok: with side out bra */}
@@ -1342,27 +1293,6 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         placeholder="e.g. ugly / sit breast shape ok / stand breast ugly, because loose tie"
                       />
                       {renderFieldExplainBox('sit breast ok: with side out bra', 'sit breast ok: with side out bra', '例如: ugly, 没有聚拢效果显扁塌 / stand breast ugly...')}
-                    </div>
-
-                    {/* stand breast ok */}
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-mono font-bold uppercase text-slate-600">stand breast ok</label>
-                        <button
-                          type="button"
-                          onClick={() => openPreviousPicker('stand breast ok', 'stand breast ok', setEditStandBreast)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
-                        >
-                          <History className="w-3 h-3 text-purple-600" />
-                          Previous
-                        </button>
-                      </div>
-                      <AutoResizeTextarea
-                        value={editStandBreast}
-                        onChange={(e) => setEditStandBreast(e.target.value)}
-                        placeholder="e.g. stand breast shape ok / stand breast ugly, because loose tie"
-                      />
-                      {renderFieldExplainBox('stand breast ok', 'stand breast ok', '例如: stand breast ugly, because loose tie... / stand breast shape ok')}
                     </div>
 
                     {/* center chest */}
@@ -1427,31 +1357,31 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       {renderFieldExplainBox('beatiful reason', 'Beautiful Reason', '版型设计美观或显瘦的具体原因...')}
                     </div>
 
-                    {/* wet & wet reason */}
+                    {/* Dryness & dryness reason */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <label className="text-xs font-mono font-bold uppercase text-slate-600 flex items-center gap-1">
                           <Droplets className="w-3.5 h-3.5 text-blue-500" />
-                          wet
+                          Dryness
                         </label>
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => setCreateOptionConfig({
                               isOpen: true,
-                              fieldName: 'wet',
-                              fieldLabel: 'Wet status (潮湿状态)',
+                              fieldName: 'Dryness',
+                              fieldLabel: 'Dryness (干爽状态)',
                               onSave: (val) => setEditWet(val)
                             })}
                             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition-colors shadow-2xs cursor-pointer"
-                            title="为 wet 字段新建选项 (如 middle)"
+                            title="为 Dryness 字段新建选项 (如 middle)"
                           >
                             <Plus className="w-3 h-3 text-purple-600" />
                             + 新建选项
                           </button>
                           <button
                             type="button"
-                            onClick={() => openPreviousPicker('wet', 'Wet status', setEditWet, editWet)}
+                            onClick={() => openPreviousPicker('Dryness', 'Dryness', setEditWet, editWet)}
                             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200 cursor-pointer"
                           >
                             <History className="w-3 h-3 text-purple-600" />
@@ -1467,8 +1397,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                             if (e.target.value === '__NEW_OPTION__') {
                               setCreateOptionConfig({
                                 isOpen: true,
-                                fieldName: 'wet',
-                                fieldLabel: 'Wet status (潮湿状态)',
+                                fieldName: 'Dryness',
+                                fieldLabel: 'Dryness (干爽状态)',
                                 onSave: (val) => setEditWet(val)
                               });
                             } else {
@@ -1496,8 +1426,8 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                             onClick={() => {
                               setCreateOptionConfig({
                                 isOpen: true,
-                                fieldName: 'wet',
-                                fieldLabel: 'Wet status (潮湿状态)',
+                                fieldName: 'Dryness',
+                                fieldLabel: 'Dryness (干爽状态)',
                                 onSave: (val) => setEditWet(val)
                               });
                             }}
@@ -1507,15 +1437,15 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                           </button>
                         </div>
                       </div>
-                      {renderFieldExplainBox('wet', 'Wet status', '出汗潮湿或速干排汗实测表现...')}
+                      {renderFieldExplainBox('Dryness', 'Dryness', '干爽或潮湿、速干排汗实测表现...')}
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-mono font-bold uppercase text-slate-600">wet reason</label>
+                        <label className="text-xs font-mono font-bold uppercase text-slate-600">Dryness reason</label>
                         <button
                           type="button"
-                          onClick={() => openPreviousPicker('wet reason', 'Drying reason', setEditWetReason)}
+                          onClick={() => openPreviousPicker('Dryness reason', 'Dryness reason', setEditWetReason)}
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                         >
                           <History className="w-3 h-3 text-purple-600" />
@@ -1527,7 +1457,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         onChange={(e) => setEditWetReason(e.target.value)}
                         placeholder="e.g. quick-dry air hung"
                       />
-                      {renderFieldExplainBox('wet reason', 'Wet Reason', '透气性、晾晒风干速度等体感记录...')}
+                      {renderFieldExplainBox('Dryness reason', 'Dryness reason', '透气性、晾晒风干速度等体感记录...')}
                     </div>
 
                     {/* long dress */}
@@ -1638,7 +1568,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                                 </label>
                                 <button
                                   type="button"
-                                  onClick={() => openPreviousPicker('when without aircond: hot feeling', 'when without aircond: hot feeling', setEditWhenNoAircondHot)}
+                                  onClick={() => openPreviousPicker('noAircondHotFeeling', 'No-air-conditioning hot feeling', setEditWhenNoAircondHot)}
                                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                                 >
                                   <History className="w-3 h-3 text-purple-600" />
@@ -1650,7 +1580,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                                 onChange={(e) => setEditWhenNoAircondHot(e.target.value)}
                                 placeholder="e.g. hot / middle hot / not hot"
                               />
-                              {renderFieldExplainBox('when without aircond: hot feeling', 'when without aircond: hot feeling', '例如: due to thick chiffon material, thick clothes...')}
+                              {renderFieldExplainBox('noAircondHotFeeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
                             </div>
 
                             {/* leg feeling */}
@@ -2212,12 +2142,12 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                     {renderViewAttr('Clothes Type', 'Clothes Type', garment['Clothes Type'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('material', 'material', garment['material'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('thick clothes', 'thick clothes', garment['thick clothes'] || <span className="text-slate-400 font-normal italic">No data</span>)}
-                    {renderViewAttr('Hot at noon', 'Hot at noon', garment['Hot at noon'] || <span className="text-slate-400 font-normal italic">No data</span>)}
+                    {renderViewAttr('noAircondHotFeeling', 'No-air-conditioning hot feeling', garment.noAircondHotFeeling || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('diao dai', 'diao dai', garment['diao dai'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr(
-                      'side breast ok: with 聚拢 bra',
-                      'side breast ok: with 聚拢 bra',
-                      garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || (garment['side breast ok'] ? `${garment['side breast ok']} (legacy)` : <span className="text-slate-400 font-normal italic">No data</span>)
+                      'sideBreastGatherBra',
+                      'Side breast shape with gathering bra',
+                      garment.sideBreastGatherBra || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
                     {renderViewAttr(
                       'side breast ok: with side out bra',
@@ -2225,23 +2155,18 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                       garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
                     {renderViewAttr(
-                      'sit breast ok: With 聚拢bra',
-                      'sit breast ok: With 聚拢bra',
-                      garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || (garment['sit breast ok'] ? `${garment['sit breast ok']} (legacy)` : <span className="text-slate-400 font-normal italic">No data</span>)
+                      'sitBreastGatherBra',
+                      'Sitting breast shape with gathering bra',
+                      garment.sitBreastGatherBra || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
                     {renderViewAttr(
                       'sit breast ok: with side out bra',
                       'sit breast ok: with side out bra',
                       garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || <span className="text-slate-400 font-normal italic">No data</span>
                     )}
-                    {renderViewAttr(
-                      'stand breast ok',
-                      'stand breast ok',
-                      garment['stand breast ok'] || garment['stand breast'] || garment.standBreast || garment.standBreastOk || <span className="text-slate-400 font-normal italic">No data</span>
-                    )}
                     {renderViewAttr('center chest', 'center chest', garment['center chest'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('beautiful', 'beautiful', garment['beautiful'] || <span className="text-slate-400 font-normal italic">No data</span>)}
-                    {renderViewAttr('wet', 'wet', garment['wet'] || <span className="text-slate-400 font-normal italic">dry</span>)}
+                    {renderViewAttr('Dryness', 'Dryness', garment.Dryness || <span className="text-slate-400 font-normal italic">dry</span>)}
                     {renderViewAttr('long dress', 'long dress', garment['long dress'] || <span className="text-slate-400 font-normal italic">No data</span>)}
                     {renderViewAttr('may throw', 'may throw', garment['may throw'] || <span className="text-slate-400 font-normal italic">no</span>)}
                     {renderViewAttr('price', 'price', typeof garment['price'] === 'number' ? `$${garment['price']}` : <span className="text-slate-400 font-normal italic">No data</span>)}
@@ -2275,16 +2200,16 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                   </div>
 
                   <div className="pt-2 text-xs border-t border-slate-200/60">
-                    <span className="font-mono text-slate-500 block font-bold">wet reason:</span>
-                    <p className={`mt-0.5 break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap ${garment['wet reason'] ? 'text-slate-800 font-medium' : 'text-slate-400 italic'}`}>
-                      {garment['wet reason'] || 'No data'}
+                    <span className="font-mono text-slate-500 block font-bold">Dryness reason:</span>
+                    <p className={`mt-0.5 break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap ${garment['Dryness reason'] ? 'text-slate-800 font-medium' : 'text-slate-400 italic'}`}>
+                      {garment['Dryness reason'] || 'No data'}
                     </p>
-                    {getFieldExplainText('wet reason') && (
+                    {getFieldExplainText('Dryness reason') && (
                       <div className="mt-1.5 flex items-start gap-2 p-2 rounded-xl bg-purple-50/90 border border-purple-200/70 text-purple-950 text-xs leading-relaxed break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap">
                         <MessageSquare className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <span className="font-bold text-[10px] text-purple-700 block uppercase font-mono mb-0.5">wet reason 专属说明:</span>
-                          <span className="font-medium select-text break-words [word-break:normal] [overflow-wrap:break-word]">{getFieldExplainText('wet reason')}</span>
+                          <span className="font-bold text-[10px] text-purple-700 block uppercase font-mono mb-0.5">Dryness reason 专属说明:</span>
+                          <span className="font-medium select-text break-words [word-break:normal] [overflow-wrap:break-word]">{getFieldExplainText('Dryness reason')}</span>
                         </div>
                       </div>
                     )}
@@ -2357,11 +2282,11 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         <div>
                           <span className="text-[11px] font-mono text-slate-500 font-bold block">&gt; hot feeling:</span>
                           <span className="font-semibold text-slate-800">
-                            {garment['when without aircond: hot feeling'] || <span className="text-slate-400 font-normal italic">No data</span>}
+                            {garment.noAircondHotFeeling || <span className="text-slate-400 font-normal italic">No data</span>}
                           </span>
-                          {getFieldExplainText('when without aircond: hot feeling') && (
+                          {getFieldExplainText('noAircondHotFeeling') && (
                             <p className="mt-0.5 text-[10px] text-purple-700 bg-purple-50 p-1.5 rounded-md border border-purple-100 break-words">
-                              💡 {getFieldExplainText('when without aircond: hot feeling')}
+                              💡 {getFieldExplainText('noAircondHotFeeling')}
                             </p>
                           )}
                         </div>
@@ -2578,7 +2503,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500">
-                          基于材质、厚薄度、中午炎热耐受(Hot at noon)、肩带(diao dai)、久坐胸部(sit breast ok)等多维字段的专项诊断。支持多版本生成、查看、编辑与删除。
+                          基于材质、厚薄度、无空调热感(noAircondHotFeeling)、干爽度(Dryness)、肩带(diao dai)与胸型等字段的专项诊断。支持多版本生成、查看、编辑与删除。
                         </p>
                       </div>
                     </div>
@@ -2792,7 +2717,7 @@ const ClothesModalContent: React.FC<ClothesModalProps & { garment: ClothesItem }
                         当前单品暂无 AI 诊断报告
                       </p>
                       <p className="text-[11px] text-slate-400 max-w-md mx-auto">
-                        点击上方 <strong>“生成 AI 诊断报告”</strong> 按钮，系统将根据你所记录的衣物物理与工学字段（面料、厚度、Hot at noon、diao dai、sit breast 等）生成专属诊断报告，可随时生成多个版本、查看、编辑与删除。
+                        点击上方 <strong>“生成 AI 诊断报告”</strong> 按钮，系统将根据你所记录的衣物物理与工学字段（面料、厚度、无空调热感、Dryness、diao dai、胸型等）生成专属诊断报告，可随时生成多个版本、查看、编辑与删除。
                       </p>
                     </div>
                   )}

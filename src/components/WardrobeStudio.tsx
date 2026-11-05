@@ -116,11 +116,11 @@ export const WardrobeStudio: React.FC<WardrobeStudioProps> = ({
   // Preset definitions
   const presets = [
     { id: 'all', label: 'All Items' },
-    { id: 'not-hot', label: '☀️ Hot at noon: Not hot', desc: 'Breathable and not hot at midday' },
+    { id: 'not-hot', label: '☀️ No-air-conditioning heat: Not hot', desc: 'Breathable and not hot without air conditioning' },
     { id: 'favorites', label: '🌟 beautiful: Beautiful', desc: 'Rated Beautiful' },
     { id: 'need-wash', label: '🧺 wash stated: need wash', desc: 'Currently unwashed in hamper' },
     { id: 'chiffon', label: '🪶 material: chiffon', desc: 'Lightweight chiffon pieces' },
-    { id: 'sit-ok', label: '💺 sit breast ok', desc: 'Comfortable while seated' },
+    { id: 'sit-ok', label: '💺 Sitting breast shape ok', desc: 'Comfortable while seated with a gathering bra' },
   ];
 
   // Dynamic Category counts derived 100% in-memory from local clothes (<1ms)
@@ -190,7 +190,7 @@ export const WardrobeStudio: React.FC<WardrobeStudioProps> = ({
 
     // 4. Presets
     if (activePreset === 'not-hot') {
-      list = list.filter(c => (c['Hot at noon'] || '').toLowerCase().includes('not'));
+      list = list.filter(c => (c.noAircondHotFeeling || '').toLowerCase().includes('not'));
     } else if (activePreset === 'favorites') {
       list = list.filter(c => (c['beautiful'] || '') === 'Beautiful');
     } else if (activePreset === 'need-wash') {
@@ -198,7 +198,7 @@ export const WardrobeStudio: React.FC<WardrobeStudioProps> = ({
     } else if (activePreset === 'chiffon') {
       list = list.filter(c => (c['material'] || '').toLowerCase().includes('chiffon'));
     } else if (activePreset === 'sit-ok') {
-      list = list.filter(c => (c['sit breast ok'] || '').toLowerCase().includes('ok'));
+      list = list.filter(c => (c.sitBreastGatherBra || '').toLowerCase().includes('ok'));
     }
 
     return list;

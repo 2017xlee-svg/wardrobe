@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ClothesItem } from '../types';
+import { canonicalGarmentFieldKey } from '../utils/garmentFieldNames';
 import {
   X, Check, SlidersHorizontal, Settings2, RotateCcw, Search,
   Sparkles, Shirt, Droplets, Sun, CheckSquare, Square,
@@ -42,15 +43,15 @@ export const ALL_CLOTHES_FILTER_FIELDS: FilterFieldDefinition[] = [
   { key: 'price', label: 'Price (价格)', category: 'core', icon: '💰', defaultVisible: false, description: 'Purchase price value' },
   
   // Comfort & Heat
-  { key: 'Hot at noon', label: 'Hot at noon (中午体感)', category: 'comfort', icon: '☀️', defaultVisible: true, description: 'Not hot, Middle, Hot' },
+  { key: 'noAircondHotFeeling', label: 'No-air-conditioning hot feeling (无空调热感)', category: 'comfort', icon: '☀️', defaultVisible: true, description: 'Hot, Middle hot, Not hot' },
   { key: 'diao dai', label: 'Diao dai (吊带受力)', category: 'comfort', icon: '🎗️', defaultVisible: true, description: 'Not diao dai, Diao dai, Wide diao dai' },
-  { key: 'wet', label: 'Wet status (潮湿/排汗)', category: 'comfort', icon: '💧', defaultVisible: true, description: 'Dry, Little wet, Wet' },
-  { key: 'wet reason', label: 'Drying reason (透气/晾晒原因)', category: 'comfort', icon: '💨', defaultVisible: false, description: 'Quick-drying, fabric notes' },
+  { key: 'Dryness', label: 'Dryness (干爽/排湿)', category: 'comfort', icon: '💧', defaultVisible: true, description: 'Dry, Little wet, Wet' },
+  { key: 'Dryness reason', label: 'Dryness reason (干爽原因)', category: 'comfort', icon: '💨', defaultVisible: false, description: 'Quick-drying, fabric notes' },
   
   // Breast & Fit
   { key: 'center chest', label: 'Center chest (正中胸骨)', category: 'breast', icon: '💖', defaultVisible: true, description: 'Center chest, No center chest, Side open' },
-  { key: 'sit breast ok', label: 'Sit breast ok (坐姿胸型)', category: 'breast', icon: '💺', defaultVisible: true, description: 'Sit breast shape ok, Stand breast ugly...' },
-  { key: 'side breast ok', label: 'Side breast ok (副乳包裹)', category: 'breast', icon: '🛡️', defaultVisible: true, description: 'Side breast shape ok, Side breast out...' },
+  { key: 'sitBreastGatherBra', label: 'Sitting breast shape with gathering bra (坐姿胸型)', category: 'breast', icon: '💺', defaultVisible: true, description: 'Sit breast shape ok, Stand breast ugly...' },
+  { key: 'sideBreastGatherBra', label: 'Side breast shape with gathering bra (侧面胸型)', category: 'breast', icon: '🛡️', defaultVisible: true, description: 'Side breast shape ok, Side breast out...' },
   { key: 'beautiful', label: 'Appearance (美观评级)', category: 'breast', icon: '🌟', defaultVisible: true, description: 'Beautiful, Middle beautiful, Not so beautiful' },
   { key: 'beatiful reason', label: 'Appearance reason (美观原因)', category: 'breast', icon: '✨', defaultVisible: false, description: 'Cut, waistline, slimming silhouette' },
 
@@ -116,7 +117,7 @@ export function filterClothesWithActiveFilters(
         return selectedVals.includes(String(val).trim());
       }
 
-      const val = (c as any)[key];
+      const val = (c as any)[canonicalGarmentFieldKey(key)];
       if (Array.isArray(val)) {
         if (val.length === 0) return false;
         return val.some(v => selectedVals.includes(String(v).trim()));

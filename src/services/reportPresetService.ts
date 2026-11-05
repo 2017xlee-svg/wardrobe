@@ -1,5 +1,6 @@
 import { ClothesItem, ReportPreset } from '../types';
 import { dataService } from './dataService';
+import { canonicalGarmentFieldKey } from '../utils/garmentFieldNames';
 
 export interface ReportFieldMeta {
   key: string;
@@ -26,13 +27,6 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     type: 'string'
   },
   {
-    key: 'when without aircond: hot feeling',
-    label: 'when without aircond: hot feeling',
-    description: 'Upper body thermal feeling without AC (hot, not hot, comfortable, undefined)',
-    category: 'comfort',
-    type: 'string'
-  },
-  {
     key: 'when without aircond: leg feeling',
     label: 'when without aircond: leg feeling',
     description: 'Leg feeling at normal room temperature without AC (not cold, hot, undefined)',
@@ -54,17 +48,17 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     type: 'string'
   },
   {
-    key: 'Hot at noon',
-    label: 'Hot at noon',
-    description: 'Midday peak heat sensation (Hot, Middle, Not hot, undefined)',
+    key: 'noAircondHotFeeling',
+    label: 'No-air-conditioning hot feeling',
+    description: 'Heat sensation without air conditioning (hot, middle hot, not hot, undefined)',
     category: 'comfort',
     type: 'string'
   },
 
   // Breast & Bra Ergonomics
   {
-    key: 'sit breast ok: With 聚拢bra',
-    label: 'sit breast ok: With 聚拢bra',
+    key: 'sitBreastGatherBra',
+    label: 'Sitting breast shape with gathering bra',
     description: 'Sitting breast silhouette and cleavage stability with gathering/push-up bra (ok, not ok, undefined)',
     category: 'fit',
     type: 'string'
@@ -77,8 +71,8 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     type: 'string'
   },
   {
-    key: 'side breast ok: with 聚拢 bra',
-    label: 'side breast ok: with 聚拢 bra',
+    key: 'sideBreastGatherBra',
+    label: 'Side breast shape with gathering bra',
     description: 'Side profile breast shape & firmness with gathering bra (ok, side out, undefined)',
     category: 'fit',
     type: 'string'
@@ -87,20 +81,6 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     key: 'side breast ok: with side out bra',
     label: 'side breast ok: with side out bra',
     description: 'Side profile breast silhouette with side-out bra (ok, side breast out, undefined)',
-    category: 'fit',
-    type: 'string'
-  },
-  {
-    key: 'sit breast ok',
-    label: 'sit breast ok',
-    description: 'General sitting breast posture silhouette (sit breast shape ok, stand breast ugly, undefined)',
-    category: 'fit',
-    type: 'string'
-  },
-  {
-    key: 'side breast ok',
-    label: 'side breast ok',
-    description: 'General side profile breast fullness (side breast shape ok, side breast out, undefined)',
     category: 'fit',
     type: 'string'
   },
@@ -149,15 +129,15 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     type: 'string'
   },
   {
-    key: 'wet',
-    label: 'wet (Moisture)',
-    description: 'Sweat wetness and drying condition (dry, little wet, wet, undefined)',
+    key: 'Dryness',
+    label: 'Dryness',
+    description: 'Dryness and drying condition (dry, little wet, wet, undefined)',
     category: 'comfort',
     type: 'string'
   },
   {
-    key: 'wet reason',
-    label: 'wet reason',
+    key: 'Dryness reason',
+    label: 'Dryness reason',
     description: 'Cause of dampness, airflow retention, or machine drying behavior',
     category: 'comfort',
     type: 'string'
@@ -298,13 +278,13 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
   {
     id: 'preset-without-aircond-hot',
     name: 'Normal / No Aircond: Upper Body (hot feeling)',
-    description: 'Tier 1: when without aircond: hot feeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).',
-    groupTiers: ['when without aircond: hot feeling', 'Clothes Type'],
+    description: 'Tier 1: noAircondHotFeeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).',
+    groupTiers: ['noAircondHotFeeling', 'Clothes Type'],
     sortField: 'Name',
     sortOrder: 'asc',
     visibleFields: [
       'Clothes Type',
-      'when without aircond: hot feeling',
+      'noAircondHotFeeling',
       'when without aircond: leg feeling',
       'material',
       'thick clothes'
@@ -320,7 +300,7 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
     visibleFields: [
       'Clothes Type',
       'when without aircond: leg feeling',
-      'when without aircond: hot feeling',
+      'noAircondHotFeeling',
       'material',
       'thick clothes'
     ]
@@ -358,29 +338,29 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
   {
     id: 'preset-wet-performance',
     name: 'Clothes Wet / Dry Performance',
-    description: 'Tier 1: Clothes Type (dress/bra). Tier 2: wet (dry, little wet, wet, undefined).',
-    groupTiers: ['Clothes Type', 'wet'],
+    description: 'Tier 1: Clothes Type (dress/bra). Tier 2: Dryness (dry, little wet, wet, undefined).',
+    groupTiers: ['Clothes Type', 'Dryness'],
     sortField: 'Name',
     sortOrder: 'asc',
     visibleFields: [
       'Clothes Type',
-      'wet',
-      'wet reason',
+      'Dryness',
+      'Dryness reason',
       'material',
-      'Hot at noon'
+      'noAircondHotFeeling'
     ]
   },
   {
     id: 'preset-breast-gather-bra',
     name: 'Breast Fit: With 聚拢bra',
-    description: 'Tier 1: Clothes Type (dress/bra). Tier 2: sit breast ok: With 聚拢bra.',
-    groupTiers: ['Clothes Type', 'sit breast ok: With 聚拢bra'],
+    description: 'Tier 1: Clothes Type (dress/bra). Tier 2: sitBreastGatherBra.',
+    groupTiers: ['Clothes Type', 'sitBreastGatherBra'],
     sortField: 'Name',
     sortOrder: 'asc',
     visibleFields: [
       'Clothes Type',
-      'sit breast ok: With 聚拢bra',
-      'side breast ok: with 聚拢 bra',
+      'sitBreastGatherBra',
+      'sideBreastGatherBra',
       'beautiful',
       'diao dai'
     ]
@@ -388,15 +368,15 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
   {
     id: 'preset-thickness-climate',
     name: 'Thickness & Climate',
-    description: 'Hierarchical drill by clothing category, noon thermal feel, and fabric thickness.',
-    groupTiers: ['Clothes Type', 'Hot at noon', 'thick clothes'],
+    description: 'Hierarchical drill by clothing category, no-air-conditioning heat feeling, and fabric thickness.',
+    groupTiers: ['Clothes Type', 'noAircondHotFeeling', 'thick clothes'],
     sortField: 'wearing frequency(how many times legacy washed)',
     sortOrder: 'desc',
     visibleFields: [
       'Clothes Type',
       'material',
       'thick clothes',
-      'Hot at noon',
+      'noAircondHotFeeling',
       'beautiful',
       'wearing frequency(how many times legacy washed)',
       'wash stated'
@@ -413,7 +393,7 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
       'Clothes Type',
       'beautiful',
       'diao dai',
-      'side breast ok',
+      'sideBreastGatherBra',
       'material',
       'price'
     ]
@@ -437,14 +417,14 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
   {
     id: 'preset-sensory-heat',
     name: 'Sensory Heat & Moisture',
-    description: 'Drill by midday heat sensitivity, moisture performance, and thickness.',
-    groupTiers: ['Hot at noon', 'wet', 'thick clothes'],
+    description: 'Drill by no-air-conditioning heat sensitivity, dryness performance, and thickness.',
+    groupTiers: ['noAircondHotFeeling', 'Dryness', 'thick clothes'],
     sortField: 'wearing frequency(how many times legacy washed)',
     sortOrder: 'desc',
     visibleFields: [
       'Clothes Type',
-      'Hot at noon',
-      'wet',
+      'noAircondHotFeeling',
+      'Dryness',
       'thick clothes',
       'material',
       'beautiful'
@@ -495,8 +475,8 @@ export function deduplicatePresets(presets: ReportPreset[]): ReportPreset[] {
     return {
       ...p,
       name: (p.name || '').trim(),
-      groupTiers: Array.from(new Set((p.groupTiers || []).map((t) => (t || '').trim()).filter(Boolean))),
-      visibleFields: Array.from(new Set((p.visibleFields || []).map((f) => (f || '').trim()).filter(Boolean)))
+      groupTiers: Array.from(new Set((p.groupTiers || []).map((t) => canonicalGarmentFieldKey((t || '').trim())).filter(Boolean))),
+      visibleFields: Array.from(new Set((p.visibleFields || []).map((f) => canonicalGarmentFieldKey((f || '').trim())).filter(Boolean)))
     };
   };
 
@@ -800,6 +780,7 @@ class ReportPresetService {
    */
   public getFieldValue(item: ClothesItem, fieldKey: string): string {
     if (!item) return 'undefined';
+    fieldKey = canonicalGarmentFieldKey(fieldKey);
 
     if (fieldKey === 'wash stated') {
       const stats = dataService.getGarmentStats(item.id);
@@ -827,14 +808,6 @@ class ReportPresetService {
         val = item.name;
       } else if (fieldKey === 'material' && item.materialProp) {
         val = item.materialProp;
-      } else if (fieldKey === 'sit breast ok: With 聚拢bra' && (item as any).sitBreastOkWithGatherBra) {
-        val = (item as any).sitBreastOkWithGatherBra;
-      } else if (fieldKey === 'sit breast ok: with side out bra' && (item as any).sitBreastOkWithSideOutBra) {
-        val = (item as any).sitBreastOkWithSideOutBra;
-      } else if (fieldKey === 'side breast ok: with 聚拢 bra' && (item as any).sideBreastOkWithGatherBra) {
-        val = (item as any).sideBreastOkWithGatherBra;
-      } else if (fieldKey === 'side breast ok: with side out bra' && (item as any).sideBreastOkWithSideOutBra) {
-        val = (item as any).sideBreastOkWithSideOutBra;
       }
     }
 

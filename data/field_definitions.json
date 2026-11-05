@@ -1,10 +1,10 @@
 [
   {
-    "fieldNameEn": "Hot at noon",
-    "fieldNameCn": "中午炎热度 / 散热透气",
+    "fieldNameEn": "noAircondHotFeeling",
+    "fieldNameCn": "无空调环境热感",
     "category": "clothes",
-    "descriptionEn": "Evaluates heat tolerance, breathability, and sun exposure during hot midday peak hours (>30°C).",
-    "descriptionCn": "评估中午高温烈日时（通常>30°C）该衣物的透气、散热及是否容易闷热捂汗。",
+    "descriptionEn": "Records the garment's heat sensation without air conditioning, including hot, middle hot, and not hot.",
+    "descriptionCn": "记录无空调环境下的热感，包括 hot、middle hot 与 not hot。",
     "typicalValues": [
       {
         "valueEn": "Not hot",
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "fieldNameEn": "sit breast ok: With 聚拢bra",
+    "fieldNameEn": "sitBreastGatherBra",
     "fieldNameCn": "正面坐姿胸型 (搭配聚拢bra)",
     "category": "clothes",
     "descriptionEn": "Front chest silhouette while seated when worn with a gathering / push-up bra (e.g. big bra, center gathering bra)",
@@ -114,7 +114,7 @@
     ]
   },
   {
-    "fieldNameEn": "sit breast ok",
+    "fieldNameEn": "sitBreastGatherBra",
     "fieldNameCn": "久坐时胸部与底围舒适度",
     "category": "clothes",
     "descriptionEn": "Evaluates chest, underwire, or band comfort while sitting at a desk for extended hours (wrinkles, tightness, pressure).",
@@ -141,7 +141,7 @@
     ]
   },
   {
-    "fieldNameEn": "side breast ok: with 聚拢 bra",
+    "fieldNameEn": "sideBreastGatherBra",
     "fieldNameCn": "侧边看胸型 (配合聚拢bra)",
     "category": "clothes",
     "descriptionEn": "Side breast silhouette and contour when worn with a gathering / push-up bra",
@@ -231,7 +231,7 @@
     ]
   },
   {
-    "fieldNameEn": "when without aircond: hot feeling",
+    "fieldNameEn": "noAircondHotFeeling",
     "fieldNameCn": "无空调环境体表温感 (常温/中午)",
     "category": "clothes",
     "descriptionEn": "Thermal and sweat sensation in natural ambient temperatures without air conditioning",
@@ -339,7 +339,7 @@
     ]
   },
   {
-    "fieldNameEn": "side breast ok",
+    "fieldNameEn": "sideBreastGatherBra",
     "fieldNameCn": "副乳包裹与侧收支撑",
     "category": "clothes",
     "descriptionEn": "Assesses side-bust containment and whether fabric cuts into underarm/side tissue.",
@@ -1667,7 +1667,7 @@
     ]
   },
   {
-    "fieldNameEn": "wet",
+    "fieldNameEn": "Dryness",
     "fieldNameCn": "衣物潮湿发黏度 / 排湿速干状态",
     "category": "clothes",
     "descriptionEn": "Tracks moisture retention, sweat clinginess, and how wet or dry the garment stays or dries during wear.",
@@ -1706,7 +1706,7 @@
     ]
   },
   {
-    "fieldNameEn": "wet reason",
+    "fieldNameEn": "Dryness reason",
     "fieldNameCn": "潮湿/干爽原因与面料结构",
     "category": "clothes",
     "descriptionEn": "Specific fabric, structural, or layered reason why the garment tends to remain dry or become wet (e.g. chiffon, lace, thick middle, plain thick).",

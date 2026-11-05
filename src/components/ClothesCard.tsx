@@ -43,11 +43,11 @@ export const ClothesCard: React.FC<ClothesCardProps> = ({
   const name = item['Name'] || item.name;
   const material = item['material'] || item.materialProp;
   const thickClothes = item['thick clothes'];
-  const hotAtNoon = item['Hot at noon'];
+  const hotAtNoon = item.noAircondHotFeeling;
   const diaoDai = item['diao dai'];
-  const sitBreastOk = item['sit breast ok: With 聚拢bra'] || item['sit breast ok: with side out bra'] || item['sit breast ok'];
-  const sideBreastOk = item['side breast ok: with 聚拢 bra'] || item['side breast ok: with side out bra'] || item['side breast ok'];
-  const wet = item['wet'];
+  const sitBreastOk = item.sitBreastGatherBra || item['sit breast ok: with side out bra'];
+  const sideBreastOk = item.sideBreastGatherBra || item['side breast ok: with side out bra'];
+  const wet = item.Dryness;
   const beautiful = item['beautiful'];
 
   const handleClick = (e: React.MouseEvent) => {

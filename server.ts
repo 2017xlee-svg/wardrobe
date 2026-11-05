@@ -5,6 +5,11 @@ import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import JSZip from "jszip";
+import {
+  canonicalGarmentFieldKey,
+  canonicalizeReportPresetFields,
+  migrateGarmentFieldAliases
+} from "./src/utils/garmentFieldNames";
 
 dotenv.config();
 
@@ -646,7 +651,7 @@ async function startServer() {
       }
 
       const parsed = JSON.parse(seedSource);
-      const clothes = Array.isArray(parsed.clothes) ? parsed.clothes : [];
+      const clothes = Array.isArray(parsed.clothes) ? parsed.clothes.map((item: any) => migrateGarmentFieldAliases(item)) : [];
       const reports = Array.isArray(parsed.reports) ? parsed.reports : [];
       const junctions = Array.isArray(parsed.junctions)
         ? parsed.junctions
@@ -702,9 +707,12 @@ async function startServer() {
       let presetsList: any[] = [];
       if (fs.existsSync(drilldownPresetsPath)) {
         try {
-          presetsList = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
+          const parsedPresets = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
+          presetsList = Array.isArray(parsedPresets) ? parsedPresets.map((preset: any) => canonicalizeReportPresetFields(preset)) : [];
         } catch {}
       }
+
+      const backupClothes = (dbData.clothes || []).map((item: any) => migrateGarmentFieldAliases(item));
 
       const zip = new JSZip();
 
@@ -713,11 +721,11 @@ async function startServer() {
         exportedAt: new Date().toISOString(),
         version: "2.0",
         app: "Wardrobe & Wear Journal",
-        totalClothes: dbData.clothes.length,
+        totalClothes: backupClothes.length,
         totalReports: dbData.reports.length,
         totalJunctions: (dbData.junctions || []).length,
         totalDrilldownPresets: presetsList.length,
-        clothes: dbData.clothes,
+        clothes: backupClothes,
         reports: dbData.reports,
         junctions: dbData.junctions || [],
         drilldownPresets: presetsList
@@ -955,7 +963,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       const dbText = await dbFile.async("string");
       const parsedDb = JSON.parse(dbText);
 
-      const clothes = Array.isArray(parsedDb.clothes) ? parsedDb.clothes : [];
+      const clothes = Array.isArray(parsedDb.clothes) ? parsedDb.clothes.map((item: any) => migrateGarmentFieldAliases(item)) : [];
       const reports = Array.isArray(parsedDb.reports) ? parsedDb.reports : [];
       const junctions = Array.isArray(parsedDb.junctions)
         ? parsedDb.junctions
@@ -1123,14 +1131,14 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         } catch {}
       }
 
-      let mergedClothes = [...clothes];
+      let mergedClothes = clothes.map((item: any) => migrateGarmentFieldAliases(item));
       let mergedReports = [...reports];
       let mergedJunctions = [...junctions];
 
       if (existingDb) {
         // 1. Merge clothes: preserve customFields, extraAttributes, and any new custom properties from existing clothes
         const existingClothesMap = new Map<string, any>(
-          (Array.isArray(existingDb.clothes) ? existingDb.clothes : []).map((c: any) => [c.id, c])
+          (Array.isArray(existingDb.clothes) ? existingDb.clothes.map((c: any) => migrateGarmentFieldAliases(c)) : []).map((c: any) => [c.id, c])
         );
         for (const c of mergedClothes) {
           const existing = existingClothesMap.get(c.id);
@@ -1201,7 +1209,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         const backupClothesIds = new Set(mergedClothes.map((c: any) => c.id));
         for (const existingC of existingDb.clothes || []) {
           if (!backupClothesIds.has(existingC.id)) {
-            mergedClothes.push(existingC);
+            mergedClothes.push(migrateGarmentFieldAliases(existingC));
           }
         }
 
@@ -1343,12 +1351,16 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               const mergedMap = new Map<string, any>();
               // Keep all current definitions (never deleted!)
               currentDefs.forEach((d: any) => {
-                if (d && d.fieldNameEn) mergedMap.set(d.fieldNameEn.toLowerCase(), d);
+                if (d && d.fieldNameEn) {
+                  const fieldNameEn = canonicalGarmentFieldKey(d.fieldNameEn);
+                  mergedMap.set(fieldNameEn.toLowerCase(), { ...d, fieldNameEn });
+                }
               });
               // Overlay backup definitions
               backupDefs.forEach((d: any) => {
                 if (d && d.fieldNameEn) {
-                  const key = d.fieldNameEn.toLowerCase();
+                  const fieldNameEn = canonicalGarmentFieldKey(d.fieldNameEn);
+                  const key = fieldNameEn.toLowerCase();
                   const existing = mergedMap.get(key);
                   if (existing) {
                     const tvMap = new Map<string, any>(
@@ -1357,9 +1369,9 @@ and select this file. All your clothes, photos, definitions, and AI reports will
                     (d.typicalValues || []).forEach((t: any) => {
                       if (t && t.valueEn) tvMap.set(t.valueEn.toLowerCase(), t);
                     });
-                    mergedMap.set(key, { ...existing, ...d, typicalValues: Array.from(tvMap.values()) });
+                    mergedMap.set(key, { ...existing, ...d, fieldNameEn, typicalValues: Array.from(tvMap.values()) });
                   } else {
-                    mergedMap.set(key, d);
+                    mergedMap.set(key, { ...d, fieldNameEn });
                   }
                 }
               });
@@ -1386,13 +1398,13 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           if (presetsZipFile) {
             const presetsText = await presetsZipFile.async("string");
             const parsed = JSON.parse(presetsText);
-            if (Array.isArray(parsed)) backupPresets = parsed;
+            if (Array.isArray(parsed)) backupPresets = parsed.map((preset: any) => canonicalizeReportPresetFields(preset));
           }
         } catch (e) {
           console.warn("[Restore] Presets extract warning:", e);
         }
       } else if (Array.isArray(parsedDb.drilldownPresets)) {
-        backupPresets = parsedDb.drilldownPresets;
+        backupPresets = parsedDb.drilldownPresets.map((preset: any) => canonicalizeReportPresetFields(preset));
       }
 
       if (backupPresets.length > 0) {
@@ -1400,7 +1412,8 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           let currentPresets: any[] = [];
           if (fs.existsSync(drilldownPresetsPath)) {
             try {
-              currentPresets = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
+              const parsedCurrent = JSON.parse(await fs.promises.readFile(drilldownPresetsPath, "utf-8"));
+              currentPresets = Array.isArray(parsedCurrent) ? parsedCurrent.map((preset: any) => canonicalizeReportPresetFields(preset)) : [];
             } catch {}
           }
           const presetMap = new Map<string, any>();
@@ -1496,13 +1509,13 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         type: c.type || c.clothesType || c['Clothes Type'],
         material: c.material || c['material'] || c.materialProp || 'Chiffon',
         thickClothes: c.thickClothes || c['thick clothes'] || '02 middle thick clothes',
-        hotAtNoon: c.hotAtNoon || c['Hot at noon'] || '(未记录中午炎热度)',
+        hotAtNoon: c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(未记录中午炎热度)',
         diaoDai: c.diaoDai || c['diao dai'] || '(未记录吊带款式)',
-        sitBreastOk: c.sitBreastOk || c['sit breast ok'] || '(未记录)',
-        sideBreastOk: c.sideBreastOk || c['side breast ok'] || '(未记录)',
+        sitBreastOk: c.sitBreastGatherBra || c.sitBreastOk || c['sit breast ok'] || '(未记录)',
+        sideBreastOk: c.sideBreastGatherBra || c.sideBreastOk || c['side breast ok'] || '(未记录)',
         centerChest: c.centerChest || c['center chest'] || '(未记录)',
-        wet: c.wet || c['wet'] || 'dry',
-        wetReason: c.wetReason || c['wetReason'] || c['wet reason'] || '',
+        wet: c.Dryness || c.wet || c['wet'] || 'dry',
+        wetReason: c['Dryness reason'] || c.wetReason || c['wetReason'] || c['wet reason'] || '',
         beautiful: c.beautiful || c['beautiful'] || '(未记录)',
         beatifulReason: c.beatifulReason || c['beatifulReason'] || c['beatiful reason'] || '',
         longDress: c.longDress || c['long dress'] || '',
@@ -1632,8 +1645,8 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               title: cj.clothesTitle,
               type: cj.clothesType || rawGarment?.type || rawGarment?.clothesType || rawGarment?.['Clothes Type'] || '',
               centerChest: rawGarment?.['center chest'] || rawGarment?.centerChest || '',
-              sideBreastOk: rawGarment?.['side breast ok'] || rawGarment?.sideBreastOk || '',
-              sitBreastOk: rawGarment?.['sit breast ok'] || rawGarment?.sitBreastOk || '',
+              sideBreastOk: rawGarment?.sideBreastGatherBra || rawGarment?.['side breast ok'] || rawGarment?.sideBreastOk || '',
+              sitBreastOk: rawGarment?.sitBreastGatherBra || rawGarment?.['sit breast ok'] || rawGarment?.sitBreastOk || '',
               descriptions: rawGarment?.Descriptions || rawGarment?.descriptions || ''
             };
           });
@@ -1668,13 +1681,13 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           recordedProperties: {
             material: candidate.material,
             thickClothes: candidate.thickClothes,
-            hotAtNoon: candidate.hotAtNoon,
+            hotAtNoon: candidate.noAircondHotFeeling || candidate.hotAtNoon,
             diaoDai: candidate.diaoDai,
             sitBreastOk: candidate.sitBreastOk,
             sideBreastOk: candidate.sideBreastOk,
             centerChest: candidate.centerChest,
-            wet: candidate.wet,
-            wetReason: candidate.wetReason,
+            wet: candidate.Dryness || candidate.wet,
+            wetReason: candidate['Dryness reason'] || candidate.wetReason,
             beautiful: candidate.beautiful,
             beatifulReason: candidate.beatifulReason,
             longDress: candidate.longDress,
@@ -1820,23 +1833,23 @@ ${JSON.stringify(formattedJunctions, null, 2)}
       const clothesType = garment.clothesType || garment['Clothes Type'] || garment.type || 'Dress';
       const material = garment.material || garment['material'] || garment.materialProp || '(未记录面料)';
       const thickClothes = garment.thickClothes || garment['thick clothes'] || garment.thickness || '(未记录厚度)';
-      const hotAtNoon = garment.hotAtNoon || garment['Hot at noon'] || '(未记录中午炎热度)';
+      const hotAtNoon = garment.noAircondHotFeeling || garment.hotAtNoon || garment['Hot at noon'] || '(未记录中午炎热度)';
       const diaoDai = garment.diaoDai || garment['diao dai'] || '(未记录吊带款式)';
-      const sitBreastOkGather = garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || '';
+      const sitBreastOkGather = garment.sitBreastGatherBra || garment['sit breast ok: With 聚拢bra'] || garment['sit breast ok: with 聚拢bra'] || garment.sitBreastOkWithGatherBra || '';
       const sitBreastOkSideOut = garment['sit breast ok: with side out bra'] || garment['sit breast ok: With side out bra'] || garment.sitBreastOkWithSideOutBra || '';
-      const sitBreastOk = garment.sitBreastOk || garment['sit breast ok'] || '(未记录坐姿胸型)';
-      const sideBreastOkGather = garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || '';
+      const sitBreastOk = garment.sitBreastGatherBra || garment.sitBreastOk || garment['sit breast ok'] || '(未记录坐姿胸型)';
+      const sideBreastOkGather = garment.sideBreastGatherBra || garment['side breast ok: with 聚拢 bra'] || garment['side breast ok: With 聚拢bra'] || garment.sideBreastOkWithGatherBra || '';
       const sideBreastOkSideOut = garment['side breast ok: with side out bra'] || garment['side breast ok: With side out bra'] || garment.sideBreastOkWithSideOutBra || '';
-      const sideBreastOk = garment.sideBreastOk || garment['side breast ok'] || '(未记录侧面胸型)';
+      const sideBreastOk = garment.sideBreastGatherBra || garment.sideBreastOk || garment['side breast ok'] || '(未记录侧面胸型)';
       const whenAircondHot = garment['when with aircond: hot feeling'] || '';
       const whenAircondLeg = garment['when with aircond: leg feeling'] || '';
-      const whenNoAircondHot = garment['when without aircond: hot feeling'] || '';
+      const whenNoAircondHot = garment.noAircondHotFeeling || garment['when without aircond: hot feeling'] || '';
       const whenNoAircondLeg = garment['when without aircond: leg feeling'] || '';
       const whenSleepFanHot = garment['when sleep under fan: hot feeling'] || '';
       const whenSleepFanLeg = garment['when sleep under fan: leg feeling'] || '';
       const centerChest = garment.centerChest || garment['center chest'] || '(未记录中位聚拢)';
-      const wet = garment.wet || garment['wet'] || 'dry';
-      const wetReason = garment.wetReason || garment['wet reason'] || garment['wetReason'] || '';
+      const wet = garment.Dryness || garment.wet || garment['wet'] || 'dry';
+      const wetReason = garment['Dryness reason'] || garment.wetReason || garment['wet reason'] || garment['wetReason'] || '';
       const beautiful = garment.beautiful || garment['beautiful'] || '(未评分)';
       const beatifulReason = garment.beatifulReason || garment['beatiful reason'] || garment['beautiful reason'] || garment.beautifulReason || '';
       const longDress = garment.longDress || garment['long dress'] || garment.skirtLength || '';
@@ -1871,7 +1884,8 @@ ${JSON.stringify(formattedJunctions, null, 2)}
       // Also gather any non-standard custom attributes present on garment
       const standardKeys = new Set([
         'id', 'name', 'Name', 'title', 'clothesType', 'Clothes Type', 'type', 'material', 'materialProp',
-        'thick clothes', 'thickClothes', 'thickness', 'Hot at noon', 'hotAtNoon', 'diao dai', 'diaoDai',
+        'thick clothes', 'thickClothes', 'thickness', 'Hot at noon', 'hotAtNoon', 'noAircondHotFeeling', 'diao dai', 'diaoDai',
+        'sideBreastGatherBra', 'sitBreastGatherBra', 'Dryness', 'Dryness reason',
         'side breast ok', 'sideBreastOk',
         'side breast ok: with 聚拢 bra', 'side breast ok: With 聚拢bra', 'sideBreastOkWithGatherBra',
         'side breast ok: with side out bra', 'side breast ok: With side out bra', 'sideBreastOkWithSideOutBra',
@@ -2375,10 +2389,10 @@ Garment Name: ${garment ? (garment['Name'] || garment.name) : (junction['clothes
 Garment Type: ${garment ? (garment['Clothes Type'] || garment.clothesType) : junction['Clothes Type (from clothes(new))'] || 'Dress'}
 Material: ${garment?.['material'] || '(未记录)'}
 Thickness: ${garment?.['thick clothes'] || '(未记录)'}
-Hot at noon (中午炎热度): ${garment?.['Hot at noon'] || '(未记录)'}
+No-air-conditioning heat feeling: ${garment?.noAircondHotFeeling || garment?.['Hot at noon'] || '(未记录)'}
 Strap Style (diao dai): ${garment?.['diao dai'] || '(未记录)'}
-Sit Breast Comfort (久坐胸部体感): ${garment?.['sit breast ok'] || '(未记录)'}
-Wet/Sweat Behavior: ${garment?.['wet'] || 'dry'}
+Sit Breast Comfort (久坐胸部体感): ${garment?.sitBreastGatherBra || garment?.['sit breast ok'] || '(未记录)'}
+Dryness Behavior: ${garment?.Dryness || garment?.['wet'] || 'dry'}
 Lifetime Washes: ${garment?.['Total Washed Count'] || 0} 次
 
 === SESSION FEEDBACK CONTEXT (本场穿着的体感背景) ===
@@ -2455,10 +2469,10 @@ Session Notes: ${report?.['report detail'] || '(无)'}
         type: c.clothesType || c['Clothes Type'],
         material: c.material || c['material'] || '(unrecorded)',
         thickClothes: c.thickClothes || c['thick clothes'] || '(unrecorded)',
-        hotAtNoon: c.hotAtNoon || c['Hot at noon'] || '(unrecorded)',
+        hotAtNoon: c.noAircondHotFeeling || c.hotAtNoon || c['Hot at noon'] || '(unrecorded)',
         diaoDai: c.diaoDai || c['diao dai'] || '(unrecorded)',
-        sitBreastOk: c.sitBreastOk || c['sit breast ok'] || '(unrecorded)',
-        sideBreastOk: c.sideBreastOk || c['side breast ok'] || '(unrecorded)',
+        sitBreastOk: c.sitBreastGatherBra || c.sitBreastOk || c['sit breast ok'] || '(unrecorded)',
+        sideBreastOk: c.sideBreastGatherBra || c.sideBreastOk || c['side breast ok'] || '(unrecorded)',
         price: c.price || c['price'] || 0,
         totalWashedCount: c.totalWashedCount || c['Total Washed Count'] || 0,
         unwashedDurationCount: c.unwashedDurationCount || c['unwashed duration count'] || 0,

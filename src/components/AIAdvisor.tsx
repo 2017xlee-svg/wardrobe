@@ -398,13 +398,13 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
             material: c['material'] || c.materialProp || c.material,
             thickClothes: c['thick clothes'] || c.thickClothes,
             longDress: c['long dress'] || c.longDress,
-            hotAtNoon: c['Hot at noon'] || c.hotAtNoon,
+            noAircondHotFeeling: c.noAircondHotFeeling,
             diaoDai: c['diao dai'] || c.diaoDai,
-            sitBreastOk: c['sit breast ok'] || c.sitBreastOk,
-            sideBreastOk: c['side breast ok'] || c.sideBreastOk,
+            sitBreastGatherBra: c.sitBreastGatherBra,
+            sideBreastGatherBra: c.sideBreastGatherBra,
             centerChest: c['center chest'] || c.centerChest,
-            wet: c['wet'] || c.wet,
-            wetReason: c['wet reason'] || c.wetReason || '',
+            Dryness: c.Dryness,
+            drynessReason: c['Dryness reason'] || '',
             beautiful: c['beautiful'] || c.beautiful,
             beatifulReason: c['beatiful reason'] || c.beatifulReason || '',
             descriptions: c['Descriptions'] || c.descriptions || '',
@@ -425,7 +425,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
             type: c['Clothes Type'] || c.clothesType,
             material: c['material'],
             thickClothes: c['thick clothes'],
-            hotAtNoon: c['Hot at noon'],
+            noAircondHotFeeling: c.noAircondHotFeeling,
             diaoDai: c['diao dai'],
             tags: c.tags || [],
             totalWashedCount: c['Total Washed Count'] || 0
@@ -680,10 +680,10 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                         clothesType: c['Clothes Type'],
                         material: c['material'],
                         thickClothes: c['thick clothes'],
-                        hotAtNoon: c['Hot at noon'],
+                        noAircondHotFeeling: c.noAircondHotFeeling,
                         diaoDai: c['diao dai'],
-                        sitBreastOk: c['sit breast ok'],
-                        sideBreastOk: c['side breast ok'],
+                        sitBreastGatherBra: c.sitBreastGatherBra,
+                        sideBreastGatherBra: c.sideBreastGatherBra,
                         price: c['price'],
                         totalWashedCount: c['Total Washed Count'],
                         unwashedDurationCount: c['unwashed duration count'],
@@ -694,8 +694,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                         totalGarments: clothes.length,
                         materials: materialCounts,
                         comfortIssues: clothes
-                          .filter(c => (c['sit breast ok'] && c['sit breast ok'] !== 'Comfortable') || (c['Hot at noon'] && c['Hot at noon'].includes('hot')))
-                          .map(c => ({ name: c['Name'], issue: `${c['sit breast ok'] || ''} ${c['Hot at noon'] || ''}` }))
+                          .filter(c => (c.sitBreastGatherBra && c.sitBreastGatherBra !== 'Comfortable') || (c.noAircondHotFeeling && c.noAircondHotFeeling.includes('hot')))
+                          .map(c => ({ name: c['Name'], issue: `${c.sitBreastGatherBra || ''} ${c.noAircondHotFeeling || ''}` }))
                       },
                       wearingReports: serializedReports,
                       junctions: serializedJunctions,
@@ -755,7 +755,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <label className="text-[11px] font-mono font-bold uppercase text-slate-700 block mb-1">
-                ☀️ 中午炎热度 / 天气预报 (Hot at noon)
+                ☀️ 无空调热感 / 天气预报
               </label>
               <select
                 value={temperature}
@@ -941,7 +941,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                只提取该单品在数据库中登记的专属字段（面料、厚薄度、Hot at noon、diao dai、久坐胸部体感等），严格隔离其他干扰数据。
+                只提取该单品在数据库中登记的专属字段（面料、厚薄度、无空调热感、Dryness、diao dai、胸型等），严格隔离其他干扰数据。
               </p>
             </div>
 
@@ -989,8 +989,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
-                  <span className="text-[10px] font-mono text-slate-400 block">中午炎热度 (Hot at noon)</span>
-                  <span className="font-bold text-slate-800">{targetGarment['Hot at noon'] || '未记录'}</span>
+                  <span className="text-[10px] font-mono text-slate-400 block">无空调热感 (noAircondHotFeeling)</span>
+                  <span className="font-bold text-slate-800">{targetGarment.noAircondHotFeeling || '未记录'}</span>
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">肩带款式 (diao dai)</span>
@@ -998,7 +998,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">久坐与侧面胸型</span>
-                  <span className="font-bold text-slate-800">{targetGarment['sit breast ok'] || '未记录'} / {targetGarment['side breast ok'] || '未记录'}</span>
+                  <span className="font-bold text-slate-800">{targetGarment.sitBreastGatherBra || '未记录'} / {targetGarment.sideBreastGatherBra || '未记录'}</span>
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">面料与厚度</span>
@@ -1010,7 +1010,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">出汗与干爽 (Wet)</span>
-                  <span className="font-bold text-slate-800">{targetGarment['wet'] || 'dry'} {targetGarment['wet reason'] ? `(${targetGarment['wet reason']})` : ''}</span>
+                  <span className="font-bold text-slate-800">{targetGarment.Dryness || 'dry'} {targetGarment['Dryness reason'] ? `(${targetGarment['Dryness reason']})` : ''}</span>
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">裙长与款式 (Long Dress)</span>

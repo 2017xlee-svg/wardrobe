@@ -89,21 +89,20 @@ class NotebookLmExportService {
       lines.push(``);
 
       lines.push(`#### Silhouette & Ergonomic Breast Fit`);
-      lines.push(`- **Front Seated Fit (with Push-up Bra \`sit breast ok: With 聚拢bra\`)**: ${item['sit breast ok: With 聚拢bra'] || 'Not evaluated'}`);
+      lines.push(`- **Front Seated Fit (with Push-up Bra \`sitBreastGatherBra\`)**: ${item.sitBreastGatherBra || 'Not evaluated'}`);
       lines.push(`- **Front Seated Fit (with Side-open Bra \`sit breast ok: with side out bra\`)**: ${item['sit breast ok: with side out bra'] || 'Not evaluated'}`);
-      lines.push(`- **Side Contour Shape (\`side breast ok\`)**: ${item['side breast ok'] || 'Not evaluated'}`);
+      lines.push(`- **Side Contour Shape (\`sideBreastGatherBra\`)**: ${item.sideBreastGatherBra || 'Not evaluated'}`);
       lines.push(`- **Center Chest / Gore Pressure (\`center chest\`)**: ${item['center chest'] || 'Not evaluated'}`);
       lines.push(``);
 
       lines.push(`#### Thermal & Climate Comfort`);
-      lines.push(`- **Midday Peak Sun & Heat (\`Hot at noon\`)**: ${item['Hot at noon'] || 'Not evaluated'}`);
-      lines.push(`- **Dampness / Moisture Retention (\`wet\`)**: ${item['wet'] || 'Not evaluated'}`);
-      if (item['wet reason']) {
-        lines.push(`- **Moisture Cause / Drying Note (\`wet reason\`)**: ${item['wet reason']}`);
+      lines.push(`- **No-Air-Conditioning Heat Feeling (\`noAircondHotFeeling\`)**: ${item.noAircondHotFeeling || 'Not evaluated'}`);
+      lines.push(`- **Dryness / Moisture Retention (\`Dryness\`)**: ${item.Dryness || 'Not evaluated'}`);
+      if (item['Dryness reason']) {
+        lines.push(`- **Dryness Reason (\`Dryness reason\`)**: ${item['Dryness reason']}`);
       }
       lines.push(`- **With Air Conditioning (Hot Feeling)**: ${item['when with aircond: hot feeling'] || 'Not evaluated'}`);
       lines.push(`- **With Air Conditioning (Leg Feeling)**: ${item['when with aircond: leg feeling'] || 'Not evaluated'}`);
-      lines.push(`- **Without Air Conditioning (Hot Feeling)**: ${item['when without aircond: hot feeling'] || 'Not evaluated'}`);
       lines.push(`- **Without Air Conditioning (Leg Feeling)**: ${item['when without aircond: leg feeling'] || 'Not evaluated'}`);
       lines.push(`- **Sleep Under Fan (Upper Body Feeling)**: ${item['when sleep under fan: hot feeling'] || 'Not evaluated'}`);
       lines.push(`- **Sleep Under Fan (Leg Feeling)**: ${item['when sleep under fan: leg feeling'] || 'Not evaluated'}`);
@@ -348,7 +347,7 @@ class NotebookLmExportService {
     lines.push(`Generated: ${now} | Source: Wardrobe Sensory & Care Management System`);
     lines.push(`Total Term Definitions: ${definitions.length}`);
     lines.push(``);
-    lines.push(`> **NotebookLM Usage Guide**: This foundational glossary provides ground-truth explanations for all domain-specific terminology used throughout the wardrobe app. When querying NotebookLM about strap strain (*diao dai*), seated bust contour (*sit breast ok*), noon heat breathability (*Hot at noon*), or declutter ratings (*may throw*), this document serves as the authoritative definition dictionary.`);
+    lines.push(`> **NotebookLM Usage Guide**: This foundational glossary provides ground-truth explanations for all domain-specific terminology used throughout the wardrobe app. When querying NotebookLM about strap strain (*diao dai*), gathered-bra bust fit, no-air-conditioning heat sensitivity, dryness, or declutter ratings (*may throw*), this document serves as the authoritative definition dictionary.`);
     lines.push(``);
 
     const categories: ('clothes' | 'wearingReport' | 'junction')[] = ['clothes', 'wearingReport', 'junction'];
@@ -440,7 +439,7 @@ class NotebookLmExportService {
         id: 'glossary',
         filename: '04_Sensory_Field_Definitions_and_Glossary.md',
         title: 'Sensory Field Definitions & Glossary',
-        description: 'Bilingual dictionary explaining terms like diao dai, sit breast ok, and Hot at noon for AI grounding.',
+        description: 'Bilingual dictionary explaining terms like diao dai, gathered-bra fit, and dryness for AI grounding.',
         category: 'glossary',
         content: glossaryMd,
         wordCount: countWords(glossaryMd),

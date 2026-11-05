@@ -4,6 +4,7 @@ import { syncOutbox, OutboxMutation, OutboxState } from './syncOutbox';
 import { fieldDictionaryService } from './fieldDictionaryService';
 import { ensureImageCacheLoaded, onImageCacheUpdate, notifyImageCacheListeners } from './localImageCache';
 import { reportPresetService } from './reportPresetService';
+import { canonicalizeFieldExplanations, migrateGarmentFieldAliases } from '../utils/garmentFieldNames';
 import initialData from '../initialData.json';
 
 export const COLLECTION_CLOTHES = 'clothes';
@@ -233,7 +234,7 @@ export function isStandardGarmentField(rawKey: string): boolean {
 
   // Breast ergonomics and variations
   if (k.startsWith('standbreast') || k.includes('standbreast')) return true;
-  if (k.startsWith('sitbreast') || k.startsWith('sidebreast')) return true;
+  if (k.startsWith('sitbreast') || k.startsWith('sidebreast') || k === 'sidebreastgatherbra' || k === 'sitbreastgatherbra') return true;
   if (k.includes('sideoutbra') || k.includes('sifeoutbra') || k.includes('gatherbra') || k.includes('聚拢bra')) return true;
   if (k === 'centerchest') return true;
 
@@ -241,10 +242,10 @@ export function isStandardGarmentField(rawKey: string): boolean {
   if (k === 'name' || k === 'clothestype') return true;
   if (k === 'material' || k === 'materialprop') return true;
   if (k === 'thickclothes') return true;
-  if (k === 'hotatnoon') return true;
+  if (k === 'hotatnoon' || k === 'noaircondhotfeeling') return true;
   if (k === 'diaodai') return true;
   if (k === 'beautiful' || k === 'beatifulreason' || k === 'beautifulreason') return true;
-  if (k === 'wet' || k === 'wetreason') return true;
+  if (k === 'wet' || k === 'wetreason' || k === 'dryness' || k === 'drynessreason') return true;
   if (k === 'descriptions' || k === 'descriptions2') return true;
   if (k === 'price') return true;
   if (k.includes('wearingfrequency') || k.includes('legacywashed')) return true;
@@ -287,7 +288,7 @@ export function isStandardReportField(rawKey: string): boolean {
 }
 
 export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem {
-  const f = r.fields || r;
+  const f = migrateGarmentFieldAliases(r.fields || r);
   const id = r.id || f.id || `garment_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   
   const legacyWashed = typeof f['wearing frequency(how many times legacy washed)'] === 'number'
@@ -320,11 +321,13 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
   });
 
   // Extract breast fields and aliases before processing custom attributes
-  const rawSideBreastGather = f['side breast ok: with 聚拢 bra'] || f['side breast ok: With 聚拢bra'] || f.sideBreastOkWithGatherBra || f.sidebreastgatherbra || f['sidebreastgatherbra'] || explicitCustom['side breast ok: with 聚拢 bra'] || explicitCustom['sidebreastgatherbra'];
+  const rawNoAircondHot = f.noAircondHotFeeling || f['Hot at noon'] || f.hotAtNoon || f['when without aircond: hot feeling'] || explicitCustom.noAircondHotFeeling || explicitCustom['Hot at noon'] || explicitCustom.hotAtNoon || explicitCustom['when without aircond: hot feeling'];
+  const rawDryness = f.Dryness || f['wet'] || f.wet || explicitCustom.Dryness || explicitCustom.wet;
+  const rawDrynessReason = f['Dryness reason'] || f['wet reason'] || f.wetReason || explicitCustom['Dryness reason'] || explicitCustom['wet reason'] || explicitCustom.wetReason;
+  const rawSideBreastGather = f.sideBreastGatherBra || f['side breast ok: with 聚拢 bra'] || f['side breast ok: With 聚拢bra'] || f.sideBreastOkWithGatherBra || f.sidebreastgatherbra || f['sidebreastgatherbra'] || f['side breast ok'] || f.sideBreastOk || explicitCustom.sideBreastGatherBra || explicitCustom['side breast ok: with 聚拢 bra'] || explicitCustom['sidebreastgatherbra'] || explicitCustom['side breast ok'];
   const rawSideBreastSideOut = f['side breast ok: with side out bra'] || f['side breast ok: With side out bra'] || f.sideBreastOkWithSideOutBra || f.sidebreastsideoutbra || f.sidebreastsifeoutbra || f['sidebreastsideoutbra'] || f['sidebreastsifeoutbra'] || explicitCustom['side breast ok: with side out bra'] || explicitCustom['sidebreastsideoutbra'] || explicitCustom['sidebreastsifeoutbra'];
-  const rawSitBreastGather = f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f.sitbreastgatherbra || f['sitbreastgatherbra'] || explicitCustom['sit breast ok: With 聚拢bra'] || explicitCustom['sitbreastgatherbra'];
+  const rawSitBreastGather = f.sitBreastGatherBra || f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f.sitbreastgatherbra || f['sitbreastgatherbra'] || f['sit breast ok'] || f.sitBreastOk || f['stand breast'] || f['stand breast ok'] || f.standBreast || f.standBreastOk || explicitCustom.sitBreastGatherBra || explicitCustom['sit breast ok: With 聚拢bra'] || explicitCustom['sit breast ok'] || explicitCustom['stand breast'] || explicitCustom['stand breast ok'] || explicitCustom.standBreast || explicitCustom.standBreastOk;
   const rawSitBreastSideOut = f['sit breast ok: with side out bra'] || f['sit breast ok: With side out bra'] || f.sitBreastOkWithSideOutBra || f.sitbreastsideoutbra || f['sitbreastsideoutbra'] || explicitCustom['sit breast ok: with side out bra'] || explicitCustom['sitbreastsideoutbra'];
-  const rawStandBreast = f['stand breast ok'] || f['stand breast'] || f.standBreast || f.standBreastOk || f.standbreast || f['standbreast'] || explicitCustom['stand breast ok'] || explicitCustom['stand breast'] || explicitCustom['standbreast'];
 
   // Collect top-level non-standard custom attributes present in f (e.g. Color, Brand, Stretch, Fabric Weight)
   for (const [k, v] of Object.entries(f)) {
@@ -361,22 +364,22 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     const lower = clean.toLowerCase().replace(/[\s_:-]/g, '');
     if (lower === 'material') return 'material';
     if (lower === 'thickclothes') return 'thick clothes';
-    if (lower === 'hotatnoon') return 'Hot at noon';
+    if (lower === 'hotatnoon' || lower === 'noaircondhotfeeling') return 'noAircondHotFeeling';
     if (lower === 'diaodai') return 'diao dai';
-    if (lower === 'sidebreastokwithgatherbra' || lower === 'sidebreastgatherbra' || lower === 'sidebreastokwith聚拢bra') return 'side breast ok: with 聚拢 bra';
+    if (lower === 'sidebreastokwithgatherbra' || lower === 'sidebreastgatherbra' || lower === 'sidebreastokwith聚拢bra' || lower === 'sidebreastok') return 'sideBreastGatherBra';
     if (lower === 'sidebreastokwithsideoutbra' || lower === 'sidebreastsideoutbra' || lower === 'sidebreastsifeoutbra') return 'side breast ok: with side out bra';
-    if (lower === 'sitbreastokwithgatherbra' || lower === 'sitbreastgatherbra' || lower === 'sitbreastokwith聚拢bra') return 'sit breast ok: With 聚拢bra';
+    if (lower === 'sitbreastokwithgatherbra' || lower === 'sitbreastgatherbra' || lower === 'sitbreastokwith聚拢bra' || lower === 'sitbreastok' || lower === 'standbreast' || lower === 'standbreastok') return 'sitBreastGatherBra';
     if (lower === 'sitbreastokwithsideoutbra' || lower === 'sitbreastsideoutbra') return 'sit breast ok: with side out bra';
-    if (lower === 'standbreastok' || lower === 'standbreast') return 'stand breast ok';
     if (lower === 'whenwithaircondhotfeeling' || lower === 'whenwithaircondhot' || lower === 'withaircondhot') return 'when with aircond: hot feeling';
     if (lower === 'whenwithaircondlegfeeling' || lower === 'whenwithaircondleg' || lower === 'withaircondleg') return 'when with aircond: leg feeling';
-    if (lower === 'whenwithoutaircondhotfeeling' || lower === 'whenwithoutaircondhot' || lower === 'withoutaircondhot' || lower === 'noaircindhoyfeeling' || lower === 'noaircondhotfeeling') return 'when without aircond: hot feeling';
+    if (lower === 'whenwithoutaircondhotfeeling' || lower === 'whenwithoutaircondhot' || lower === 'withoutaircondhot' || lower === 'noaircindhoyfeeling' || lower === 'noaircondhotfeeling') return 'noAircondHotFeeling';
     if (lower === 'whenwithoutaircondlegfeeling' || lower === 'whenwithoutaircondleg' || lower === 'withoutaircondleg' || lower === 'noaircondlegfeeling') return 'when without aircond: leg feeling';
     if (lower === 'whensleepunderfanhotfeeling' || lower === 'whensleepunderfanhot' || lower === 'sleepfanhot') return 'when sleep under fan: hot feeling';
     if (lower === 'whensleepunderfanlegfeeling' || lower === 'whensleepunderfanleg' || lower === 'sleepfanleg') return 'when sleep under fan: leg feeling';
     if (lower === 'centerchest') return 'center chest';
     if (lower === 'beatifulreason' || lower === 'beautifulreason') return 'beatiful reason';
-    if (lower === 'wetreason') return 'wet reason';
+    if (lower === 'wetreason' || lower === 'drynessreason') return 'Dryness reason';
+    if (lower === 'wet' || lower === 'dryness') return 'Dryness';
     if (lower === 'descriptions') return 'Descriptions';
     if (lower === 'descriptions2') return 'Descriptions 2';
     if (lower === 'lastcommentoraction' || lower === 'lastcomment') return 'last comment or action';
@@ -404,6 +407,9 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     }
   }
 
+  const canonicalExplanations = canonicalizeFieldExplanations(extractedExplanations);
+  Object.keys(extractedExplanations).forEach(key => delete extractedExplanations[key]);
+  Object.assign(extractedExplanations, canonicalExplanations);
   explicitCustom._fieldExplanations = extractedExplanations;
 
   const garment: ClothesItem = {
@@ -413,21 +419,14 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     'Clothes Type': f['Clothes Type'] || f.clothesType || 'Dress',
     'material': f['material'] || 'Chiffon',
     'thick clothes': f['thick clothes'] || f.thickClothes || '01 not thick clothes',
-    'Hot at noon': f['Hot at noon'] || f.hotAtNoon || 'Not hot',
+    noAircondHotFeeling: rawNoAircondHot || 'Not hot',
     'diao dai': f['diao dai'] || f.diaoDai || 'not diao dai',
-    'side breast ok': f['side breast ok'] || f.sideBreastOk || 'side breast shape ok',
-    'side breast ok: with 聚拢 bra': rawSideBreastGather || f['side breast ok'] || f.sideBreastOk || 'side breast shape ok',
+    sideBreastGatherBra: rawSideBreastGather || 'side breast shape ok',
     'side breast ok: with side out bra': rawSideBreastSideOut || 'side breast out',
-    'sit breast ok': f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
-    'sit breast ok: With 聚拢bra': rawSitBreastGather || f['sit breast ok'] || f.sitBreastOk || 'sit breast shape ok',
+    sitBreastGatherBra: rawSitBreastGather || 'sit breast shape ok',
     'sit breast ok: with side out bra': rawSitBreastSideOut || f['sit breast ok'] || f.sitBreastOk || 'ugly',
-    'stand breast ok': rawStandBreast || '',
-    'stand breast': rawStandBreast || '',
-    standBreast: rawStandBreast || '',
-    standBreastOk: rawStandBreast || '',
     'when with aircond: hot feeling': extractClimateScenarioField(f, 'withAircond', 'hot'),
     'when with aircond: leg feeling': extractClimateScenarioField(f, 'withAircond', 'leg'),
-    'when without aircond: hot feeling': extractClimateScenarioField(f, 'withoutAircond', 'hot'),
     'when without aircond: leg feeling': extractClimateScenarioField(f, 'withoutAircond', 'leg'),
     'when sleep under fan: hot feeling': extractClimateScenarioField(f, 'sleepFan', 'hot'),
     'when sleep under fan: leg feeling': extractClimateScenarioField(f, 'sleepFan', 'leg'),
@@ -435,8 +434,8 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     'center chest': f['center chest'] || f.centerChest || 'no center chest',
     'beautiful': f['beautiful'] || f.beautiful || 'Beautiful',
     'beatiful reason': f['beatiful reason'] || f.beatifulReason || '',
-    'wet': f['wet'] || f.wet || 'dry',
-    'wet reason': f['wet reason'] || f.wetReason || '',
+    Dryness: rawDryness || 'dry',
+    'Dryness reason': rawDrynessReason || '',
     'Descriptions': f['Descriptions'] || f.descriptions || '',
     'Descriptions 2': f['Descriptions 2'] || f.descriptions2 || '',
     'price': typeof f['price'] === 'number' ? f['price'] : undefined,
@@ -1010,7 +1009,7 @@ export class DataService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           updatedAt: nowIso,
-          clothes: this.clothes,
+          clothes: this.clothes.map(garment => normalizeGarment(garment)),
           reports: this.reports,
           junctions: this.junctions,
           drilldownPresets: currentPresets
@@ -1248,7 +1247,7 @@ export class DataService {
       throw new Error('Database file in archive is corrupted or not valid JSON.');
     }
 
-    const backupClothes: any[] = Array.isArray(parsed.clothes) ? parsed.clothes : [];
+    const backupClothes: any[] = Array.isArray(parsed.clothes) ? parsed.clothes.map((item: any) => normalizeGarment(item)) : [];
     const backupReports: any[] = Array.isArray(parsed.reports) ? parsed.reports : [];
 
     // Photos count
@@ -3055,7 +3054,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       field.replace(/\s+/g, '_'),
       field.replace(/\s+([a-z])/g, (_, c) => c.toUpperCase()),
       field.replace(/-/g, ''),
-      ...(field.toLowerCase().includes('sit breast') ? ['sit breast ok', 'sitBreastOk', 'sit breast ok: With 聚拢bra', 'sit breast ok: with side out bra'] : [])
+      ...(field.toLowerCase().includes('sit breast') || field === 'sitBreastGatherBra' ? ['sitBreastGatherBra', 'sit breast ok', 'sitBreastOk', 'sit breast ok: With 聚拢bra', 'sit breast ok: with side out bra'] : [])
     ]));
 
     const processItem = (item: any, isReport: boolean) => {
@@ -3305,7 +3304,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       'Last Washed': latestWashDate ? `${latestWashDate}T00:00:00.000Z` : '',
       'Tracked App Washes': trackedAppWashes,
       'Total Washed Count': totalWashed,
-      'wet': hasNeedWash ? 'dry' : garment['wet']
+      Dryness: hasNeedWash ? 'dry' : garment.Dryness
     };
 
     this.clothes = this.clothes.map(c => c.id === clothesId ? updatedGarment : c);
@@ -3389,7 +3388,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       prevTrackedWashes: targetGarment['Tracked App Washes'] || 0,
       prevTotalWashed: targetGarment['Total Washed Count'] || 0,
       prevLastWashed: targetGarment['Last Washed'] || '',
-      prevWet: targetGarment['wet'] || 'dry'
+      prevWet: targetGarment.Dryness || 'dry'
     }] : [];
 
     this.junctions = this.junctions.map(j => {
@@ -3427,7 +3426,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'Tracked App Washes': newTracked,
           'Total Washed Count': newTotal,
           'Last Washed': washIso,
-          'wet': 'dry' as const
+          Dryness: 'dry' as const
         };
         return updatedGarment;
       }
@@ -3475,7 +3474,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             'Tracked App Washes': (updatedGarment as ClothesItem)['Tracked App Washes'],
             'Total Washed Count': (updatedGarment as ClothesItem)['Total Washed Count'],
             'Last Washed': (updatedGarment as ClothesItem)['Last Washed'],
-            'wet': 'dry'
+            Dryness: 'dry'
           },
           `Wash garment ${clothesId}`
         );
@@ -3518,7 +3517,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           prevTrackedWashes: c['Tracked App Washes'] || 0,
           prevTotalWashed: c['Total Washed Count'] || 0,
           prevLastWashed: c['Last Washed'] || '',
-          prevWet: c['wet'] || 'dry'
+          prevWet: c.Dryness || 'dry'
         });
       }
     });
@@ -3555,7 +3554,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'Tracked App Washes': newTracked,
           'Total Washed Count': newTotal,
           'Last Washed': washIso,
-          'wet': 'dry' as const
+          Dryness: 'dry' as const
         };
         updatedGarmentList.push(updatedItem);
         return updatedItem;
@@ -3588,7 +3587,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'Tracked App Washes': item['Tracked App Washes'],
           'Total Washed Count': item['Total Washed Count'],
           'Last Washed': item['Last Washed'],
-          'wet': 'dry'
+          Dryness: 'dry'
         },
         `Wash garment ${item.id}`
       );
@@ -3660,7 +3659,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'Tracked App Washes': rev.prevTrackedWashes,
           'Total Washed Count': rev.prevTotalWashed,
           'Last Washed': rev.prevLastWashed,
-          'wet': rev.prevWet
+          Dryness: rev.prevWet
         };
       }
       return c;
@@ -3694,7 +3693,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           'Tracked App Washes': rev.prevTrackedWashes,
           'Total Washed Count': rev.prevTotalWashed,
           'Last Washed': rev.prevLastWashed || null,
-          'wet': rev.prevWet
+          Dryness: rev.prevWet
         },
         `Revert garment ${rev.id}`
       );
@@ -3937,7 +3936,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             'Tracked App Washes': newTracked,
             'Total Washed Count': newTotal,
             'Last Washed': `${washDateStr}T00:00:00.000Z`,
-            'wet': 'dry' as const
+            Dryness: 'dry' as const
           };
         }
         return c;
@@ -3977,7 +3976,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             'Tracked App Washes': updatedGarment['Tracked App Washes'],
             'Total Washed Count': updatedGarment['Total Washed Count'],
             'Last Washed': updatedGarment['Last Washed'],
-            'wet': 'dry'
+            Dryness: 'dry'
           },
           `Update wash count for ${item.clothesId}`
         );
@@ -4189,7 +4188,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               'Tracked App Washes': updatedG['Tracked App Washes'],
               'Total Washed Count': updatedG['Total Washed Count'],
               'Last Washed': updatedG['Last Washed'],
-              'wet': updatedG['wet']
+              Dryness: updatedG.Dryness
             },
             `Reconcile wash stats for ${cId}`
           );
