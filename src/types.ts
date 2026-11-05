@@ -141,6 +141,7 @@ export interface WearingReport {
 
   // Dynamic custom session observation fields (extensible over time, e.g. Weather, Room Temp)
   customFields?: Record<string, any>;
+  /** Accepted when reading legacy records; normalized reports omit this duplicate. */
   extraAttributes?: Record<string, any>;
   _deletedCustomFields?: string[];
 

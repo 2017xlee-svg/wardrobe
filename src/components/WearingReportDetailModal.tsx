@@ -310,12 +310,13 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
         ...(freshReport.customFields || {}),
         ...(freshReport.extraAttributes || {})
       };
+      delete (combinedCustom as any)._fieldExplanations;
       const effectiveReport = {
         ...freshReport,
         ...report,
-        customFields: combinedCustom,
-        extraAttributes: combinedCustom
+        customFields: combinedCustom
       };
+      delete (effectiveReport as any).extraAttributes;
 
       const res = await fetch("/api/ai/analyze-wearing-report", {
         method: "POST",
@@ -404,7 +405,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
   };
 
   // Custom Attributes & Specifications Handlers for this Wearing Report
-  const handleAddReportCustomField = async (key: string, val: any) => {
+  const handleAddReportCustomField = async (key: string, val: any, explanation?: string) => {
     const prevDeleted = Array.isArray(report._deletedCustomFields) ? report._deletedCustomFields : [];
     const newDeleted = prevDeleted.filter(k => k !== key);
     report._deletedCustomFields = newDeleted;
@@ -415,15 +416,18 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
     updated[key] = val;
 
     report.customFields = updated;
-    report.extraAttributes = updated;
-    (report as any)[key] = val;
+    delete report.extraAttributes;
+    const fieldExplanations = { ...(report.fieldExplanations || {}) };
+    if (explanation?.trim()) fieldExplanations[key] = explanation.trim();
+    else delete fieldExplanations[key];
+    report.fieldExplanations = fieldExplanations;
     setCustomFieldsVersion(v => v + 1);
 
-    await dataService.setReportCustomField(report.id, key, val);
-    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
+    await dataService.setReportCustomField(report.id, key, val, explanation);
+    onUpdateReport?.({ ...report, customFields: updated, fieldExplanations, _deletedCustomFields: newDeleted });
   };
 
-  const handleUpdateReportCustomField = async (key: string, val: any) => {
+  const handleUpdateReportCustomField = async (key: string, val: any, explanation?: string) => {
     const prevDeleted = Array.isArray(report._deletedCustomFields) ? report._deletedCustomFields : [];
     const newDeleted = prevDeleted.filter(k => k !== key);
     report._deletedCustomFields = newDeleted;
@@ -434,12 +438,15 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
     updated[key] = val;
 
     report.customFields = updated;
-    report.extraAttributes = updated;
-    (report as any)[key] = val;
+    delete report.extraAttributes;
+    const fieldExplanations = { ...(report.fieldExplanations || {}) };
+    if (explanation?.trim()) fieldExplanations[key] = explanation.trim();
+    else delete fieldExplanations[key];
+    report.fieldExplanations = fieldExplanations;
     setCustomFieldsVersion(v => v + 1);
 
-    await dataService.setReportCustomField(report.id, key, val);
-    onUpdateReport?.({ ...report, customFields: updated, extraAttributes: updated, _deletedCustomFields: newDeleted, [key]: val });
+    await dataService.setReportCustomField(report.id, key, val, explanation);
+    onUpdateReport?.({ ...report, customFields: updated, fieldExplanations, _deletedCustomFields: newDeleted });
   };
 
   const handleDeleteReportCustomField = async (key: string) => {
@@ -457,7 +464,10 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
     // 3. Remove key from top-level report properties
     delete (report as any)[key];
     report.customFields = updated;
-    report.extraAttributes = updated;
+    delete report.extraAttributes;
+    const fieldExplanations = { ...(report.fieldExplanations || {}) };
+    delete fieldExplanations[key];
+    report.fieldExplanations = fieldExplanations;
     setCustomFieldsVersion(v => v + 1);
 
     // 4. Call dataService to remove the custom field and persist
@@ -467,7 +477,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
     onUpdateReport?.({
       ...report,
       customFields: updated,
-      extraAttributes: updated,
+      fieldExplanations,
       _deletedCustomFields: newDeleted
     });
   };
@@ -753,8 +763,6 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
           delete existingCustom[k];
         }
       });
-      existingCustom._fieldExplanations = editFieldExplanations;
-
       const updated = await dataService.updateWearingReport(
         report.id,
         {
@@ -771,8 +779,7 @@ const WearingReportDetailModalContent: React.FC<WearingReportDetailModalProps & 
           'tags': editTags,
           'Pictures': editPictures,
           fieldExplanations: editFieldExplanations,
-          customFields: existingCustom,
-          extraAttributes: existingCustom
+          customFields: existingCustom
         },
         editGarments.map(g => ({
           junctionId: g.junctionId,

@@ -160,6 +160,60 @@ function normalizeGarmentForStorage(item: any): any {
   return garment;
 }
 
+function isStandardReportKeyServer(rawKey: string): boolean {
+  if (!rawKey) return false;
+  if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
+  if (rawKey.startsWith('_') || rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
+  const key = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
+  if (['name', 'wearingdate', 'time', 'timestamp', 'weardate', 'created', 'createdat', 'categories', 'tags', 'pictures', 'picturescount'].includes(key)) return true;
+  if (key.includes('garments') || key.includes('clothes') || key.includes('clotheslinked')) return true;
+  if (key === 'aiwearinganalysis' || key === 'aireports') return true;
+  if (key.includes('shoulderfeel') || key === 'sweat' || key === 'nightsweat' || key.includes('midbreast') || key.includes('nightmidbreast')) return true;
+  if (key.includes('legfeel') || key.includes('reportdetail') || key === 'comfort' || key === 'satisfaction' || key.includes('fieldexplanations')) return true;
+  return false;
+}
+
+function normalizeReportForStorage(item: any): any {
+  const report = { ...item };
+  const customFields = {
+    ...(report.extraAttributes || {}),
+    ...(report.customFields || {})
+  };
+  const fieldExplanations = {
+    ...(report.extraAttributes?._fieldExplanations || {}),
+    ...(report.customFields?._fieldExplanations || {}),
+    ...(report.fieldExplanations || {})
+  };
+  for (const [key, value] of Object.entries(customFields)) {
+    if (key === '_fieldExplanations' || key === '_deletedCustomFields') continue;
+    if (key.endsWith('_explain')) {
+      const field = key.slice(0, -'_explain'.length).trim();
+      if (typeof value === 'string' && value.trim() && !fieldExplanations[field]) fieldExplanations[field] = value.trim();
+      delete customFields[key];
+    } else if (isStandardReportKeyServer(key)) {
+      delete customFields[key];
+    }
+  }
+  for (const [key, value] of Object.entries(report)) {
+    if (key.endsWith('_explain')) {
+      const field = key.slice(0, -'_explain'.length).trim();
+      if (typeof value === 'string' && value.trim() && !fieldExplanations[field]) fieldExplanations[field] = value.trim();
+      delete report[key];
+      continue;
+    }
+    if (isStandardReportKeyServer(key)) continue;
+    if (customFields[key] === undefined || customFields[key] === null || String(customFields[key]).trim() === '') {
+      customFields[key] = value;
+    }
+    delete report[key];
+  }
+  delete report.extraAttributes;
+  delete customFields._fieldExplanations;
+  report.customFields = customFields;
+  report.fieldExplanations = fieldExplanations;
+  return report;
+}
+
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
@@ -469,19 +523,6 @@ async function startServer() {
         }
       }
 
-      const isStandardReportKeyServer = (rawKey: string): boolean => {
-        if (!rawKey) return false;
-        if (['id', 'fields', 'createdTime', 'customFields', 'extraAttributes', '_deletedCustomFields', 'contentBlocks'].includes(rawKey)) return true;
-        if (rawKey.startsWith('_')) return true;
-        if (rawKey.endsWith('_explain') || rawKey.toLowerCase().includes('explain')) return true;
-        const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
-        if (k.includes('garments') || k.includes('clothes') || k.includes('clotheslinked')) return true;
-        if (k === 'wearingdate' || k === 'time' || k === 'timestamp' || k === 'weardate') return true;
-        if (k.includes('shoulderfeel') || k === 'sweat' || k === 'nightsweat' || k.includes('midbreast') || k.includes('nightmidbreast')) return true;
-        if (k.includes('legfeel') || k.includes('reportdetail') || k === 'comfort' || k === 'satisfaction' || k.includes('fieldexplanations')) return true;
-        return false;
-      };
-
       // Sanitize clothes: purge standard fields and _explain keys from customFields, migrate explanations
       if (Array.isArray(payload.clothes)) {
         payload.clothes = payload.clothes.map((item: any) => normalizeGarmentForStorage(item));
@@ -514,32 +555,7 @@ async function startServer() {
 
       // Sanitize reports: purge standard fields and _explain keys from customFields
       if (Array.isArray(payload.reports)) {
-        payload.reports.forEach((r: any) => {
-          if (!r.fieldExplanations || typeof r.fieldExplanations !== 'object') {
-            r.fieldExplanations = {};
-          }
-          const custom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
-          for (const [k, v] of Object.entries(custom)) {
-            if (k.endsWith('_explain') || k.toLowerCase().includes('explain')) {
-              const baseKey = k.replace(/_explain$/i, '').trim();
-              if (v && typeof v === 'string' && v.trim() && !r.fieldExplanations[baseKey]) {
-                r.fieldExplanations[baseKey] = v.trim();
-              }
-              if (r.customFields) delete r.customFields[k];
-              if (r.extraAttributes) delete r.extraAttributes[k];
-            } else if (isStandardReportKeyServer(k)) {
-              if (r.customFields) delete r.customFields[k];
-              if (r.extraAttributes) delete r.extraAttributes[k];
-            }
-          }
-          if (r.customFields) r.customFields._fieldExplanations = r.fieldExplanations;
-          if (r.extraAttributes) r.extraAttributes._fieldExplanations = r.fieldExplanations;
-          for (const k of Object.keys(r)) {
-            if (k.endsWith('_explain') || (k.toLowerCase().includes('explain') && k !== 'fieldExplanations')) {
-              delete r[k];
-            }
-          }
-        });
+        payload.reports = payload.reports.map((report: any) => normalizeReportForStorage(report));
       }
 
       await fs.promises.mkdir(dataDir, { recursive: true });
@@ -695,7 +711,7 @@ async function startServer() {
         totalJunctions: (dbData.junctions || []).length,
         totalDrilldownPresets: presetsList.length,
         clothes: backupClothes,
-        reports: dbData.reports,
+        reports: (dbData.reports || []).map((report: any) => normalizeReportForStorage(report)),
         junctions: dbData.junctions || [],
         drilldownPresets: presetsList
       };
@@ -932,7 +948,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       const parsedDb = JSON.parse(dbText);
 
       const clothes = Array.isArray(parsedDb.clothes) ? parsedDb.clothes.map((item: any) => migrateGarmentFieldAliases(item)) : [];
-      const reports = Array.isArray(parsedDb.reports) ? parsedDb.reports : [];
+      const reports = Array.isArray(parsedDb.reports) ? parsedDb.reports.map((report: any) => normalizeReportForStorage(report)) : [];
       const junctions = Array.isArray(parsedDb.junctions)
         ? parsedDb.junctions
         : (Array.isArray(parsedDb.reportClothes) ? parsedDb.reportClothes : []);
@@ -1177,7 +1193,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
 
         // 2. Merge reports: preserve customFields, extraAttributes, and any new custom properties
         const existingReportsMap = new Map<string, any>(
-          (Array.isArray(existingDb.reports) ? existingDb.reports : []).map((r: any) => [r.id, r])
+          (Array.isArray(existingDb.reports) ? existingDb.reports.map((r: any) => normalizeReportForStorage(r)) : []).map((r: any) => [r.id, r])
         );
         for (const r of mergedReports) {
           const existing = existingReportsMap.get(r.id);
@@ -1190,8 +1206,8 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               ...(Array.isArray(r.customFields?._deletedCustomFields) ? r.customFields._deletedCustomFields : [])
             ]);
 
-            const existingCustom = { ...(existing.customFields || {}), ...(existing.extraAttributes || {}) };
-            const incomingCustom = { ...(r.customFields || {}), ...(r.extraAttributes || {}) };
+            const existingCustom = { ...(existing.customFields || {}) };
+            const incomingCustom = { ...(r.customFields || {}) };
 
             deletedSet.forEach(k => {
               delete existingCustom[k];
@@ -1218,14 +1234,11 @@ and select this file. All your clothes, photos, definitions, and AI reports will
               r._deletedCustomFields = Array.from(deletedSet);
             }
 
+            Object.keys(mergedCustom).forEach(key => {
+              if (isStandardReportKeyServer(key)) delete mergedCustom[key];
+            });
             r.customFields = mergedCustom;
-            r.extraAttributes = mergedCustom;
-            for (const [mk, mv] of Object.entries(mergedCustom)) {
-              if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-              if (r[mk] === undefined || r[mk] === null || String(r[mk]).trim() === "") {
-                r[mk] = mv;
-              }
-            }
+            delete r.extraAttributes;
 
             if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
               r.fieldExplanations = {
@@ -1248,7 +1261,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         const backupReportIds = new Set(mergedReports.map((r: any) => r.id));
         for (const existingR of existingDb.reports || []) {
           if (!backupReportIds.has(existingR.id)) {
-            mergedReports.push(existingR);
+            mergedReports.push(normalizeReportForStorage(existingR));
           }
         }
 
@@ -1297,7 +1310,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       const sanitizedPayload = {
         updatedAt: nowIso,
         clothes: mergedClothes,
-        reports: mergedReports,
+        reports: mergedReports.map((report: any) => normalizeReportForStorage(report)),
         junctions: mergedJunctions,
         drilldownPresets: mergedPresets,
       };
