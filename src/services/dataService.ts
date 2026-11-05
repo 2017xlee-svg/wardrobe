@@ -274,8 +274,9 @@ export function isStandardReportField(rawKey: string): boolean {
 
   const k = rawKey.toLowerCase().replace(/[\s_:-]/g, '');
 
+  if (['name', 'wearingdate', 'time', 'timestamp', 'weardate', 'created', 'createdat', 'categories', 'tags', 'pictures', 'picturescount'].includes(k)) return true;
   if (k.includes('garments') || k.includes('clothes') || k.includes('clotheslinked')) return true;
-  if (k === 'wearingdate' || k === 'time' || k === 'timestamp' || k === 'weardate') return true;
+  if (k === 'aiwearinganalysis' || k === 'aireports' || k === 'name') return true;
   if (k.includes('shoulderfeel')) return true;
   if (k === 'sweat' || k === 'nightsweat' || k === 'sweatprop') return true;
   if (k.includes('midbreast') || k.includes('nightmidbreast')) return true;
@@ -642,8 +643,6 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     }
   }
 
-  explicitReportCustom._fieldExplanations = extractedReportExplanations;
-
   const report: WearingReport = {
     ...f,
     id,
@@ -664,11 +663,11 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     'Pictures': Array.isArray(f['Pictures']) ? f['Pictures'] : (Array.isArray(f.pictures) ? f.pictures : []),
     aiReports,
     fieldExplanations: extractedReportExplanations,
-    customFields: explicitReportCustom,
-    extraAttributes: explicitReportCustom
+    customFields: explicitReportCustom
   };
+  delete report.extraAttributes;
 
-  // Strip deleted fields and mirror active custom attributes onto top-level properties
+  // Keep dynamic report values only in customFields.
   deletedFields.forEach(k => {
     delete (report as any)[k];
   });
@@ -676,11 +675,8 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
     report._deletedCustomFields = Array.from(deletedFields);
   }
 
-  for (const [k, v] of Object.entries(explicitReportCustom)) {
-    if (k.startsWith('_') || deletedFields.has(k)) continue;
-    if ((report as any)[k] === undefined || (report as any)[k] === null || String((report as any)[k]).trim() === '') {
-      (report as any)[k] = v;
-    }
+  for (const k of Object.keys(explicitReportCustom)) {
+    if (!k.startsWith('_')) delete (report as any)[k];
   }
 
   // Remove any loose explain keys that leaked into report top-level
@@ -701,7 +697,7 @@ export function normalizeReport(r: any, explicitDeletedKeys?: any): WearingRepor
   report.legFeel = report['leg feel'];
   report.nightLegFeel = report['night leg feel'];
   report.aiWearingAnalysis = report['AI Wearing Analysis'];
-  report.fieldExplanations = f.fieldExplanations || f.customFields?._fieldExplanations || {};
+  report.fieldExplanations = extractedReportExplanations;
   return report;
 }
 
@@ -1004,7 +1000,7 @@ export class DataService {
         body: JSON.stringify({
           updatedAt: nowIso,
           clothes: this.clothes.map(garment => normalizeGarment(garment)),
-          reports: this.reports,
+          reports: this.reports.map(report => normalizeReport(report)),
           junctions: this.junctions,
           drilldownPresets: currentPresets
         })
@@ -1436,7 +1432,7 @@ export class DataService {
       totalJunctions: this.junctions.length,
       totalDrilldownPresets: currentPresets.length,
       clothes: this.clothes,
-      reports: this.reports,
+      reports: this.reports.map(report => normalizeReport(report)),
       junctions: this.junctions,
       drilldownPresets: currentPresets
     };
@@ -1920,16 +1916,11 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           r._deletedCustomFields = Array.from(deletedSet);
         }
 
+        Object.keys(mergedCustom).forEach(key => {
+          if (isStandardReportField(key)) delete mergedCustom[key];
+        });
         r.customFields = mergedCustom;
-        r.extraAttributes = mergedCustom;
-
-        // Also ensure every dynamic custom attribute in mergedCustom is accessible as a top-level property on r
-        for (const [mk, mv] of Object.entries(mergedCustom)) {
-          if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-          if ((r as any)[mk] === undefined || (r as any)[mk] === null || String((r as any)[mk]).trim() === '') {
-            (r as any)[mk] = mv;
-          }
-        }
+        delete r.extraAttributes;
 
         // Preserve and merge fieldExplanations for reports
         if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
@@ -1960,8 +1951,6 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         if (af.name && (af.target === 'reports' || af.target === 'both')) {
           if (!r.customFields) r.customFields = {};
           r.customFields[af.name] = af.defaultValue ?? '';
-          if (!r.extraAttributes) r.extraAttributes = {};
-          r.extraAttributes[af.name] = af.defaultValue ?? '';
         }
       }
 
@@ -2617,7 +2606,12 @@ and select this file. All your clothes, photos, definitions, and AI reports will
   /**
    * Adds or updates a dynamic custom field on a wearing report.
    */
-  public async setReportCustomField(reportId: string, fieldName: string, fieldValue: any): Promise<void> {
+  public async setReportCustomField(
+    reportId: string,
+    fieldName: string,
+    fieldValue: any,
+    explanation?: string
+  ): Promise<void> {
     const report = this.reports.find(r => r.id === reportId);
     if (!report) return;
 
@@ -2630,6 +2624,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     const deletedArr = Array.from(remainingDeleted);
 
     const currentCustom = { ...(report.customFields || report.extraAttributes || {}) };
+    delete currentCustom._fieldExplanations;
     currentCustom[fieldName] = fieldValue;
     if (deletedArr.length > 0) {
       currentCustom._deletedCustomFields = deletedArr;
@@ -2637,16 +2632,19 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       delete currentCustom._deletedCustomFields;
     }
 
-    (report as any)[fieldName] = fieldValue;
     report._deletedCustomFields = deletedArr;
     report.customFields = currentCustom;
-    report.extraAttributes = currentCustom;
+    const fieldExplanations = { ...(report.fieldExplanations || {}) };
+    if (explanation !== undefined) {
+      if (explanation.trim()) fieldExplanations[fieldName] = explanation.trim();
+      else delete fieldExplanations[fieldName];
+      report.fieldExplanations = fieldExplanations;
+    }
 
     await this.updateWearingReport(reportId, {
       customFields: currentCustom,
-      extraAttributes: currentCustom,
       _deletedCustomFields: deletedArr,
-      [fieldName]: fieldValue
+      ...(explanation !== undefined ? { fieldExplanations } : {})
     });
   }
 
@@ -2666,18 +2664,21 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     const deletedArr = Array.from(prevDeleted);
 
     const currentCustom = { ...(report.customFields || report.extraAttributes || {}) };
+    delete currentCustom._fieldExplanations;
     delete currentCustom[fieldName];
     currentCustom._deletedCustomFields = deletedArr;
 
     delete (report as any)[fieldName];
     report._deletedCustomFields = deletedArr;
     report.customFields = currentCustom;
-    report.extraAttributes = currentCustom;
+    const fieldExplanations = { ...(report.fieldExplanations || {}) };
+    delete fieldExplanations[fieldName];
+    report.fieldExplanations = fieldExplanations;
 
     await this.updateWearingReport(reportId, {
       customFields: currentCustom,
-      extraAttributes: currentCustom,
-      _deletedCustomFields: deletedArr
+      _deletedCustomFields: deletedArr,
+      fieldExplanations
     }, undefined, [fieldName]);
   }
 
@@ -2900,15 +2901,11 @@ and select this file. All your clothes, photos, definitions, and AI reports will
           r._deletedCustomFields = Array.from(deletedSet);
         }
 
+        Object.keys(mergedCustom).forEach(key => {
+          if (isStandardReportField(key)) delete mergedCustom[key];
+        });
         r.customFields = mergedCustom;
-        r.extraAttributes = mergedCustom;
-
-        for (const [mk, mv] of Object.entries(mergedCustom)) {
-          if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-          if ((r as any)[mk] === undefined || (r as any)[mk] === null || String((r as any)[mk]).trim() === '') {
-            (r as any)[mk] = mv;
-          }
-        }
+        delete r.extraAttributes;
 
         if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
           r.fieldExplanations = {
