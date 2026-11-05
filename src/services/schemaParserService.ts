@@ -33,8 +33,8 @@ export const KNOWN_CLOTHES_FIELDS: KnownFieldSchema[] = [
     allowedEnumValues: ['01 not thick clothes', '02 middle thick clothes', '03 thick clothes', 'not so thick bra', 'quick thick material bra']
   },
   {
-    key: 'Hot at noon',
-    label: 'Hot at noon',
+    key: 'noAircondHotFeeling',
+    label: 'No-air-conditioning hot feeling',
     expectedType: 'enum',
     allowedEnumValues: ['Not hot', 'Middle', 'Hot']
   },
@@ -45,14 +45,14 @@ export const KNOWN_CLOTHES_FIELDS: KnownFieldSchema[] = [
     allowedEnumValues: ['diao dai', 'not diao dai', 'wide diao dai']
   },
   {
-    key: 'side breast ok',
-    label: 'side breast ok',
+    key: 'sideBreastGatherBra',
+    label: 'Side breast shape with gathering bra',
     expectedType: 'enum',
     allowedEnumValues: ['side breast shape ok', 'side breast ok', 'side breast out']
   },
   {
-    key: 'sit breast ok',
-    label: 'sit breast ok',
+    key: 'sitBreastGatherBra',
+    label: 'Sitting breast shape with gathering bra',
     expectedType: 'enum',
     allowedEnumValues: ['sit breast shape ok', 'stand breast ugly, because alot zhouwhen', 'stand breast ugly, because loose tie not as white marry', '?']
   },
@@ -70,12 +70,12 @@ export const KNOWN_CLOTHES_FIELDS: KnownFieldSchema[] = [
   },
   { key: 'beatiful reason', label: 'beatiful reason', expectedType: 'string' },
   {
-    key: 'wet',
-    label: 'wet',
+    key: 'Dryness',
+    label: 'Dryness',
     expectedType: 'enum',
     allowedEnumValues: ['dry', 'little wet', 'wet']
   },
-  { key: 'wet reason', label: 'wet reason', expectedType: 'string' },
+  { key: 'Dryness reason', label: 'Dryness reason', expectedType: 'string' },
   {
     key: 'long dress',
     label: 'long dress',

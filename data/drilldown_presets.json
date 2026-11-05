@@ -38,16 +38,16 @@
   {
     "id": "preset-without-aircond-hot",
     "name": "Normal / No Aircond: Upper Body (hot feeling)",
-    "description": "Tier 1: when without aircond: hot feeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).",
+    "description": "Tier 1: noAircondHotFeeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).",
     "groupTiers": [
-      "when without aircond: hot feeling",
+      "noAircondHotFeeling",
       "Clothes Type"
     ],
     "sortField": "Name",
     "sortOrder": "asc",
     "visibleFields": [
       "Clothes Type",
-      "when without aircond: hot feeling",
+      "noAircondHotFeeling",
       "when without aircond: leg feeling",
       "material",
       "thick clothes"
@@ -66,7 +66,7 @@
     "visibleFields": [
       "Clothes Type",
       "when without aircond: leg feeling",
-      "when without aircond: hot feeling",
+      "noAircondHotFeeling",
       "material",
       "thick clothes"
     ]
@@ -110,35 +110,35 @@
   {
     "id": "preset-wet-performance",
     "name": "Clothes Wet / Dry Performance",
-    "description": "Tier 1: Clothes Type (dress/bra). Tier 2: wet (dry, little wet, wet, undefined).",
+    "description": "Tier 1: Clothes Type (dress/bra). Tier 2: Dryness (dry, little wet, wet, undefined).",
     "groupTiers": [
       "Clothes Type",
-      "wet"
+      "Dryness"
     ],
     "sortField": "Name",
     "sortOrder": "asc",
     "visibleFields": [
       "Clothes Type",
-      "wet",
-      "wet reason",
+      "Dryness",
+      "Dryness reason",
       "material",
-      "Hot at noon"
+      "noAircondHotFeeling"
     ]
   },
   {
     "id": "preset-breast-gather-bra",
     "name": "Breast Fit: With 聚拢bra",
-    "description": "Tier 1: Clothes Type (dress/bra). Tier 2: sit breast ok: With 聚拢bra.",
+    "description": "Tier 1: Clothes Type (dress/bra). Tier 2: sitBreastGatherBra.",
     "groupTiers": [
       "Clothes Type",
-      "sit breast ok: With 聚拢bra"
+      "sitBreastGatherBra"
     ],
     "sortField": "Name",
     "sortOrder": "asc",
     "visibleFields": [
       "Clothes Type",
-      "sit breast ok: With 聚拢bra",
-      "side breast ok: with 聚拢 bra",
+      "sitBreastGatherBra",
+      "sideBreastGatherBra",
       "beautiful",
       "diao dai"
     ]
@@ -146,10 +146,10 @@
   {
     "id": "preset-thickness-climate",
     "name": "Thickness & Climate",
-    "description": "Hierarchical drill by clothing category, noon thermal feel, and fabric thickness.",
+    "description": "Hierarchical drill by clothing category, no-air-conditioning heat feeling, and fabric thickness.",
     "groupTiers": [
       "Clothes Type",
-      "Hot at noon",
+      "noAircondHotFeeling",
       "thick clothes"
     ],
     "sortField": "wearing frequency(how many times legacy washed)",
@@ -158,7 +158,7 @@
       "Clothes Type",
       "material",
       "thick clothes",
-      "Hot at noon",
+      "noAircondHotFeeling",
       "beautiful",
       "wearing frequency(how many times legacy washed)",
       "wash stated"
@@ -179,7 +179,7 @@
       "Clothes Type",
       "beautiful",
       "diao dai",
-      "side breast ok",
+      "sideBreastGatherBra",
       "material",
       "price"
     ]
@@ -207,18 +207,18 @@
   {
     "id": "preset-sensory-heat",
     "name": "Sensory Heat & Moisture",
-    "description": "Drill by midday heat sensitivity, moisture performance, and thickness.",
+    "description": "Drill by no-air-conditioning heat sensitivity, dryness performance, and thickness.",
     "groupTiers": [
-      "Hot at noon",
-      "wet",
+      "noAircondHotFeeling",
+      "Dryness",
       "thick clothes"
     ],
     "sortField": "wearing frequency(how many times legacy washed)",
     "sortOrder": "desc",
     "visibleFields": [
       "Clothes Type",
-      "Hot at noon",
-      "wet",
+      "noAircondHotFeeling",
+      "Dryness",
       "thick clothes",
       "material",
       "beautiful"

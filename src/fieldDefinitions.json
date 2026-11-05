@@ -1,10 +1,10 @@
 [
   {
-    "fieldNameEn": "Hot at noon",
-    "fieldNameCn": "中午炎热度 / 散热透气",
+    "fieldNameEn": "noAircondHotFeeling",
+    "fieldNameCn": "无空调环境热感",
     "category": "clothes",
-    "descriptionEn": "Evaluates heat tolerance, breathability, and sun exposure during hot midday peak hours (>30°C).",
-    "descriptionCn": "评估中午高温烈日时（通常>30°C）该衣物的透气、散热及是否容易闷热捂汗。",
+    "descriptionEn": "Records the garment's heat sensation without air conditioning, including hot, middle hot, and not hot.",
+    "descriptionCn": "记录无空调环境下的热感，包括 hot、middle hot 与 not hot。",
     "typicalValues": [
       {
         "valueEn": "Not hot",
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "fieldNameEn": "sit breast ok: With 聚拢bra",
+    "fieldNameEn": "sitBreastGatherBra",
     "fieldNameCn": "正面坐姿胸型 (搭配聚拢bra)",
     "category": "clothes",
     "descriptionEn": "Front chest silhouette while seated when worn with a gathering / push-up bra (e.g. big bra, center gathering bra)",
@@ -114,34 +114,7 @@
     ]
   },
   {
-    "fieldNameEn": "sit breast ok",
-    "fieldNameCn": "久坐时胸部与底围舒适度",
-    "category": "clothes",
-    "descriptionEn": "Evaluates chest, underwire, or band comfort while sitting at a desk for extended hours (wrinkles, tightness, pressure).",
-    "descriptionCn": "考察在工位长时间坐姿办公时，胸口与底围钢圈是否有压迫感、胸型是否起皱或变丑。",
-    "typicalValues": [
-      {
-        "valueEn": "sit breast shape ok",
-        "valueCn": "坐姿胸型自然舒适",
-        "meaningEn": "Comfortable with natural support even when seated for hours",
-        "meaningCn": "久坐办公不勒胸，底围无压迫，胸型自然"
-      },
-      {
-        "valueEn": "stand breast ugly, because alot zhouwhen",
-        "valueCn": "站立/坐着褶皱多影响外观",
-        "meaningEn": "Creasing/wrinkles visible, loose or improper cups",
-        "meaningCn": "版型不服帖或褶皱过多，影响胸部形态美观"
-      },
-      {
-        "valueEn": "?",
-        "valueCn": "体感未明确 / 待体验",
-        "meaningEn": "Observation not yet finalized or requires testing",
-        "meaningCn": "尚未充分体验，需要下次久坐时专门感受记录"
-      }
-    ]
-  },
-  {
-    "fieldNameEn": "side breast ok: with 聚拢 bra",
+    "fieldNameEn": "sideBreastGatherBra",
     "fieldNameCn": "侧边看胸型 (配合聚拢bra)",
     "category": "clothes",
     "descriptionEn": "Side breast silhouette and contour when worn with a gathering / push-up bra",
@@ -231,7 +204,7 @@
     ]
   },
   {
-    "fieldNameEn": "when without aircond: hot feeling",
+    "fieldNameEn": "noAircondHotFeeling",
     "fieldNameCn": "无空调环境体表温感 (常温/中午)",
     "category": "clothes",
     "descriptionEn": "Thermal and sweat sensation in natural ambient temperatures without air conditioning",
@@ -335,27 +308,6 @@
         "valueCn": "温暖适度",
         "meaningEn": "Comfortably insulated legs throughout the night",
         "meaningCn": "裙长与厚度恰好保护腿部免受冷风直吹"
-      }
-    ]
-  },
-  {
-    "fieldNameEn": "side breast ok",
-    "fieldNameCn": "副乳包裹与侧收支撑",
-    "category": "clothes",
-    "descriptionEn": "Assesses side-bust containment and whether fabric cuts into underarm/side tissue.",
-    "descriptionCn": "评估侧边包裹性、是否有副乳溢出或侧边勒肉。",
-    "typicalValues": [
-      {
-        "valueEn": "side breast shape ok",
-        "valueCn": "副乳包裹良好舒适",
-        "meaningEn": "Smooth side profile, no spilling over the cup edges",
-        "meaningCn": "侧边平整收拢，不挤压副乳"
-      },
-      {
-        "valueEn": "side breast out",
-        "valueCn": "副乳外溢 / 包裹不足",
-        "meaningEn": "Tissue bulges at armpit area, cup coverage too narrow",
-        "meaningCn": "罩杯或侧翼过窄，副乳外溢明显"
       }
     ]
   },
@@ -1667,7 +1619,7 @@
     ]
   },
   {
-    "fieldNameEn": "wet",
+    "fieldNameEn": "Dryness",
     "fieldNameCn": "衣物潮湿发黏度 / 排湿速干状态",
     "category": "clothes",
     "descriptionEn": "Tracks moisture retention, sweat clinginess, and how wet or dry the garment stays or dries during wear.",
@@ -1706,7 +1658,7 @@
     ]
   },
   {
-    "fieldNameEn": "wet reason",
+    "fieldNameEn": "Dryness reason",
     "fieldNameCn": "潮湿/干爽原因与面料结构",
     "category": "clothes",
     "descriptionEn": "Specific fabric, structural, or layered reason why the garment tends to remain dry or become wet (e.g. chiffon, lace, thick middle, plain thick).",

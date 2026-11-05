@@ -31,14 +31,11 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
   const [clothesType, setClothesType] = useState('Dress');
   const [material, setMaterial] = useState('soft chiffon');
   const [thickClothes, setThickClothes] = useState('01 not thick clothes');
-  const [hotAtNoon, setHotAtNoon] = useState('Not hot');
   const [diaoDai, setDiaoDai] = useState('diao dai');
   const [sideBreastOkWithGatherBra, setSideBreastOkWithGatherBra] = useState('side breast shape ok');
   const [sideBreastOkWithSideOutBra, setSideBreastOkWithSideOutBra] = useState('side breast out');
   const [sitBreastOkWithGatherBra, setSitBreastOkWithGatherBra] = useState('sit breast shape ok');
   const [sitBreastOkWithSideOutBra, setSitBreastOkWithSideOutBra] = useState('ugly');
-  const [sideBreastOk, setSideBreastOk] = useState('side breast shape ok');
-  const [standBreast, setStandBreast] = useState('');
 
   // Multi-scenario climate and sensory ergonomics states
   const [whenAircondHot, setWhenAircondHot] = useState('not so cold');
@@ -78,8 +75,8 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
   } | null>(null);
 
   const wetOptions = React.useMemo(() => {
-    const dictValues = fieldDictionaryService.getFieldTypicalValues('wet');
-    const histValues = dataService.getFieldPreviousValues('wet', 'clothes');
+    const dictValues = fieldDictionaryService.getFieldTypicalValues('Dryness');
+    const histValues = dataService.getFieldPreviousValues('Dryness', 'clothes');
     const optMap = new Map<string, { value: string; label: string; meaningCn?: string }>();
 
     // Standard baseline options
@@ -206,7 +203,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
     });
 
     // 2. Special defaults for wet
-    if (fieldKey === 'wet') {
+    if (fieldKey === 'Dryness') {
       const defaultWet = [
         { value: 'dry', labelCn: '干爽 / 不易受潮', meaningCn: '不易吸湿发黏或透气快干，穿着全程保持干爽舒适' },
         { value: 'middle', labelCn: '适中 / 半干半湿', meaningCn: '排湿透气适中，微有体感但未明显积汗黏腻' },
@@ -333,30 +330,23 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
       'Clothes Type': clothesType,
       'material': material.trim(),
       'thick clothes': thickClothes,
-      'Hot at noon': hotAtNoon,
+      noAircondHotFeeling: whenNoAircondHot,
       'diao dai': diaoDai,
-      'side breast ok': sideBreastOkWithGatherBra || sideBreastOkWithSideOutBra,
-      'side breast ok: with 聚拢 bra': sideBreastOkWithGatherBra,
+      sideBreastGatherBra: sideBreastOkWithGatherBra,
       'side breast ok: with side out bra': sideBreastOkWithSideOutBra,
-      'sit breast ok': sitBreastOkWithGatherBra || sitBreastOkWithSideOutBra,
-      'sit breast ok: With 聚拢bra': sitBreastOkWithGatherBra,
+      sitBreastGatherBra: sitBreastOkWithGatherBra,
       'sit breast ok: with side out bra': sitBreastOkWithSideOutBra,
-      'stand breast ok': standBreast.trim(),
-      'stand breast': standBreast.trim(),
-      standBreast: standBreast.trim(),
-      standBreastOk: standBreast.trim(),
       // Multi-scenario climate ergonomics
       'when with aircond: hot feeling': whenAircondHot,
       'when with aircond: leg feeling': whenAircondLeg,
-      'when without aircond: hot feeling': whenNoAircondHot,
       'when without aircond: leg feeling': whenNoAircondLeg,
       'when sleep under fan: hot feeling': whenSleepFanHot,
       'when sleep under fan: leg feeling': whenSleepFanLeg,
       'center chest': centerChest,
       'beautiful': beautiful as any,
       'beatiful reason': beatifulReason.trim(),
-      'wet': wet,
-      'wet reason': wetReason.trim(),
+      Dryness: wet,
+      'Dryness reason': wetReason.trim(),
       'long dress': longDress,
       'price': isNaN(numPrice as number) ? undefined : numPrice,
       'Descriptions': descriptions.trim(),
@@ -538,27 +528,6 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                   {renderFieldExplainBox('thick clothes', 'Thick Clothes', '面料厚度、保暖或透气实测感受...')}
                 </div>
 
-                {/* Hot at noon */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-mono font-bold uppercase text-slate-600">Hot at noon</label>
-                    <button
-                      type="button"
-                      onClick={() => openPreviousPicker('Hot at noon', 'Hot at noon', setHotAtNoon)}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
-                    >
-                      <History className="w-3 h-3 text-purple-600" />
-                      Previous
-                    </button>
-                  </div>
-                  <AutoResizeTextarea
-                    value={hotAtNoon}
-                    onChange={(e) => setHotAtNoon(e.target.value)}
-                    placeholder="Not hot"
-                  />
-                  {renderFieldExplainBox('Hot at noon', 'Hot at noon', '中午炎热度体感（如: noon not hot / cool but fabric thin）...')}
-                </div>
-
                 {/* diao dai */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -580,13 +549,13 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                   {renderFieldExplainBox('diao dai', 'Diao dai', '例如: diao dai not hook at noon, but pain in shoulder.')}
                 </div>
 
-                {/* side breast ok: with 聚拢 bra */}
+                {/* Side breast shape with gathering bra */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-mono font-bold uppercase text-slate-600">side breast ok: with 聚拢 bra</label>
+                    <label className="text-xs font-mono font-bold uppercase text-slate-600">Side breast shape with gathering bra</label>
                     <button
                       type="button"
-                      onClick={() => openPreviousPicker('side breast ok: with 聚拢 bra', 'side breast ok: with 聚拢 bra', setSideBreastOkWithGatherBra)}
+                      onClick={() => openPreviousPicker('sideBreastGatherBra', 'Side breast shape with gathering bra', setSideBreastOkWithGatherBra)}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                     >
                       <History className="w-3 h-3 text-purple-600" />
@@ -598,7 +567,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                     onChange={(e) => setSideBreastOkWithGatherBra(e.target.value)}
                     placeholder="side breast shape ok"
                   />
-                  {renderFieldExplainBox('side breast ok: with 聚拢 bra', 'side breast ok: with 聚拢 bra', '例如: 配合聚拢bra侧面胸型优美饱满 / side breast shape ok...')}
+                  {renderFieldExplainBox('sideBreastGatherBra', 'Side breast shape with gathering bra', '例如: 配合聚拢bra侧面胸型优美饱满 / side breast shape ok...')}
                 </div>
 
                 {/* side breast ok: with side out bra */}
@@ -622,13 +591,13 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                   {renderFieldExplainBox('side breast ok: with side out bra', 'side breast ok: with side out bra', '例如: side breast out, 配合侧开内衣侧面副乳外溢或扁塌...')}
                 </div>
 
-                {/* sit breast ok: With 聚拢bra */}
+                {/* Sitting breast shape with gathering bra */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-mono font-bold uppercase text-slate-600">sit breast ok: With 聚拢bra</label>
+                    <label className="text-xs font-mono font-bold uppercase text-slate-600">Sitting breast shape with gathering bra</label>
                     <button
                       type="button"
-                      onClick={() => openPreviousPicker('sit breast ok: With 聚拢bra', 'sit breast ok: With 聚拢bra', setSitBreastOkWithGatherBra)}
+                      onClick={() => openPreviousPicker('sitBreastGatherBra', 'Sitting breast shape with gathering bra', setSitBreastOkWithGatherBra)}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                     >
                       <History className="w-3 h-3 text-purple-600" />
@@ -640,7 +609,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                     onChange={(e) => setSitBreastOkWithGatherBra(e.target.value)}
                     placeholder="e.g. sit breast shape ok"
                   />
-                  {renderFieldExplainBox('sit breast ok: With 聚拢bra', 'sit breast ok: With 聚拢bra', '例如: 配合聚拢bra胸型美观稳定 / sit breast shape ok...')}
+                  {renderFieldExplainBox('sitBreastGatherBra', 'Sitting breast shape with gathering bra', '例如: 配合聚拢bra胸型美观稳定 / sit breast shape ok...')}
                 </div>
 
                 {/* sit breast ok: with side out bra */}
@@ -662,27 +631,6 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                     placeholder="e.g. ugly / sit breast shape ok"
                   />
                   {renderFieldExplainBox('sit breast ok: with side out bra', 'sit breast ok: with side out bra', '例如: ugly, 没有聚拢效果显扁塌 / sit breast shape ok...')}
-                </div>
-
-                {/* stand breast ok */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-mono font-bold uppercase text-slate-600">stand breast ok</label>
-                    <button
-                      type="button"
-                      onClick={() => openPreviousPicker('stand breast ok', 'stand breast ok', setStandBreast)}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
-                    >
-                      <History className="w-3 h-3 text-purple-600" />
-                      Previous
-                    </button>
-                  </div>
-                  <AutoResizeTextarea
-                    value={standBreast}
-                    onChange={(e) => setStandBreast(e.target.value)}
-                    placeholder="e.g. stand breast shape ok / stand breast ugly, because loose tie"
-                  />
-                  {renderFieldExplainBox('stand breast ok', 'stand breast ok', '例如: stand breast ugly, because loose tie... / stand breast shape ok')}
                 </div>
 
                 {/* center chest */}
@@ -752,26 +700,26 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-xs font-mono font-bold uppercase text-slate-600 flex items-center gap-1">
                       <Droplets className="w-3.5 h-3.5 text-blue-500" />
-                      wet
+                      Dryness
                     </label>
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => setCreateOptionConfig({
                           isOpen: true,
-                          fieldName: 'wet',
-                          fieldLabel: 'Wet status (潮湿状态)',
+                          fieldName: 'Dryness',
+                          fieldLabel: 'Dryness (干爽状态)',
                           onSave: (val) => setWet(val)
                         })}
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition-colors shadow-2xs cursor-pointer"
-                        title="为 wet 字段新建选项 (如 middle)"
+                        title="为 Dryness 字段新建选项 (如 middle)"
                       >
                         <Plus className="w-3 h-3 text-purple-600" />
                         + 新建选项
                       </button>
                       <button
                         type="button"
-                        onClick={() => openPreviousPicker('wet', 'Wet status', (v) => setWet(v), wet)}
+                        onClick={() => openPreviousPicker('Dryness', 'Dryness', (v) => setWet(v), wet)}
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200 cursor-pointer"
                       >
                         <History className="w-3 h-3 text-purple-600" />
@@ -787,8 +735,8 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                         if (e.target.value === '__NEW_OPTION__') {
                           setCreateOptionConfig({
                             isOpen: true,
-                            fieldName: 'wet',
-                            fieldLabel: 'Wet status (潮湿状态)',
+                            fieldName: 'Dryness',
+                            fieldLabel: 'Dryness (干爽状态)',
                             onSave: (val) => setWet(val)
                           });
                         } else {
@@ -814,11 +762,11 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                       <button
                         type="button"
                         onClick={() => {
-                          const manualVal = window.prompt('直接输入或修改 wet 选项值 (例如 middle, dry, wet 等):', wet);
+                          const manualVal = window.prompt('直接输入或修改 Dryness 选项值 (例如 middle, dry, wet 等):', wet);
                           if (manualVal !== null && manualVal.trim()) {
                             const clean = manualVal.trim();
                             setWet(clean);
-                            fieldDictionaryService.addTypicalValue('wet', {
+                            fieldDictionaryService.addTypicalValue('Dryness', {
                               valueEn: clean,
                               valueCn: clean,
                               meaningCn: ''
@@ -831,15 +779,15 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                       </button>
                     </div>
                   </div>
-                  {renderFieldExplainBox('wet', 'Wet status', '出汗潮湿或速干排汗实测表现...')}
+                  {renderFieldExplainBox('Dryness', 'Dryness', '干爽或潮湿、速干排汗实测表现...')}
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-mono font-bold uppercase text-slate-600">wet reason</label>
+                    <label className="text-xs font-mono font-bold uppercase text-slate-600">Dryness reason</label>
                     <button
                       type="button"
-                      onClick={() => openPreviousPicker('wet reason', 'Drying reason', setWetReason)}
+                      onClick={() => openPreviousPicker('Dryness reason', 'Dryness reason', setWetReason)}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                     >
                       <History className="w-3 h-3 text-purple-600" />
@@ -851,7 +799,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                     onChange={(e) => setWetReason(e.target.value)}
                     placeholder="quick-drying fabric"
                   />
-                  {renderFieldExplainBox('wet reason', 'Wet Reason', '透气性、晾晒风干速度等体感记录...')}
+                  {renderFieldExplainBox('Dryness reason', 'Dryness reason', '透气性、晾晒风干速度等体感记录...')}
                 </div>
 
                 {/* long dress */}
@@ -962,7 +910,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                             </label>
                             <button
                               type="button"
-                              onClick={() => openPreviousPicker('when without aircond: hot feeling', 'when without aircond: hot feeling', setWhenNoAircondHot)}
+                              onClick={() => openPreviousPicker('noAircondHotFeeling', 'No-air-conditioning hot feeling', setWhenNoAircondHot)}
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                             >
                               <History className="w-3 h-3 text-purple-600" />
@@ -974,7 +922,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                             onChange={(e) => setWhenNoAircondHot(e.target.value)}
                             placeholder="e.g. hot / middle hot / not hot"
                           />
-                          {renderFieldExplainBox('when without aircond: hot feeling', 'when without aircond: hot feeling', '例如: due to thick chiffon material, thick clothes...')}
+                          {renderFieldExplainBox('noAircondHotFeeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
                         </div>
 
                         {/* leg feeling */}

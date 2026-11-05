@@ -31,8 +31,36 @@ export interface AIAdvisorReportRecord {
 }
 
 import rawDefaultFieldDefinitions from '../fieldDefinitions.json';
+import { canonicalGarmentFieldKey } from '../utils/garmentFieldNames';
 
-export const DEFAULT_FIELD_DEFINITIONS: FieldDefinitionItem[] = rawDefaultFieldDefinitions as FieldDefinitionItem[];
+function canonicalizeFieldDefinitions(items: FieldDefinitionItem[]): FieldDefinitionItem[] {
+  const definitions = new Map<string, FieldDefinitionItem>();
+  for (const item of items) {
+    if (!item?.fieldNameEn) continue;
+    const fieldNameEn = canonicalGarmentFieldKey(item.fieldNameEn);
+    const existing = definitions.get(fieldNameEn.toLowerCase());
+    if (!existing) {
+      definitions.set(fieldNameEn.toLowerCase(), { ...item, fieldNameEn });
+      continue;
+    }
+
+    const values = new Map((existing.typicalValues || []).map(value => [value.valueEn.trim().toLowerCase(), value]));
+    (item.typicalValues || []).forEach(value => {
+      if (value?.valueEn) values.set(value.valueEn.trim().toLowerCase(), value);
+    });
+    definitions.set(fieldNameEn.toLowerCase(), {
+      ...item,
+      ...existing,
+      fieldNameEn,
+      typicalValues: Array.from(values.values())
+    });
+  }
+  return Array.from(definitions.values());
+}
+
+export const DEFAULT_FIELD_DEFINITIONS: FieldDefinitionItem[] = canonicalizeFieldDefinitions(
+  rawDefaultFieldDefinitions as FieldDefinitionItem[]
+);
 
 const STORAGE_KEY_FIELD_DEFS = 'wardrobe_field_definitions_v5';
 const STORAGE_KEY_AI_REPORTS = 'wardrobe_ai_advisor_reports_v1';
@@ -59,7 +87,8 @@ class FieldDictionaryManager {
       if (savedDefs) {
         const parsed = JSON.parse(savedDefs);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const existingMap = new Map<string, FieldDefinitionItem>(parsed.map((p: FieldDefinitionItem) => [p.fieldNameEn.toLowerCase(), p]));
+          const normalizedParsed = canonicalizeFieldDefinitions(parsed);
+          const existingMap = new Map<string, FieldDefinitionItem>(normalizedParsed.map((p: FieldDefinitionItem) => [p.fieldNameEn.toLowerCase(), p]));
           let didAdd = false;
           for (const d of DEFAULT_FIELD_DEFINITIONS) {
             const key = d.fieldNameEn.toLowerCase();
@@ -96,10 +125,11 @@ class FieldDictionaryManager {
               }
             }
           }
-          this.definitions = parsed;
+          this.definitions = normalizedParsed;
+          if (JSON.stringify(parsed) !== JSON.stringify(normalizedParsed)) didAdd = true;
           if (didAdd) {
             try {
-              localStorage.setItem(STORAGE_KEY_FIELD_DEFS, JSON.stringify(parsed));
+              localStorage.setItem(STORAGE_KEY_FIELD_DEFS, JSON.stringify(normalizedParsed));
             } catch {}
           }
         } else {
@@ -141,7 +171,7 @@ class FieldDictionaryManager {
         
         // 2. Overlay server definitions, preserving and merging typicalValues
         if (Array.isArray(serverDefs)) {
-          for (const s of serverDefs) {
+          for (const s of canonicalizeFieldDefinitions(serverDefs)) {
             if (s && s.fieldNameEn) {
               const key = s.fieldNameEn.toLowerCase();
               const existing = map.get(key);
@@ -159,7 +189,7 @@ class FieldDictionaryManager {
         }
 
         // 3. Overlay local definitions, preserving and merging typicalValues
-        for (const l of this.definitions) {
+        for (const l of canonicalizeFieldDefinitions(this.definitions)) {
           if (l && l.fieldNameEn) {
             const key = l.fieldNameEn.toLowerCase();
             const existing = map.get(key);
@@ -252,7 +282,7 @@ class FieldDictionaryManager {
 
   public getFieldDefinition(fieldName: string): FieldDefinitionItem | undefined {
     if (!fieldName) return undefined;
-    const clean = fieldName.trim().toLowerCase();
+    const clean = canonicalGarmentFieldKey(fieldName).trim().toLowerCase();
     return this.definitions.find(d => {
       const en = d.fieldNameEn.toLowerCase();
       const cn = (d.fieldNameCn || '').toLowerCase();
@@ -270,7 +300,7 @@ class FieldDictionaryManager {
     let def = this.getFieldDefinition(fieldName);
     if (!def) {
       def = {
-        fieldNameEn: fieldName.trim(),
+        fieldNameEn: canonicalGarmentFieldKey(fieldName.trim()),
         fieldNameCn: fieldName.trim(),
         category: 'clothes',
         descriptionEn: `Attribute ${fieldName}`,
@@ -348,7 +378,7 @@ class FieldDictionaryManager {
   }
 
   public setCategoryAllEnabled(category: 'all' | 'clothes' | 'wearingReport' | 'junction', enabled: boolean): void {
-    for (const d of this.definitions) {
+    for (const d of canonicalizeFieldDefinitions(this.definitions)) {
       if (category === 'all' || d.category === category) {
         d.enabledForAi = enabled;
       }
@@ -384,7 +414,7 @@ class FieldDictionaryManager {
       }
     }
     // 3. Merge imported definitions and their typicalValues
-    for (const item of items) {
+    for (const item of canonicalizeFieldDefinitions(items)) {
       if (item && item.fieldNameEn) {
         const key = item.fieldNameEn.toLowerCase();
         const existing = map.get(key);
@@ -519,4 +549,3 @@ class FieldDictionaryManager {
 }
 
 export const fieldDictionaryService = new FieldDictionaryManager();
-

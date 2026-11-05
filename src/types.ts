@@ -40,39 +40,30 @@ export interface Clothes {
   'Clothes Type': 'Dress' | 'bra' | 'Tshirt' | 'Pant' | string;
   'material': string;
   'thick clothes'?: '01 not thick clothes' | '02 middle thick clothes' | '03 thick clothes' | 'not so thick bra' | 'quick thick material bra' | string;
-  'Hot at noon'?: 'Not hot' | 'Middle' | 'Hot' | string;
+  noAircondHotFeeling?: string;
   'diao dai'?: 'diao dai' | 'not diao dai' | 'wide diao dai' | string;
-  'side breast ok'?: 'side breast shape ok' | 'side breast ok' | 'side breast out' | string;
-  'side breast ok: with 聚拢 bra'?: string;
+  sideBreastGatherBra?: string;
   'side breast ok: with side out bra'?: string;
-  sideBreastOkWithGatherBra?: string;
   sideBreastOkWithSideOutBra?: string;
   sidebreastsideoutbra?: string;
   sidebreastsifeoutbra?: string;
   sidebreastgatherbra?: string;
-  'sit breast ok'?: 'sit breast shape ok' | 'stand breast ugly, because alot zhouwhen' | 'stand breast ugly, because loose tie not as white marry' | '?' | string;
-  'sit breast ok: With 聚拢bra'?: string;
+  sitBreastGatherBra?: string;
   'sit breast ok: with side out bra'?: string;
-  sitBreastOkWithGatherBra?: string;
   sitBreastOkWithSideOutBra?: string;
   sitbreastsideoutbra?: string;
   sitbreastgatherbra?: string;
-  'stand breast'?: string;
-  'stand breast ok'?: string;
-  standBreast?: string;
-  standBreastOk?: string;
   // Multi-scenario climate and sensory ergonomics
   'when with aircond: hot feeling'?: string;
   'when with aircond: leg feeling'?: string;
-  'when without aircond: hot feeling'?: string;
   'when without aircond: leg feeling'?: string;
   'when sleep under fan: hot feeling'?: string;
   'when sleep under fan: leg feeling'?: string;
   'center chest'?: 'no center chest' | 'center chest' | 'not center but side open' | 'yes center chest bra' | string;
   'beautiful'?: 'Beautiful' | 'Middle beautiful' | 'not so beautiful' | string;
   'beatiful reason'?: string;
-  'wet'?: 'dry' | 'little wet' | 'wet' | string;
-  'wet reason'?: string;
+  Dryness?: 'dry' | 'little wet' | 'wet' | string;
+  'Dryness reason'?: string;
   'Descriptions'?: string;
   'Descriptions 2'?: string;
   'price'?: number;
@@ -233,4 +224,3 @@ export interface DrillStep {
   field: string;
   value: string;
 }
-
