@@ -321,9 +321,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
 
     const numPrice = price ? parseFloat(price) : undefined;
 
-    const existingCustom: Record<string, any> = {
-      _fieldExplanations: fieldExplanations
-    };
+    const existingCustom: Record<string, any> = {};
 
     const payload: Omit<Clothes, 'id'> = {
       'Name': name.trim(),

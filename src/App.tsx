@@ -197,9 +197,6 @@ export function App() {
     fieldExplanations?: Record<string, string>;
   }) => {
     const existingCustom: Record<string, any> = {};
-    if (params.fieldExplanations) {
-      existingCustom._fieldExplanations = params.fieldExplanations;
-    }
 
     await dataService.addWearingReport(
       {
@@ -216,8 +213,7 @@ export function App() {
         'tags': params['tags'] || ['#journal'],
         'Pictures': params['Pictures'] || [],
         fieldExplanations: params.fieldExplanations || {},
-        customFields: existingCustom,
-        extraAttributes: existingCustom
+        customFields: existingCustom
       },
       params.clothesItems
     );

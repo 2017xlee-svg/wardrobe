@@ -7,8 +7,9 @@ interface CustomAttributesManagerProps {
   title?: string;
   description?: string;
   attributes: Record<string, any>;
-  onAddAttribute: (key: string, value: any) => Promise<void> | void;
-  onUpdateAttribute: (key: string, value: any) => Promise<void> | void;
+  explanations?: Record<string, string>;
+  onAddAttribute: (key: string, value: any, explanation?: string) => Promise<void> | void;
+  onUpdateAttribute: (key: string, value: any, explanation?: string) => Promise<void> | void;
   onDeleteAttribute: (key: string) => Promise<void> | void;
   suggestedKeys?: string[];
   entityType?: 'garment' | 'wearing report';
@@ -18,6 +19,7 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
   title = 'Extra Attributes & Specifications',
   description = 'Add, edit, or remove custom specifications and observational fields.',
   attributes = {},
+  explanations = {},
   onAddAttribute,
   onUpdateAttribute,
   onDeleteAttribute,
@@ -26,8 +28,10 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
 }) => {
   const [newKey, setNewKey] = useState('');
   const [newValue, setNewValue] = useState('');
+  const [newExplanation, setNewExplanation] = useState('');
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState('');
+  const [editingExplanation, setEditingExplanation] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -45,13 +49,15 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
     e.preventDefault();
     const cleanKey = newKey.trim();
     const cleanVal = newValue.trim();
+    const cleanExp = newExplanation.trim();
     if (!cleanKey || !cleanVal) return;
 
     setIsSubmitting(true);
     try {
-      await onAddAttribute(cleanKey, cleanVal);
+      await onAddAttribute(cleanKey, cleanVal, cleanExp || undefined);
       setNewKey('');
       setNewValue('');
+      setNewExplanation('');
       setShowAddForm(false);
     } catch (err) {
       console.error('Failed to add attribute:', err);
@@ -63,7 +69,7 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
   const handleSaveEdit = async (key: string) => {
     setIsSubmitting(true);
     try {
-      await onUpdateAttribute(key, editingValue.trim());
+      await onUpdateAttribute(key, editingValue.trim(), editingExplanation.trim());
       setEditingKey(null);
     } catch (err) {
       console.error('Failed to update attribute:', err);
@@ -170,6 +176,18 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
                 required
               />
             </div>
+            <div className="sm:col-span-2">
+              <label className="text-[10px] font-mono uppercase text-purple-700 font-bold block mb-1">
+                专属说明 (Explanation - Optional, 存入 fieldExplanations)
+              </label>
+              <textarea
+                rows={2}
+                placeholder="在此输入该自定义属性的专属说明、体感原因或背景备注（存入 fieldExplanations）..."
+                value={newExplanation}
+                onChange={(e) => setNewExplanation(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-xl border border-purple-200 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-hidden leading-relaxed bg-purple-50/30"
+              />
+            </div>
           </div>
           <div className="flex justify-end gap-2 pt-1 border-t border-slate-100">
             <button
@@ -202,6 +220,7 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
           {entries.map(([key, val]) => {
             const isEditingThis = editingKey === key;
             const displayStr = typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
+            const explainText = explanations?.[key] || '';
             return (
               <div
                 key={key}
@@ -246,9 +265,10 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
                           onClick={() => {
                             setEditingKey(key);
                             setEditingValue(displayStr);
+                            setEditingExplanation(explainText);
                           }}
                           className="p-1.5 rounded-lg hover:bg-purple-50 text-slate-500 hover:text-purple-700 transition-colors cursor-pointer"
-                          title="Edit value"
+                          title="Edit value and explanation"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
@@ -267,30 +287,52 @@ export const CustomAttributesManager: React.FC<CustomAttributesManagerProps> = (
                 </div>
 
                 {isEditingThis ? (
-                  <div className="pt-1 space-y-1.5">
-                    <label className="text-[10px] font-mono text-purple-700 font-bold block uppercase">
-                      编辑字段取值 (Edit Literal Value):
-                    </label>
-                    <textarea
-                      value={editingValue}
-                      onChange={(e) => setEditingValue(e.target.value)}
-                      rows={Math.min(12, Math.max(4, editingValue.split('\n').length))}
-                      className="w-full px-3 py-2.5 rounded-xl border-2 border-purple-400 text-xs sm:text-sm text-slate-900 font-medium leading-relaxed focus:ring-2 focus:ring-purple-500 focus:outline-hidden resize-y min-h-[96px] max-h-[1600px] break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap bg-white shadow-inner"
-                      autoFocus
-                    />
-                    <div className="text-[11px] text-slate-500 flex justify-between items-center">
-                      <span>可直接按住右下角向下拉伸文本框</span>
-                      <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">{editingValue.length} 字符</span>
+                  <div className="pt-1 space-y-2.5">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono text-purple-700 font-bold block uppercase">
+                        编辑字段取值 (Literal Value, 存入 customFields):
+                      </label>
+                      <textarea
+                        value={editingValue}
+                        onChange={(e) => setEditingValue(e.target.value)}
+                        rows={Math.min(12, Math.max(4, editingValue.split('\n').length))}
+                        className="w-full px-3 py-2.5 rounded-xl border-2 border-purple-400 text-xs sm:text-sm text-slate-900 font-medium leading-relaxed focus:ring-2 focus:ring-purple-500 focus:outline-hidden resize-y min-h-[96px] max-h-[1600px] break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap bg-white shadow-inner"
+                        autoFocus
+                      />
+                      <div className="text-[11px] text-slate-500 flex justify-between items-center">
+                        <span>可直接按住右下角向下拉伸文本框</span>
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">{editingValue.length} 字符</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-mono text-purple-700 font-bold block uppercase">
+                        专属说明 (Explanation, 存入 fieldExplanations):
+                      </label>
+                      <textarea
+                        value={editingExplanation}
+                        onChange={(e) => setEditingExplanation(e.target.value)}
+                        rows={2}
+                        placeholder="该自定义字段的专属体感说明或备注..."
+                        className="w-full px-3 py-2 rounded-xl border border-purple-300 text-xs text-slate-800 leading-relaxed focus:ring-2 focus:ring-purple-500 focus:outline-hidden bg-purple-50/20"
+                      />
                     </div>
                   </div>
                 ) : (
-                  <div className="min-w-0 w-full space-y-1">
+                  <div className="min-w-0 w-full space-y-1.5">
                     <span className="text-[10px] font-mono font-bold uppercase text-slate-400 block tracking-wider">
                       真实登记取值 (Literal Value):
                     </span>
                     <div className="text-xs sm:text-sm text-slate-900 font-medium break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap leading-relaxed select-text p-3 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs">
                       {displayStr}
                     </div>
+
+                    {explainText && (
+                      <div className="mt-1 flex items-start gap-2 p-2.5 rounded-xl bg-purple-50/90 border border-purple-200/70 text-purple-950 text-xs leading-relaxed break-words [word-break:normal] [overflow-wrap:break-word] whitespace-pre-wrap">
+                        <span className="font-bold text-[10px] text-purple-700 block uppercase font-mono mb-0.5">专属体感说明 (Explanation):</span>
+                        <span className="font-medium select-text break-words [word-break:normal] [overflow-wrap:break-word]">{explainText}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

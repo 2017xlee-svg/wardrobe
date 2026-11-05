@@ -1,0 +1,16 @@
+{
+  "app": "Wardrobe & Wear Journal",
+  "backupGeneratedAt": "2026-11-01T00:09:11.933Z",
+  "version": "2.0",
+  "stats": {
+    "totalGarments": 32,
+    "totalWearingReports": 69,
+    "totalJunctions": 132,
+    "totalPhotosInArchive": 53,
+    "totalAiReportsInArchive": 69,
+    "totalAdvisorReports": 11,
+    "totalFieldDefinitions": 52,
+    "totalDrilldownPresets": 15
+  },
+  "aiEngine": "Google AI Studio Gemini API (gemini-3.8-flash)"
+}
