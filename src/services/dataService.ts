@@ -321,13 +321,13 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
   });
 
   // Extract breast fields and aliases before processing custom attributes
-  const rawNoAircondHot = f.noAircondHotFeeling || f['Hot at noon'] || f.hotAtNoon || f['when without aircond: hot feeling'] || explicitCustom.noAircondHotFeeling || explicitCustom['Hot at noon'] || explicitCustom.hotAtNoon || explicitCustom['when without aircond: hot feeling'];
+  const rawNoAircondHot = f['when without aircond: hot feeling'] || f.noAircondHotFeeling || f['Hot at noon'] || f.hotAtNoon || explicitCustom['when without aircond: hot feeling'] || explicitCustom.noAircondHotFeeling || explicitCustom['Hot at noon'] || explicitCustom.hotAtNoon;
   const rawDryness = f.Dryness || f['wet'] || f.wet || explicitCustom.Dryness || explicitCustom.wet;
   const rawDrynessReason = f['Dryness reason'] || f['wet reason'] || f.wetReason || explicitCustom['Dryness reason'] || explicitCustom['wet reason'] || explicitCustom.wetReason;
   const rawSideBreastGather = f.sideBreastGatherBra || f['side breast ok: with 聚拢 bra'] || f['side breast ok: With 聚拢bra'] || f.sideBreastOkWithGatherBra || f.sidebreastgatherbra || f['sidebreastgatherbra'] || f['side breast ok'] || f.sideBreastOk || explicitCustom.sideBreastGatherBra || explicitCustom['side breast ok: with 聚拢 bra'] || explicitCustom['sidebreastgatherbra'] || explicitCustom['side breast ok'];
-  const rawSideBreastSideOut = f['side breast ok: with side out bra'] || f['side breast ok: With side out bra'] || f.sideBreastOkWithSideOutBra || f.sidebreastsideoutbra || f.sidebreastsifeoutbra || f['sidebreastsideoutbra'] || f['sidebreastsifeoutbra'] || explicitCustom['side breast ok: with side out bra'] || explicitCustom['sidebreastsideoutbra'] || explicitCustom['sidebreastsifeoutbra'];
+  const rawSideBreastSideOut = f['side breast ok: with side out bra'] || f.sideBreastSideOutBra || f.sideBreastOkWithSideOutBra || explicitCustom['side breast ok: with side out bra'];
   const rawSitBreastGather = f.sitBreastGatherBra || f['sit breast ok: With 聚拢bra'] || f['sit breast ok: with 聚拢bra'] || f.sitBreastOkWithGatherBra || f.sitbreastgatherbra || f['sitbreastgatherbra'] || f['sit breast ok'] || f.sitBreastOk || f['stand breast'] || f['stand breast ok'] || f.standBreast || f.standBreastOk || explicitCustom.sitBreastGatherBra || explicitCustom['sit breast ok: With 聚拢bra'] || explicitCustom['sit breast ok'] || explicitCustom['stand breast'] || explicitCustom['stand breast ok'] || explicitCustom.standBreast || explicitCustom.standBreastOk;
-  const rawSitBreastSideOut = f['sit breast ok: with side out bra'] || f['sit breast ok: With side out bra'] || f.sitBreastOkWithSideOutBra || f.sitbreastsideoutbra || f['sitbreastsideoutbra'] || explicitCustom['sit breast ok: with side out bra'] || explicitCustom['sitbreastsideoutbra'];
+  const rawSitBreastSideOut = f['sit breast ok: with side out bra'] || f.sitBreastSideOutBra || f.sitBreastOkWithSideOutBra || explicitCustom['sit breast ok: with side out bra'];
 
   // Collect top-level non-standard custom attributes present in f (e.g. Color, Brand, Stretch, Fabric Weight)
   for (const [k, v] of Object.entries(f)) {
@@ -364,18 +364,18 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     const lower = clean.toLowerCase().replace(/[\s_:-]/g, '');
     if (lower === 'material') return 'material';
     if (lower === 'thickclothes') return 'thick clothes';
-    if (lower === 'hotatnoon' || lower === 'noaircondhotfeeling') return 'noAircondHotFeeling';
+    if (lower === 'hotatnoon' || lower === 'noaircondhotfeeling') return 'when without aircond: hot feeling';
     if (lower === 'diaodai') return 'diao dai';
     if (lower === 'sidebreastokwithgatherbra' || lower === 'sidebreastgatherbra' || lower === 'sidebreastokwith聚拢bra' || lower === 'sidebreastok') return 'sideBreastGatherBra';
     if (lower === 'sidebreastokwithsideoutbra' || lower === 'sidebreastsideoutbra' || lower === 'sidebreastsifeoutbra') return 'side breast ok: with side out bra';
     if (lower === 'sitbreastokwithgatherbra' || lower === 'sitbreastgatherbra' || lower === 'sitbreastokwith聚拢bra' || lower === 'sitbreastok' || lower === 'standbreast' || lower === 'standbreastok') return 'sitBreastGatherBra';
     if (lower === 'sitbreastokwithsideoutbra' || lower === 'sitbreastsideoutbra') return 'sit breast ok: with side out bra';
-    if (lower === 'whenwithaircondhotfeeling' || lower === 'whenwithaircondhot' || lower === 'withaircondhot') return 'when with aircond: hot feeling';
-    if (lower === 'whenwithaircondlegfeeling' || lower === 'whenwithaircondleg' || lower === 'withaircondleg') return 'when with aircond: leg feeling';
-    if (lower === 'whenwithoutaircondhotfeeling' || lower === 'whenwithoutaircondhot' || lower === 'withoutaircondhot' || lower === 'noaircindhoyfeeling' || lower === 'noaircondhotfeeling') return 'noAircondHotFeeling';
+    if (lower === 'whenwithaircondhotfeeling' || lower === 'whenwithaircondhot' || lower === 'withaircondhot' || lower === 'aircondhotfeeling') return 'when with aircond: hot feeling';
+    if (lower === 'whenwithaircondlegfeeling' || lower === 'whenwithaircondleg' || lower === 'withaircondleg' || lower === 'aircondlegfeeling') return 'when with aircond: leg feeling';
+    if (lower === 'whenwithoutaircondhotfeeling' || lower === 'whenwithoutaircondhot' || lower === 'withoutaircondhot' || lower === 'noaircindhoyfeeling' || lower === 'noaircondhotfeeling') return 'when without aircond: hot feeling';
     if (lower === 'whenwithoutaircondlegfeeling' || lower === 'whenwithoutaircondleg' || lower === 'withoutaircondleg' || lower === 'noaircondlegfeeling') return 'when without aircond: leg feeling';
-    if (lower === 'whensleepunderfanhotfeeling' || lower === 'whensleepunderfanhot' || lower === 'sleepfanhot') return 'when sleep under fan: hot feeling';
-    if (lower === 'whensleepunderfanlegfeeling' || lower === 'whensleepunderfanleg' || lower === 'sleepfanleg') return 'when sleep under fan: leg feeling';
+    if (lower === 'whensleepunderfanhotfeeling' || lower === 'whensleepunderfanhot' || lower === 'sleepfanhot' || lower === 'fansleephotfeeling') return 'when sleep under fan: hot feeling';
+    if (lower === 'whensleepunderfanlegfeeling' || lower === 'whensleepunderfanleg' || lower === 'sleepfanleg' || lower === 'fansleeplegfeeling') return 'when sleep under fan: leg feeling';
     if (lower === 'centerchest') return 'center chest';
     if (lower === 'beatifulreason' || lower === 'beautifulreason') return 'beatiful reason';
     if (lower === 'wetreason' || lower === 'drynessreason') return 'Dryness reason';
@@ -410,8 +410,6 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
   const canonicalExplanations = canonicalizeFieldExplanations(extractedExplanations);
   Object.keys(extractedExplanations).forEach(key => delete extractedExplanations[key]);
   Object.assign(extractedExplanations, canonicalExplanations);
-  explicitCustom._fieldExplanations = extractedExplanations;
-
   const garment: ClothesItem = {
     ...f,
     id,
@@ -419,7 +417,7 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     'Clothes Type': f['Clothes Type'] || f.clothesType || 'Dress',
     'material': f['material'] || 'Chiffon',
     'thick clothes': f['thick clothes'] || f.thickClothes || '01 not thick clothes',
-    noAircondHotFeeling: rawNoAircondHot || 'Not hot',
+    'when without aircond: hot feeling': rawNoAircondHot || 'Not hot',
     'diao dai': f['diao dai'] || f.diaoDai || 'not diao dai',
     sideBreastGatherBra: rawSideBreastGather || 'side breast shape ok',
     'side breast ok: with side out bra': rawSideBreastSideOut || 'side breast out',
@@ -454,11 +452,10 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     'wash stated (from Full Wearing Report (new design) clothes list (linked))': Array.isArray(f['wash stated (from Full Wearing Report (new design) clothes list (linked))'])
       ? f['wash stated (from Full Wearing Report (new design) clothes list (linked))']
       : [],
-    customFields: explicitCustom,
-    extraAttributes: explicitCustom
+    customFields: explicitCustom
   };
 
-  // Strip deleted fields and mirror active custom attributes onto top-level properties
+  // Keep dynamic values only in customFields; explanations live in fieldExplanations.
   deletedFields.forEach(k => {
     delete (garment as any)[k];
   });
@@ -466,11 +463,8 @@ export function normalizeGarment(r: any, explicitDeletedKeys?: any): ClothesItem
     garment._deletedCustomFields = Array.from(deletedFields);
   }
 
-  for (const [k, v] of Object.entries(explicitCustom)) {
-    if (k.startsWith('_') || deletedFields.has(k)) continue;
-    if ((garment as any)[k] === undefined || (garment as any)[k] === null || String((garment as any)[k]).trim() === '') {
-      (garment as any)[k] = v;
-    }
+  for (const k of Object.keys(explicitCustom)) {
+    if (!k.startsWith('_')) delete (garment as any)[k];
   }
 
   // Remove any loose explain keys that leaked into garment top-level
@@ -1370,15 +1364,17 @@ export class DataService {
 
     // Presets in backup
     let backupPresetsCount = 0;
-    const presetsKey = allFiles.find(f => !zip.files[f].dir && (f.endsWith('drilldown_presets.json') || f.endsWith('report_presets.json')));
-    if (presetsKey) {
+    if (Array.isArray(parsed?.drilldownPresets) && parsed.drilldownPresets.length > 0) {
+      backupPresetsCount = parsed.drilldownPresets.length;
+    } else {
+      const presetsKey = allFiles.find(f => !zip.files[f].dir && (f.endsWith('drilldown_presets.json') || f.endsWith('report_presets.json')));
+      if (presetsKey) {
       try {
         const text = await zip.file(presetsKey)!.async('text');
         const pList = JSON.parse(text);
         if (Array.isArray(pList)) backupPresetsCount = pList.length;
       } catch {}
-    } else if (Array.isArray(parsed?.drilldownPresets)) {
-      backupPresetsCount = parsed.drilldownPresets.length;
+      }
     }
 
     const currentPresetsCount = reportPresetService.getPresets().length;
@@ -1630,7 +1626,6 @@ ${aiDiagnosticsSection}
 
     zip.file('ai_advisor_reports.json', JSON.stringify(aiAdvisorReports, null, 2));
     zip.file('field_definitions.json', JSON.stringify(fieldDefinitions, null, 2));
-    zip.file('drilldown_presets.json', JSON.stringify(currentPresets, null, 2));
 
     const metadata = {
       app: 'Wardrobe & Wear Journal',
@@ -1792,7 +1787,16 @@ and select this file. All your clothes, photos, definitions, and AI reports will
             deletedSet.add(key);
           } else if (action === 'rename') {
             const newKey = (fieldRenames[key] || key).trim();
-            if (newKey) mergedCustom[newKey] = val;
+            if (newKey) {
+              mergedCustom[newKey] = val;
+              if (newKey !== key) {
+                delete mergedCustom[key];
+                if (existing.fieldExplanations?.[key]) {
+                  c.fieldExplanations = { ...(c.fieldExplanations || {}), [newKey]: existing.fieldExplanations[key] };
+                  delete c.fieldExplanations[key];
+                }
+              }
+            }
           } else {
             // Keep
             if (val !== undefined && val !== null && String(val).trim() !== '') {
@@ -1813,15 +1817,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         }
 
         c.customFields = mergedCustom;
-        c.extraAttributes = mergedCustom;
-
-        // Also ensure every dynamic custom attribute in mergedCustom is accessible as a top-level property on c
-        for (const [mk, mv] of Object.entries(mergedCustom)) {
-          if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-          if ((c as any)[mk] === undefined || (c as any)[mk] === null || String((c as any)[mk]).trim() === '') {
-            (c as any)[mk] = mv;
-          }
-        }
+        delete c.extraAttributes;
 
         // Preserve and merge fieldExplanations (e.g. climate rationale, fit notes)
         if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {
@@ -1854,8 +1850,6 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         if (af.name && (af.target === 'clothes' || af.target === 'both')) {
           if (!c.customFields) c.customFields = {};
           c.customFields[af.name] = af.defaultValue ?? '';
-          if (!c.extraAttributes) c.extraAttributes = {};
-          c.extraAttributes[af.name] = af.defaultValue ?? '';
         }
       }
 
@@ -2150,11 +2144,12 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       }
     }
 
-    // 4. Extract and restore drilldown_presets.json if present
+    // Prefer presets embedded in database.json; read the separate file only from legacy backups.
     let restoredPresetsCount = 0;
-    const presetsKey = allFiles.find(f => !zip.files[f].dir && (f.endsWith('drilldown_presets.json') || f.endsWith('report_presets.json')));
-    let backupPresetsToImport: any[] = [];
-    if (presetsKey) {
+    let backupPresetsToImport: any[] = Array.isArray(parsed?.drilldownPresets) ? parsed.drilldownPresets : [];
+    if (backupPresetsToImport.length === 0) {
+      const presetsKey = allFiles.find(f => !zip.files[f].dir && (f.endsWith('drilldown_presets.json') || f.endsWith('report_presets.json')));
+      if (presetsKey) {
       try {
         const presetsText = await zip.file(presetsKey)!.async('text');
         const parsedPresets = JSON.parse(presetsText);
@@ -2162,8 +2157,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       } catch (err) {
         console.warn('Drilldown presets restore warning:', err);
       }
-    } else if (Array.isArray(parsed?.drilldownPresets)) {
-      backupPresetsToImport = parsed.drilldownPresets;
+      }
     }
 
     if (backupPresetsToImport.length > 0) {
@@ -2546,7 +2540,12 @@ and select this file. All your clothes, photos, definitions, and AI reports will
   /**
    * Adds or updates a dynamic custom field on a garment.
    */
-  public async setGarmentCustomField(clothesId: string, fieldName: string, fieldValue: any): Promise<void> {
+  public async setGarmentCustomField(
+    clothesId: string,
+    fieldName: string,
+    fieldValue: any,
+    explanation?: string
+  ): Promise<void> {
     const garment = this.clothes.find(c => c.id === clothesId);
     if (!garment) return;
 
@@ -2566,16 +2565,19 @@ and select this file. All your clothes, photos, definitions, and AI reports will
       delete currentCustom._deletedCustomFields;
     }
 
-    (garment as any)[fieldName] = fieldValue;
     garment._deletedCustomFields = deletedArr;
     garment.customFields = currentCustom;
-    garment.extraAttributes = currentCustom;
+    const fieldExplanations = { ...(garment.fieldExplanations || {}) };
+    if (explanation !== undefined) {
+      if (explanation.trim()) fieldExplanations[fieldName] = explanation.trim();
+      else delete fieldExplanations[fieldName];
+      garment.fieldExplanations = fieldExplanations;
+    }
 
     await this.updateGarment(clothesId, {
       customFields: currentCustom,
-      extraAttributes: currentCustom,
       _deletedCustomFields: deletedArr,
-      [fieldName]: fieldValue
+      ...(explanation !== undefined ? { fieldExplanations } : {})
     });
   }
 
@@ -2601,12 +2603,14 @@ and select this file. All your clothes, photos, definitions, and AI reports will
     delete (garment as any)[fieldName];
     garment._deletedCustomFields = deletedArr;
     garment.customFields = currentCustom;
-    garment.extraAttributes = currentCustom;
+    const fieldExplanations = { ...(garment.fieldExplanations || {}) };
+    delete fieldExplanations[fieldName];
+    garment.fieldExplanations = fieldExplanations;
 
     await this.updateGarment(clothesId, {
       customFields: currentCustom,
-      extraAttributes: currentCustom,
-      _deletedCustomFields: deletedArr
+      _deletedCustomFields: deletedArr,
+      fieldExplanations
     }, [fieldName]);
   }
 
@@ -2815,15 +2819,7 @@ and select this file. All your clothes, photos, definitions, and AI reports will
         }
 
         c.customFields = mergedCustom;
-        c.extraAttributes = mergedCustom;
-
-        // Mirror all merged custom attributes to top-level properties
-        for (const [mk, mv] of Object.entries(mergedCustom)) {
-          if (mk.startsWith('_') || deletedSet.has(mk)) continue;
-          if ((c as any)[mk] === undefined || (c as any)[mk] === null || String((c as any)[mk]).trim() === '') {
-            (c as any)[mk] = mv;
-          }
-        }
+        delete c.extraAttributes;
 
         // Preserve field explanations (fit notes, climate rationale)
         if (existing.fieldExplanations && typeof existing.fieldExplanations === 'object') {

@@ -43,7 +43,7 @@ export const ALL_CLOTHES_FILTER_FIELDS: FilterFieldDefinition[] = [
   { key: 'price', label: 'Price (价格)', category: 'core', icon: '💰', defaultVisible: false, description: 'Purchase price value' },
   
   // Comfort & Heat
-  { key: 'noAircondHotFeeling', label: 'No-air-conditioning hot feeling (无空调热感)', category: 'comfort', icon: '☀️', defaultVisible: true, description: 'Hot, Middle hot, Not hot' },
+  { key: 'when without aircond: hot feeling', label: 'No-air-conditioning hot feeling (无空调热感)', category: 'comfort', icon: '☀️', defaultVisible: true, description: 'Hot, Middle hot, Not hot' },
   { key: 'diao dai', label: 'Diao dai (吊带受力)', category: 'comfort', icon: '🎗️', defaultVisible: true, description: 'Not diao dai, Diao dai, Wide diao dai' },
   { key: 'Dryness', label: 'Dryness (干爽/排湿)', category: 'comfort', icon: '💧', defaultVisible: true, description: 'Dry, Little wet, Wet' },
   { key: 'Dryness reason', label: 'Dryness reason (干爽原因)', category: 'comfort', icon: '💨', defaultVisible: false, description: 'Quick-drying, fabric notes' },

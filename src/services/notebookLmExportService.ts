@@ -96,7 +96,7 @@ class NotebookLmExportService {
       lines.push(``);
 
       lines.push(`#### Thermal & Climate Comfort`);
-      lines.push(`- **No-Air-Conditioning Heat Feeling (\`noAircondHotFeeling\`)**: ${item.noAircondHotFeeling || 'Not evaluated'}`);
+      lines.push(`- **No-Air-Conditioning Heat Feeling (\`when without aircond: hot feeling\`)**: ${item['when without aircond: hot feeling'] || 'Not evaluated'}`);
       lines.push(`- **Dryness / Moisture Retention (\`Dryness\`)**: ${item.Dryness || 'Not evaluated'}`);
       if (item['Dryness reason']) {
         lines.push(`- **Dryness Reason (\`Dryness reason\`)**: ${item['Dryness reason']}`);

@@ -33,7 +33,7 @@ export const KNOWN_CLOTHES_FIELDS: KnownFieldSchema[] = [
     allowedEnumValues: ['01 not thick clothes', '02 middle thick clothes', '03 thick clothes', 'not so thick bra', 'quick thick material bra']
   },
   {
-    key: 'noAircondHotFeeling',
+    key: 'when without aircond: hot feeling',
     label: 'No-air-conditioning hot feeling',
     expectedType: 'enum',
     allowedEnumValues: ['Not hot', 'Middle', 'Hot']

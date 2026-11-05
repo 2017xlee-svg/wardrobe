@@ -170,12 +170,6 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
           ...(targetGarment.extraAttributes || {}),
           ...(freshGarment.customFields || {}),
           ...(freshGarment.extraAttributes || {})
-        },
-        extraAttributes: {
-          ...(targetGarment.extraAttributes || {}),
-          ...(targetGarment.customFields || {}),
-          ...(freshGarment.customFields || {}),
-          ...(freshGarment.extraAttributes || {})
         }
       };
 
@@ -390,7 +384,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: customPrompt.trim() || '请根据以上天气设定（特别是中午炎热度 Hot at noon）与设定的条件，全面对比候选衣物，并深度结合过往20维真实穿搭日志与Junction时长洗护数据，推荐最适宜穿搭，指出体感预警与洗护建议。',
+          prompt: customPrompt.trim() || '请根据以上天气设定（特别是无空调热感 when without aircond: hot feeling）与设定的条件，全面对比候选衣物，并深度结合过往20维真实穿搭日志与Junction时长洗护数据，推荐最适宜穿搭，指出体感预警与洗护建议。',
           items: candidateItems.map(c => ({
             id: c.id,
             name: c['Name'] || c.name,
@@ -398,7 +392,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
             material: c['material'] || c.materialProp || c.material,
             thickClothes: c['thick clothes'] || c.thickClothes,
             longDress: c['long dress'] || c.longDress,
-            noAircondHotFeeling: c.noAircondHotFeeling,
+            whenWithoutAircondHotFeeling: c['when without aircond: hot feeling'],
             diaoDai: c['diao dai'] || c.diaoDai,
             sitBreastGatherBra: c.sitBreastGatherBra,
             sideBreastGatherBra: c.sideBreastGatherBra,
@@ -425,7 +419,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
             type: c['Clothes Type'] || c.clothesType,
             material: c['material'],
             thickClothes: c['thick clothes'],
-            noAircondHotFeeling: c.noAircondHotFeeling,
+            whenWithoutAircondHotFeeling: c['when without aircond: hot feeling'],
             diaoDai: c['diao dai'],
             tags: c.tags || [],
             totalWashedCount: c['Total Washed Count'] || 0
@@ -511,7 +505,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
             精准体感穿搭评估与气候诊断
           </h2>
           <p className="text-xs text-slate-500 max-w-xl leading-relaxed">
-            告别泛泛空话，严格依照您的中英输入字段（如中午炎热度 Hot at noon、细肩带 diao dai、久坐胸部体感等）进行深层人体工学推导与穿搭推荐。
+            告别泛泛空话，严格依照您的中英输入字段（如无空调热感、细肩带 diao dai、久坐胸部体感等）进行深层人体工学推导与穿搭推荐。
           </p>
         </div>
 
@@ -680,7 +674,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                         clothesType: c['Clothes Type'],
                         material: c['material'],
                         thickClothes: c['thick clothes'],
-                        noAircondHotFeeling: c.noAircondHotFeeling,
+                        whenWithoutAircondHotFeeling: c['when without aircond: hot feeling'],
                         diaoDai: c['diao dai'],
                         sitBreastGatherBra: c.sitBreastGatherBra,
                         sideBreastGatherBra: c.sideBreastGatherBra,
@@ -694,8 +688,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
                         totalGarments: clothes.length,
                         materials: materialCounts,
                         comfortIssues: clothes
-                          .filter(c => (c.sitBreastGatherBra && c.sitBreastGatherBra !== 'Comfortable') || (c.noAircondHotFeeling && c.noAircondHotFeeling.includes('hot')))
-                          .map(c => ({ name: c['Name'], issue: `${c.sitBreastGatherBra || ''} ${c.noAircondHotFeeling || ''}` }))
+                          .filter(c => (c.sitBreastGatherBra && c.sitBreastGatherBra !== 'Comfortable') || (c['when without aircond: hot feeling'] && c['when without aircond: hot feeling'].includes('hot')))
+                          .map(c => ({ name: c['Name'], issue: `${c.sitBreastGatherBra || ''} ${c['when without aircond: hot feeling'] || ''}` }))
                       },
                       wearingReports: serializedReports,
                       junctions: serializedJunctions,
@@ -989,8 +983,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
-                  <span className="text-[10px] font-mono text-slate-400 block">无空调热感 (noAircondHotFeeling)</span>
-                  <span className="font-bold text-slate-800">{targetGarment.noAircondHotFeeling || '未记录'}</span>
+                  <span className="text-[10px] font-mono text-slate-400 block">无空调热感</span>
+                  <span className="font-bold text-slate-800">{targetGarment['when without aircond: hot feeling'] || '未记录'}</span>
                 </div>
                 <div className="p-2 rounded-xl bg-white border border-slate-200">
                   <span className="text-[10px] font-mono text-slate-400 block">肩带款式 (diao dai)</span>

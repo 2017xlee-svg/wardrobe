@@ -40,19 +40,12 @@ export interface Clothes {
   'Clothes Type': 'Dress' | 'bra' | 'Tshirt' | 'Pant' | string;
   'material': string;
   'thick clothes'?: '01 not thick clothes' | '02 middle thick clothes' | '03 thick clothes' | 'not so thick bra' | 'quick thick material bra' | string;
-  noAircondHotFeeling?: string;
+  'when without aircond: hot feeling'?: string;
   'diao dai'?: 'diao dai' | 'not diao dai' | 'wide diao dai' | string;
   sideBreastGatherBra?: string;
   'side breast ok: with side out bra'?: string;
-  sideBreastOkWithSideOutBra?: string;
-  sidebreastsideoutbra?: string;
-  sidebreastsifeoutbra?: string;
-  sidebreastgatherbra?: string;
   sitBreastGatherBra?: string;
   'sit breast ok: with side out bra'?: string;
-  sitBreastOkWithSideOutBra?: string;
-  sitbreastsideoutbra?: string;
-  sitbreastgatherbra?: string;
   // Multi-scenario climate and sensory ergonomics
   'when with aircond: hot feeling'?: string;
   'when with aircond: leg feeling'?: string;
@@ -90,6 +83,7 @@ export interface Clothes {
 
   // Dynamic custom attributes/fields (extensible over time by the user)
   customFields?: Record<string, any>;
+  /** Accepted when reading legacy records; normalized garments omit this duplicate. */
   extraAttributes?: Record<string, any>;
   _deletedCustomFields?: string[];
 

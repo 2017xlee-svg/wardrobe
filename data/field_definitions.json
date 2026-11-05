@@ -1,6 +1,6 @@
 [
   {
-    "fieldNameEn": "noAircondHotFeeling",
+    "fieldNameEn": "when without aircond: hot feeling",
     "fieldNameCn": "无空调环境热感",
     "category": "clothes",
     "descriptionEn": "Records the garment's heat sensation without air conditioning, including hot, middle hot, and not hot.",
@@ -231,7 +231,7 @@
     ]
   },
   {
-    "fieldNameEn": "noAircondHotFeeling",
+    "fieldNameEn": "when without aircond: hot feeling",
     "fieldNameCn": "无空调环境体表温感 (常温/中午)",
     "category": "clothes",
     "descriptionEn": "Thermal and sweat sensation in natural ambient temperatures without air conditioning",

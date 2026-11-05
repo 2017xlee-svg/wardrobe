@@ -190,7 +190,7 @@ export const WardrobeStudio: React.FC<WardrobeStudioProps> = ({
 
     // 4. Presets
     if (activePreset === 'not-hot') {
-      list = list.filter(c => (c.noAircondHotFeeling || '').toLowerCase().includes('not'));
+      list = list.filter(c => (c['when without aircond: hot feeling'] || '').toLowerCase().includes('not'));
     } else if (activePreset === 'favorites') {
       list = list.filter(c => (c['beautiful'] || '') === 'Beautiful');
     } else if (activePreset === 'need-wash') {

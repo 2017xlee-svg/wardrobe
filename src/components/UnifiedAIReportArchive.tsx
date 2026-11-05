@@ -107,7 +107,7 @@ export const UnifiedAIReportArchive: React.FC<UnifiedAIReportArchiveProps> = ({
           model: v.model,
           isPrimary: v.isPrimary,
           content: v.content,
-          metaInfo: `${g['Clothes Type'] || '衣服'} · ${g['material'] || '面料'} · 无空调热感: ${g.noAircondHotFeeling || '未填'}`,
+          metaInfo: `${g['Clothes Type'] || '衣服'} · ${g['material'] || '面料'} · 无空调热感: ${g['when without aircond: hot feeling'] || '未填'}`,
           garment: g
         });
       });

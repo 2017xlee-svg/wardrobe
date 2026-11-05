@@ -48,7 +48,7 @@ export const AVAILABLE_REPORT_FIELDS: ReportFieldMeta[] = [
     type: 'string'
   },
   {
-    key: 'noAircondHotFeeling',
+    key: 'when without aircond: hot feeling',
     label: 'No-air-conditioning hot feeling',
     description: 'Heat sensation without air conditioning (hot, middle hot, not hot, undefined)',
     category: 'comfort',
@@ -278,13 +278,13 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
   {
     id: 'preset-without-aircond-hot',
     name: 'Normal / No Aircond: Upper Body (hot feeling)',
-    description: 'Tier 1: noAircondHotFeeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).',
-    groupTiers: ['noAircondHotFeeling', 'Clothes Type'],
+    description: 'Tier 1: when without aircond: hot feeling (not cold, hot, undefined). Tier 2: Clothes Type (dress/bra).',
+    groupTiers: ['when without aircond: hot feeling', 'Clothes Type'],
     sortField: 'Name',
     sortOrder: 'asc',
     visibleFields: [
       'Clothes Type',
-      'noAircondHotFeeling',
+      'when without aircond: hot feeling',
       'when without aircond: leg feeling',
       'material',
       'thick clothes'
@@ -300,7 +300,7 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
     visibleFields: [
       'Clothes Type',
       'when without aircond: leg feeling',
-      'noAircondHotFeeling',
+      'when without aircond: hot feeling',
       'material',
       'thick clothes'
     ]
@@ -347,7 +347,7 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
       'Dryness',
       'Dryness reason',
       'material',
-      'noAircondHotFeeling'
+      'when without aircond: hot feeling'
     ]
   },
   {
@@ -369,14 +369,14 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
     id: 'preset-thickness-climate',
     name: 'Thickness & Climate',
     description: 'Hierarchical drill by clothing category, no-air-conditioning heat feeling, and fabric thickness.',
-    groupTiers: ['Clothes Type', 'noAircondHotFeeling', 'thick clothes'],
+    groupTiers: ['Clothes Type', 'when without aircond: hot feeling', 'thick clothes'],
     sortField: 'wearing frequency(how many times legacy washed)',
     sortOrder: 'desc',
     visibleFields: [
       'Clothes Type',
       'material',
       'thick clothes',
-      'noAircondHotFeeling',
+      'when without aircond: hot feeling',
       'beautiful',
       'wearing frequency(how many times legacy washed)',
       'wash stated'
@@ -418,12 +418,12 @@ export const DEFAULT_REPORT_PRESETS: ReportPreset[] = [
     id: 'preset-sensory-heat',
     name: 'Sensory Heat & Moisture',
     description: 'Drill by no-air-conditioning heat sensitivity, dryness performance, and thickness.',
-    groupTiers: ['noAircondHotFeeling', 'Dryness', 'thick clothes'],
+    groupTiers: ['when without aircond: hot feeling', 'Dryness', 'thick clothes'],
     sortField: 'wearing frequency(how many times legacy washed)',
     sortOrder: 'desc',
     visibleFields: [
       'Clothes Type',
-      'noAircondHotFeeling',
+      'when without aircond: hot feeling',
       'Dryness',
       'thick clothes',
       'material',
@@ -550,24 +550,24 @@ class ReportPresetService {
     if (this.presets.length === 0) {
       this.presets = [...DEFAULT_REPORT_PRESETS];
     }
-    // Always asynchronously synchronize with server disk presets (e.g. from restored backup or container disk)
+    // Presets are persisted in the database payload, alongside garments and reports.
     this.fetchServerPresets();
   }
 
   /**
-   * Fetches persistent presets from server disk (/api/drilldown-presets)
-   * and merges them safely with local presets.
+   * Fetches presets from the server's database payload and merges them with local presets.
    */
   public async fetchServerPresets(): Promise<ReportPreset[]> {
     try {
       if (typeof window !== 'undefined') {
-        const res = await fetch('/api/drilldown-presets');
+        const res = await fetch('/api/local-db');
         if (res.ok) {
-          const serverPresets = await res.json();
+          const database = await res.json();
+          const serverPresets = database?.drilldownPresets;
           if (Array.isArray(serverPresets) && serverPresets.length > 0) {
             return this.importPresets(serverPresets, false, false);
           } else if (this.presets.length > 0) {
-            // First time seeding server disk
+            // Seed the database payload when it has no saved presets.
             this.syncToServer(this.presets);
           }
         }
@@ -579,16 +579,12 @@ class ReportPresetService {
   }
 
   /**
-   * Syncs current presets to the server filesystem so backups and cross-device sessions stay intact.
+   * Persists presets in the database payload so backups and cross-device sessions stay intact.
    */
-  public async syncToServer(presets: ReportPreset[]): Promise<void> {
+  public async syncToServer(_presets: ReportPreset[]): Promise<void> {
     try {
       if (typeof window !== 'undefined') {
-        await fetch('/api/drilldown-presets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(deduplicatePresets(presets))
-        });
+        await dataService.saveToLocalDisk();
       }
     } catch (err) {
       console.warn('[ReportPresetService] Failed to sync presets to server:', err);
@@ -674,11 +670,6 @@ class ReportPresetService {
     this.syncToServer(updated);
     this.notify();
 
-    // Persist to local database file so full backup archive immediately contains this updated preset
-    try {
-      dataService.saveToLocalDisk().catch(() => {});
-    } catch {}
-
     return updated;
   }
 
@@ -691,10 +682,6 @@ class ReportPresetService {
     this.syncToServer(result);
     this.notify();
 
-    try {
-      dataService.saveToLocalDisk().catch(() => {});
-    } catch {}
-
     return result;
   }
 
@@ -703,10 +690,6 @@ class ReportPresetService {
     this.savePresetsLocal(this.presets);
     this.syncToServer(this.presets);
     this.notify();
-
-    try {
-      dataService.saveToLocalDisk().catch(() => {});
-    } catch {}
 
     return this.presets;
   }

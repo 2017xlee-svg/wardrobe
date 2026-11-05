@@ -328,7 +328,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
       'Clothes Type': clothesType,
       'material': material.trim(),
       'thick clothes': thickClothes,
-      noAircondHotFeeling: whenNoAircondHot,
+      'when without aircond: hot feeling': whenNoAircondHot,
       'diao dai': diaoDai,
       sideBreastGatherBra: sideBreastOkWithGatherBra,
       'side breast ok: with side out bra': sideBreastOkWithSideOutBra,
@@ -356,8 +356,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
       'Pictures': pictures,
       'tags': tags,
       fieldExplanations,
-      customFields: existingCustom,
-      extraAttributes: existingCustom
+      customFields: existingCustom
     };
 
     if (onAddClothes) {
@@ -908,7 +907,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                             </label>
                             <button
                               type="button"
-                              onClick={() => openPreviousPicker('noAircondHotFeeling', 'No-air-conditioning hot feeling', setWhenNoAircondHot)}
+                              onClick={() => openPreviousPicker('when without aircond: hot feeling', 'No-air-conditioning hot feeling', setWhenNoAircondHot)}
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white hover:bg-purple-100 text-slate-600 hover:text-purple-700 border border-slate-200"
                             >
                               <History className="w-3 h-3 text-purple-600" />
@@ -920,7 +919,7 @@ export const AddClothesModal: React.FC<AddClothesModalProps> = ({
                             onChange={(e) => setWhenNoAircondHot(e.target.value)}
                             placeholder="e.g. hot / middle hot / not hot"
                           />
-                          {renderFieldExplainBox('noAircondHotFeeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
+                          {renderFieldExplainBox('when without aircond: hot feeling', 'No-air-conditioning hot feeling', '例如: due to thick chiffon material, thick clothes...')}
                         </div>
 
                         {/* leg feeling */}
